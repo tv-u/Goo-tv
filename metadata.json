@@ -1,0 +1,6 @@
+{
+  "name": "CineSphere VIP - World Class Movie & TV Streaming",
+  "description": "Stream unlimited movies and TV series with 20+ active streaming servers, TMDB live sync, seasons & episodes selector, and 4K cinema player.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

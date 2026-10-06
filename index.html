@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>GOO TV - World Class Movie & TV Streaming</title>
+    <meta name="description" content="Watch unlimited movies and TV shows on GOO TV with 20+ active streaming servers, auto-sync playback, seasons & episodes, and 4K cinema player." />
+    <meta name="keywords" content="movies, streaming, tv shows, bollywood, cinema, 4k movies, series, watch movies online, goo tv" />
+    
+    <!-- OpenGraph Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="GOO TV" />
+    <meta property="og:title" content="GOO TV - World Class Movie & TV Streaming" />
+    <meta property="og:description" content="Watch unlimited movies and TV shows on GOO TV with 20+ active streaming servers, auto-sync playback, seasons & episodes, and 4K cinema player." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&h=630&q=80" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GOO TV - World Class Movie & TV Streaming" />
+    <meta name="twitter:description" content="Watch unlimited movies and TV shows on GOO TV with 20+ active streaming servers, auto-sync playback, seasons & episodes, and 4K cinema player." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&h=630&q=80" />
+    <meta name="theme-color" content="#0b0c10" />
+
+    <!-- Web Performance Preconnects -->
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin>
+    <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Schema.org JSON-LD Structured Data (WebSite + SearchAction) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://gootv.app/#website",
+          "url": "https://gootv.app/",
+          "name": "GOO TV",
+          "description": "Watch unlimited movies and TV shows with 20+ active servers and auto-sync streaming.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://gootv.app/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "name": "GOO TV",
+          "applicationCategory": "EntertainmentApplication",
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="bg-[#0b0c10] text-[#f3f4f6] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-red-600 selection:text-white antialiased overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
