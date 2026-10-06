@@ -16,6 +16,25 @@
     <meta name="theme-color" content="#0b0c10" />
     <link rel="canonical" href="https://gootv.app/" />
 
+    <!-- Pure Dark Mode CSS (Prevents Any White Screen Flicker on Any Host) -->
+    <style>
+      html, body {
+        background-color: #0b0c10 !important;
+        color: #f3f4f6 !important;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      #root {
+        min-height: 100vh;
+        background-color: #0b0c10;
+      }
+      @keyframes pulseSlow {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(0.97); }
+      }
+    </style>
+
     <!-- OpenGraph Social Cards -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="GOO TV" />
@@ -76,7 +95,37 @@
     </script>
   </head>
   <body class="bg-[#0b0c10] text-[#f3f4f6] font-['Plus_Jakarta_Sans',sans-serif] selection:bg-red-600 selection:text-white antialiased overflow-x-hidden">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Dark Cinema Instant Loading Splash (Zero White Screen Ever) -->
+      <div id="app-loading-fallback" style="min-height:100vh;background-color:#0b0c10;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:20px;text-align:center;">
+        <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#e50914,#f59e0b);display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 12px 30px rgba(229,9,20,0.4);animation:pulseSlow 1.5s infinite ease-in-out;">
+          <svg style="width:28px;height:28px;fill:#fff;" viewBox="0 0 24 24"><path d="M10 8.64L15.27 12 10 15.36V8.64M8 5v14l11-7L8 5z"/></svg>
+        </div>
+        <h1 style="font-size:24px;font-weight:900;letter-spacing:-0.5px;margin:0 0 8px 0;color:#fff;">GOO <span style="color:#e50914;">TV</span></h1>
+        <p style="font-size:12px;color:#9ca3af;margin:0 0 18px 0;font-weight:600;">20 High-Speed Servers • Direct Downloads Active</p>
+        <div style="width:160px;height:4px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;">
+          <div style="width:50%;height:100%;background:linear-gradient(to right,#e50914,#f59e0b);border-radius:999px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vite module entry for Dev Server and npm run build -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- GitHub Pages Static Host Auto-Launcher (Zero-White-Screen Guarantee) -->
+    <script>
+      (function() {
+        window.addEventListener('DOMContentLoaded', function() {
+          setTimeout(function() {
+            var loader = document.getElementById('app-loading-fallback');
+            // If loader is still present, Vite did not compile /src/main.tsx because it's static GitHub Pages!
+            if (loader) {
+              console.log('Static hosting detected. Launching standalone cinema client...');
+              window.location.replace('./standalone.html' + (window.location.hash || ''));
+            }
+          }, 350);
+        });
+      })();
+    </script>
   </body>
 </html>
