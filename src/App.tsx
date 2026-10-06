@@ -45,6 +45,8 @@ import { WatchlistDrawer } from './components/WatchlistDrawer';
 import { ServersListModal } from './components/ServersListModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { ExploreView } from './components/ExploreView';
+import { PolicyModal, PolicyPageType } from './components/PolicyModal';
+import { AdsterraAdBanner } from './components/AdsterraAdBanner';
 import { STREAMING_SERVERS } from './services/servers';
 
 function MainApp() {
@@ -53,6 +55,7 @@ function MainApp() {
   const [detailMedia, setDetailMedia] = useState<MediaItem | null>(null);
   const [trailerMedia, setTrailerMedia] = useState<MediaItem | null>(null);
   const [downloadMedia, setDownloadMedia] = useState<MediaItem | null>(null);
+  const [policyPage, setPolicyPage] = useState<PolicyPageType | null>(null);
   const [showWatchlist, setShowWatchlist] = useState<boolean>(false);
   const [watchlistInitialTab, setWatchlistInitialTab] = useState<'watchlist' | 'history'>('watchlist');
   const [showServersModal, setShowServersModal] = useState<boolean>(false);
@@ -291,6 +294,11 @@ function MainApp() {
                 </div>
               </div>
             )}
+
+            {/* SPONSORED ADSTERRA SMART VIP AD BANNER */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <AdsterraAdBanner />
+            </div>
 
             {/* TRENDING SECTION WITH TIME-WINDOW TOGGLE */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
@@ -556,21 +564,41 @@ function MainApp() {
 
             <div>
               <h5 className="font-extrabold text-white text-xs uppercase tracking-wider mb-2.5">
-                Player Technology
+                Legal & Governance
               </h5>
-              <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
-                Features pure Direct Cinema Stream, Clean Popup Window, Theater Mode, Video.js and Plyr skins, and multi-tier high speed downloads.
-              </p>
-              <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-bold">
-                <Zap className="w-4 h-4 fill-emerald-400" />
-                <span>20 Servers Auto-Sync Ready</span>
-              </div>
+              <ul className="space-y-2 text-[11px] text-gray-400">
+                <li>
+                  <button onClick={() => setPolicyPage('about')} className="hover:text-red-400 transition-colors cursor-pointer text-left">
+                    • About GOO TV Platform
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => setPolicyPage('terms')} className="hover:text-red-400 transition-colors cursor-pointer text-left">
+                    • Terms & Conditions
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => setPolicyPage('privacy')} className="hover:text-red-400 transition-colors cursor-pointer text-left">
+                    • Security & Privacy Policy
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => setPolicyPage('dmca')} className="hover:text-red-400 transition-colors cursor-pointer text-left">
+                    • DMCA Copyright Disclaimer
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
 
           <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-gray-500">
             <p>© {new Date().getFullYear()} GOO TV. Powered by The Movie Database (TMDB) API.</p>
-            <p>Designed for cinema enthusiasts worldwide.</p>
+            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+              <button onClick={() => setPolicyPage('about')} className="hover:text-white transition-colors cursor-pointer">About Us</button>
+              <button onClick={() => setPolicyPage('terms')} className="hover:text-white transition-colors cursor-pointer">Terms</button>
+              <button onClick={() => setPolicyPage('privacy')} className="hover:text-white transition-colors cursor-pointer">Privacy & Security</button>
+              <button onClick={() => setPolicyPage('dmca')} className="hover:text-white transition-colors cursor-pointer">DMCA Disclaimer</button>
+            </div>
           </div>
         </div>
       </footer>
@@ -649,6 +677,15 @@ function MainApp() {
       {showServersModal && (
         <ServersListModal
           onClose={() => setShowServersModal(false)}
+        />
+      )}
+
+      {/* LEGAL & POLICY MODAL (ABOUT US, TERMS, PRIVACY, DMCA) */}
+      {policyPage && (
+        <PolicyModal
+          page={policyPage}
+          onClose={() => setPolicyPage(null)}
+          onSelectPage={(p) => setPolicyPage(p)}
         />
       )}
     </div>
