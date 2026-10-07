@@ -21,16 +21,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CineSphere VIP" />
 
-    <!-- GitHub Pages Path Normalizer (Ensures assets resolve correctly on repo subpaths) -->
+    <!-- GitHub Pages Immediate Cinema Launcher (Zero-Freeze Guarantee) -->
     <script>
       (function() {
         try {
-          var p = window.location.pathname;
           if (window.location.hostname.endsWith('github.io')) {
-            var parts = p.split('/').filter(Boolean);
-            if (parts.length === 1 && !p.endsWith('/')) {
-              window.location.replace(window.location.origin + p + '/' + window.location.search + window.location.hash);
-            }
+            // Direct GitHub Pages static hosting: launch standalone cinema client immediately
+            var target = './standalone.html' + (window.location.search || '') + (window.location.hash || '');
+            window.location.replace(target);
           }
         } catch (e) {}
       })();
