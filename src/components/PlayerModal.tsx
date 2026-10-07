@@ -29,6 +29,7 @@ import { MediaItem, MediaDetails, Season } from '../types/movie';
 import { STREAMING_SERVERS } from '../services/servers';
 import { fetchMediaDetails, fetchTVSeason, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
+import { AdsterraAdBanner } from './AdsterraAdBanner';
 
 interface PlayerModalProps {
   media: MediaItem;
@@ -401,6 +402,9 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           })}
         </div>
 
+        {/* Sponsored Fast Server Accelerator Boost */}
+        <AdsterraAdBanner format="stream_accelerator" className="mb-3" />
+
         {/* BIG CLICK HERE TO PLAY BOX (Exact Screenshot 1 Design) */}
         <div className="relative rounded-2xl overflow-hidden bg-black shadow-2xl border border-white/15 mb-4">
           
@@ -531,6 +535,9 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 </span>
               </h3>
 
+              {/* Sponsored VIP High-Speed Direct Download Banner */}
+              <AdsterraAdBanner format="download_sponsor" />
+
               <div className="space-y-2">
                 {downloadLinks.map((dl) => (
                   <a
@@ -591,6 +598,18 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Share</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    const pageUrl = window.location.origin + window.location.pathname + '#play-' + (isTv ? 'tv' : 'movie') + '-' + media.id;
+                    navigator.clipboard.writeText(pageUrl);
+                    triggerSyncToast('🔗 Direct Movie Page link copied to clipboard!');
+                  }}
+                  className="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Share2 className="w-3.5 h-3.5" />
+                  <span>Copy Page Link</span>
                 </button>
               </div>
             </div>

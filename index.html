@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     
     <!-- Primary SEO Meta Tags (High CTR & Long-Tail Optimization) -->
-    <title>GOO TV - Free Movies & TV Series Online | 4K Ultra HD & Hindi Dubbed Stream</title>
-    <meta name="title" content="GOO TV - Free Movies & TV Series Online | 4K Ultra HD & Hindi Dubbed Stream" />
-    <meta name="description" content="Watch unlimited movies and TV series free in 4K Ultra HD on GOO TV. Enjoy 20+ active fallback streaming servers, zero sandbox errors, Hindi dubbed dual audio, and direct high-speed downloads." />
+    <title>CineSphere VIP - World Class Movie & TV Streaming | GOO TV</title>
+    <meta name="title" content="CineSphere VIP - World Class Movie & TV Streaming | GOO TV" />
+    <meta name="description" content="Stream unlimited movies and TV series with 20+ active streaming servers, TMDB live sync, seasons & episodes selector, and 4K cinema player." />
     
     <!-- Zero-Competition & Long-Tail Keywords -->
-    <meta name="keywords" content="watch free movies online no sign up, watch hindi dubbed movies online full hd 1080p, stream hollywood movies free without registration, zero buffering streaming player, download movies direct mp4 streamtape, 4k ultra hd movie streaming website, tv series all seasons episodes watch online, unblocked movies streaming server switch, bollywood movies watch free online, anime episodes full english sub dub, streamtape direct download link, streamwish fast player, filemoon resumable storage, doodstream mirror online, goo tv free cinema" />
-    <meta name="author" content="GOO TV" />
+    <meta name="keywords" content="watch free movies online no sign up, watch hindi dubbed movies online full hd 1080p, stream hollywood movies free without registration, zero buffering streaming player, download movies direct mp4 streamtape, 4k ultra hd movie streaming website, tv series all seasons episodes watch online, unblocked movies streaming server switch, bollywood movies watch free online, anime episodes full english sub dub, streamtape direct download link, streamwish fast player, filemoon resumable storage, doodstream mirror online, cinesphere vip, goo tv free cinema" />
+    <meta name="author" content="CineSphere VIP" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#0b0c10" />
     <link rel="canonical" href="https://gootv.app/" />
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CineSphere VIP" />
 
     <!-- Pure Dark Mode CSS (Prevents Any White Screen Flicker on Any Host) -->
     <style>
@@ -37,9 +42,9 @@
 
     <!-- OpenGraph Social Cards -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="GOO TV" />
-    <meta property="og:title" content="GOO TV - Free Movies & TV Series Online | 4K Ultra HD & Hindi Dubbed" />
-    <meta property="og:description" content="Watch unlimited movies and TV series free in 4K Ultra HD on GOO TV with 20+ active fallback servers, zero buffer playback, and high-speed downloads." />
+    <meta property="og:site_name" content="CineSphere VIP" />
+    <meta property="og:title" content="CineSphere VIP - World Class Movie & TV Streaming | GOO TV" />
+    <meta property="og:description" content="Stream unlimited movies and TV series with 20+ active streaming servers, TMDB live sync, seasons & episodes selector, and 4K cinema player." />
     <meta property="og:image" content="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&h=630&q=80" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -47,9 +52,9 @@
 
     <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@GooTVStream" />
-    <meta name="twitter:title" content="GOO TV - Free Movies & TV Series Online | 4K Ultra HD & Hindi Dubbed" />
-    <meta name="twitter:description" content="Watch unlimited movies and TV series free in 4K Ultra HD on GOO TV with 20+ active fallback servers, zero buffer playback, and high-speed downloads." />
+    <meta name="twitter:site" content="@CineSphereVIP" />
+    <meta name="twitter:title" content="CineSphere VIP - World Class Movie & TV Streaming | GOO TV" />
+    <meta name="twitter:description" content="Stream unlimited movies and TV series with 20+ active streaming servers, TMDB live sync, seasons & episodes selector, and 4K cinema player." />
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1200&h=630&q=80" />
 
     <!-- Web Performance Preconnects -->
@@ -112,18 +117,12 @@
     <!-- Vite module entry for Dev Server and npm run build -->
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- GitHub Pages Static Host Auto-Launcher (Zero-White-Screen Guarantee) -->
+    <!-- Fail-Safe Cinema Loader Watchdog -->
     <script>
       (function() {
-        window.addEventListener('DOMContentLoaded', function() {
-          setTimeout(function() {
-            var loader = document.getElementById('app-loading-fallback');
-            // If loader is still present, Vite did not compile /src/main.tsx because it's static GitHub Pages!
-            if (loader) {
-              console.log('Static hosting detected. Launching standalone cinema client...');
-              window.location.replace('./standalone.html' + (window.location.hash || ''));
-            }
-          }, 350);
+        // Global unhandled error recovery to prevent white screen
+        window.addEventListener('error', function(e) {
+          console.warn('System notice caught:', e.message);
         });
       })();
     </script>

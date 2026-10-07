@@ -21,6 +21,7 @@ import {
   TV_GENRES 
 } from '../services/tmdb';
 import { MediaCard } from './MediaCard';
+import { AdsterraAdBanner } from './AdsterraAdBanner';
 
 interface ExploreViewProps {
   initialType?: 'movie' | 'tv' | 'bollywood' | 'anime' | 'top_rated';
@@ -380,6 +381,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Sponsored VIP Accelerator Banner in Catalog */}
+      <AdsterraAdBanner format="native_bar" className="mb-6" />
 
       {/* Grid of Movies/Shows or Skeleton */}
       {loading ? (

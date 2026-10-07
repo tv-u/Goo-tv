@@ -123,9 +123,79 @@ function MainApp() {
     detailMediaIdRef.current = detailMedia?.id ?? null;
   }, [detailMedia?.id]);
 
+  // Dynamic SEO & Individual Movie Page Metadata Generation
   useEffect(() => {
-    const handleHashChange = () => {
+    const currentMedia = activeMedia || detailMedia;
+    if (currentMedia) {
+      const title = currentMedia.title || currentMedia.name || 'Movie';
+      const year = (currentMedia.release_date || currentMedia.first_air_date || '').slice(0, 4);
+      const isTv = currentMedia.media_type === 'tv' || (!currentMedia.title && !!currentMedia.name);
+      const seoTitle = `Watch ${title} (${year || '2026'}) Full ${isTv ? 'Series' : 'Movie'} Free 4K HD | CineSphere VIP`;
+      const seoDesc = `Stream ${title} (${year || '2026'}) online free with 20+ active fallback servers, Hindi dubbed dual audio, and direct high-speed downloads in 4K Ultra HD and 1080p BluRay.`;
+
+      document.title = seoTitle;
+
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', seoDesc);
+
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', seoTitle);
+
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', seoDesc);
+
+      const ogImg = document.querySelector('meta[property="og:image"]');
+      if (ogImg && currentMedia.backdrop_path) {
+        ogImg.setAttribute('content', getImageUrl(currentMedia.backdrop_path, 'w1280'));
+      }
+    } else {
+      document.title = 'CineSphere VIP - World Class Movie & TV Streaming | GOO TV';
+      const defaultDesc = 'Stream unlimited movies and TV series with 20+ active streaming servers, TMDB live sync, seasons & episodes selector, and 4K cinema player.';
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', defaultDesc);
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', 'CineSphere VIP - World Class Movie & TV Streaming | GOO TV');
+    }
+  }, [activeMedia, detailMedia]);
+
+  // Handle URL Hash, Deep-Link, and Search Query Routing
+  useEffect(() => {
+    const handleUrlRouting = () => {
       const hash = window.location.hash;
+      const urlParams = new URLSearchParams(window.location.search);
+
+      // Check query params (?movie=123, ?tv=123, ?p=...)
+      const queryMovieId = urlParams.get('movie') || urlParams.get('id');
+      const queryTvId = urlParams.get('tv');
+      const queryWatchId = urlParams.get('watch');
+
+      if (queryMovieId && Number(queryMovieId) !== activeMediaIdRef.current) {
+        fetchMediaDetails(Number(queryMovieId), 'movie').then((item) => {
+          setActiveMedia(item);
+        }).catch(console.error);
+        return;
+      }
+
+      if (queryTvId && Number(queryTvId) !== activeMediaIdRef.current) {
+        fetchMediaDetails(Number(queryTvId), 'tv').then((item) => {
+          setActiveMedia(item);
+        }).catch(console.error);
+        return;
+      }
+
+      if (queryWatchId && Number(queryWatchId) !== activeMediaIdRef.current) {
+        fetchMediaDetails(Number(queryWatchId), 'movie').then((item) => {
+          setActiveMedia(item);
+        }).catch(console.error);
+        return;
+      }
+
+      // Check policy hash links (#about, #terms, #privacy, #dmca)
+      if (hash === '#about' || hash === '#terms' || hash === '#privacy' || hash === '#dmca') {
+        setPolicyPage(hash.replace('#', '') as PolicyPageType);
+        return;
+      }
+
       if (!hash) return;
 
       if (hash.startsWith('#play-')) {
@@ -147,9 +217,9 @@ function MainApp() {
       }
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    handleUrlRouting();
+    window.addEventListener('hashchange', handleUrlRouting);
+    return () => window.removeEventListener('hashchange', handleUrlRouting);
   }, []);
 
   // Update hash when active media changes
@@ -394,6 +464,11 @@ function MainApp() {
                 onDownload={handleOpenDownload}
                 onViewAll={() => setCurrentTab('tv')}
               />
+
+              {/* Mid-Feed High-Converting Sponsored VIP Banner */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+                <AdsterraAdBanner format="native_bar" />
+              </div>
 
               <MediaRow
                 title="Popular Hollywood Cinema"

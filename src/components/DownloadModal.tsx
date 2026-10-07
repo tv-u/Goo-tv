@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { MediaItem, Season } from '../types/movie';
 import { getImageUrl, fetchTVSeason, fetchMediaDetails } from '../services/tmdb';
+import { AdsterraAdBanner } from './AdsterraAdBanner';
 
 interface DownloadModalProps {
   media: MediaItem;
@@ -192,20 +193,22 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
   const activeServer = servers[selectedServer] || servers[0];
 
   const handleStartDownload = () => {
+    // 1. Immediately trigger the download in a clean new window (bypasses browser async popup blocker)
+    window.open(activeServer.url, '_blank', 'noopener,noreferrer');
+
+    // 2. Animate progress bar in UI
     setDownloadStarted(true);
-    setDownloadProgress(10);
+    setDownloadProgress(35);
 
     const interval = setInterval(() => {
       setDownloadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          // Trigger the download URL in new window/tab
-          window.open(activeServer.url, '_blank', 'noopener,noreferrer');
           return 100;
         }
-        return prev + 30;
+        return prev + 25;
       });
-    }, 400);
+    }, 300);
   };
 
   return (
@@ -255,6 +258,9 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-5 sm:p-6 space-y-6">
+          
+          {/* SPONSORED HIGH-SPEED VIP DOWNLOAD BANNER */}
+          <AdsterraAdBanner format="download_sponsor" />
           
           {/* TV Shows Season & Episode Selector */}
           {isTv && (
