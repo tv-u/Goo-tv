@@ -3,6 +3,7 @@ import { Play, Info, Plus, Check, Star, Volume2, VolumeX, Sparkles, ExternalLink
 import { MediaItem } from '../types/movie';
 import { getBackdropUrl, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
+import { openCleanPopupWindow } from '../utils/playerUrl';
 
 interface HeroBannerProps {
   items: MediaItem[];
@@ -112,18 +113,15 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             </button>
 
             {/* Direct Clean Popup Window Button */}
-            <a
-              href={current.media_type === 'tv'
-                ? `https://multiembed.mov/?video_id=${current.id}&tmdb=1&s=1&e=1`
-                : `https://multiembed.mov/?video_id=${current.id}&tmdb=1`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => openCleanPopupWindow(current)}
               className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-600/30 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
+              title="Open in Clean Popup Window with Full Controls (Skip, Play/Pause, 4K Quality, Hindi Dual Audio)"
             >
               <ExternalLink className="w-4 h-4" />
               <span>Clean Popup Window</span>
-            </a>
+            </button>
 
             <button
               onClick={() => onOpenDownload ? onOpenDownload(current) : onPlayMedia(current)}

@@ -44,13 +44,13 @@ export const WatchlistProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [preferredServer, setPreferredServerState] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('cinesphere_server');
-      if (!saved || saved === 'vidsrc-to' || saved === 'vidlink') {
-        try { localStorage.setItem('cinesphere_server', 'superembed'); } catch {}
-        return 'superembed';
+      if (!saved || saved === 'vidsrc-to' || saved === 'superembed') {
+        try { localStorage.setItem('cinesphere_server', 'autoembed'); } catch {}
+        return 'autoembed';
       }
       return saved;
     } catch {
-      return 'superembed';
+      return 'autoembed';
     }
   });
 

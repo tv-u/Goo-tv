@@ -3,6 +3,7 @@ import { Play, Star, Plus, Check, Info, ExternalLink, Download } from 'lucide-re
 import { MediaItem } from '../types/movie';
 import { getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
+import { openCleanPopupWindow, getCleanPlayerUrl } from '../utils/playerUrl';
 
 interface MediaCardProps {
   item: MediaItem;
@@ -30,28 +31,12 @@ export const MediaCard: React.FC<MediaCardProps> = ({
     ? getImageUrl(item.poster_path, 'w500')
     : getImageUrl(item.backdrop_path || item.poster_path, 'w780');
 
-  // Direct clean popup streaming URL (Zero sandbox, 100% unrestricted playback)
-  const popupStreamUrl = mediaType === 'tv'
-    ? `https://multiembed.mov/?video_id=${item.id}&tmdb=1&s=1&e=1`
-    : `https://multiembed.mov/?video_id=${item.id}&tmdb=1`;
+  // Direct clean popup streaming URL with all VIP controls
+  const popupStreamUrl = getCleanPlayerUrl(item);
 
   const handleOpenPopup = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const width = Math.min(window.screen.width * 0.9, 1280);
-    const height = Math.min(window.screen.height * 0.85, 720);
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-    
-    const popup = window.open(
-      popupStreamUrl,
-      'GooTVCleanPopup',
-      `width=${width},height=${height},top=${top},left=${left},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=no`
-    );
-    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-      window.open(popupStreamUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      popup.focus();
-    }
+    openCleanPopupWindow(item);
   };
 
   const handleDownloadClick = (e: React.MouseEvent) => {

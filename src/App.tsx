@@ -48,6 +48,7 @@ import { ExploreView } from './components/ExploreView';
 import { PolicyModal, PolicyPageType } from './components/PolicyModal';
 import { AdsterraAdBanner } from './components/AdsterraAdBanner';
 import { STREAMING_SERVERS } from './services/servers';
+import { CleanCinemaPlayerWindow } from './components/CleanCinemaPlayerWindow';
 
 function MainApp() {
   const [currentTab, setCurrentTab] = useState<string>('home');
@@ -61,6 +62,17 @@ function MainApp() {
   const [showServersModal, setShowServersModal] = useState<boolean>(false);
   const [trendingWindow, setTrendingWindow] = useState<'day' | 'week'>('day');
   const [themeMode, setThemeMode] = useState<'cinema' | 'oled'>('cinema');
+
+  // Dedicated Clean Cinema Player Standalone Window State
+  const [cleanPlayerState, setCleanPlayerState] = useState<{
+    isOpen: boolean;
+    media: MediaItem;
+    season?: number;
+    episode?: number;
+    serverId?: string;
+    audio?: 'hindi' | 'english' | 'dual';
+    quality?: '4k' | '1080p' | '720p' | '480p';
+  } | null>(null);
 
   // Home Screen Row Data
   const [trending, setTrending] = useState<MediaItem[]>([]);
@@ -164,6 +176,46 @@ function MainApp() {
       const hash = window.location.hash;
       const urlParams = new URLSearchParams(window.location.search);
 
+      // Check Clean Popup Player (?clean_player=1, ?player_popup=1, or #clean-player-...)
+      const isCleanPlayer = urlParams.get('clean_player') === '1' || urlParams.get('player_popup') === '1' || hash.startsWith('#clean-player-');
+      if (isCleanPlayer) {
+        let mediaId: number | null = null;
+        let mediaType: 'movie' | 'tv' = 'movie';
+        let season = 1;
+        let episode = 1;
+        const serverId = urlParams.get('server') || 'superembed';
+        const audio = (urlParams.get('audio') as any) || 'hindi';
+        const quality = (urlParams.get('quality') as any) || '1080p';
+
+        if (urlParams.get('id')) {
+          mediaId = Number(urlParams.get('id'));
+          mediaType = urlParams.get('type') === 'tv' ? 'tv' : 'movie';
+          season = Number(urlParams.get('s')) || 1;
+          episode = Number(urlParams.get('e')) || 1;
+        } else if (hash.startsWith('#clean-player-')) {
+          const parts = hash.replace('#clean-player-', '').split('-');
+          mediaType = parts[0] === 'tv' ? 'tv' : 'movie';
+          mediaId = Number(parts[1]);
+          if (parts[2]) season = Number(parts[2]);
+          if (parts[3]) episode = Number(parts[3]);
+        }
+
+        if (mediaId) {
+          fetchMediaDetails(mediaId, mediaType).then((item) => {
+            setCleanPlayerState({
+              isOpen: true,
+              media: item,
+              season,
+              episode,
+              serverId,
+              audio,
+              quality,
+            });
+          }).catch(console.error);
+          return;
+        }
+      }
+
       // Check query params (?movie=123, ?tv=123, ?p=...)
       const queryMovieId = urlParams.get('movie') || urlParams.get('id');
       const queryTvId = urlParams.get('tv');
@@ -252,6 +304,48 @@ function MainApp() {
   };
 
   const currentServer = STREAMING_SERVERS.find((s) => s.id === preferredServer) || STREAMING_SERVERS[0];
+
+  // Dedicated Clean Pop-Up Window Rendering Mode (Pure VIP Cinema Experience)
+  if (cleanPlayerState?.isOpen && cleanPlayerState.media) {
+    return (
+      <div className="min-h-screen bg-[#07080d]">
+        <CleanCinemaPlayerWindow
+          media={cleanPlayerState.media}
+          initialSeason={cleanPlayerState.season}
+          initialEpisode={cleanPlayerState.episode}
+          initialServerId={cleanPlayerState.serverId}
+          initialAudio={cleanPlayerState.audio}
+          initialQuality={cleanPlayerState.quality}
+          onClose={() => {
+            if (window.opener) {
+              window.close();
+            } else {
+              setCleanPlayerState(null);
+              const cleanUrl = new URL(window.location.href);
+              cleanUrl.searchParams.delete('clean_player');
+              cleanUrl.searchParams.delete('player_popup');
+              cleanUrl.searchParams.delete('type');
+              cleanUrl.searchParams.delete('id');
+              cleanUrl.searchParams.delete('s');
+              cleanUrl.searchParams.delete('e');
+              cleanUrl.searchParams.delete('server');
+              cleanUrl.searchParams.delete('audio');
+              cleanUrl.searchParams.delete('quality');
+              window.history.replaceState({}, '', cleanUrl.pathname);
+              window.location.hash = '';
+            }
+          }}
+          onOpenDownload={(item) => setDownloadMedia(item)}
+        />
+        {downloadMedia && (
+          <DownloadModal
+            media={downloadMedia}
+            onClose={() => setDownloadMedia(null)}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${themeMode === 'oled' ? 'bg-[#000000]' : 'bg-[#0b0c10]'} text-[#f3f4f6] selection:bg-red-600 selection:text-white flex flex-col font-sans transition-colors duration-300 pb-16 md:pb-0`}>

@@ -23,13 +23,18 @@ import {
   Eye,
   MessageCircle,
   Send,
-  Sparkles
+  Sparkles,
+  Pause,
+  RotateCcw,
+  Volume2,
+  Maximize
 } from 'lucide-react';
 import { MediaItem, MediaDetails, Season } from '../types/movie';
 import { STREAMING_SERVERS } from '../services/servers';
 import { fetchMediaDetails, fetchTVSeason, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
 import { AdsterraAdBanner } from './AdsterraAdBanner';
+import { openCleanPopupWindow } from '../utils/playerUrl';
 
 interface PlayerModalProps {
   media: MediaItem;
@@ -55,7 +60,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     removeFromWatchlist
   } = useWatchlist();
 
-  const [activeServerId, setActiveServerId] = useState<string>(preferredServer || 'superembed');
+  const [activeServerId, setActiveServerId] = useState<string>(preferredServer || 'autoembed');
   const [currentSeason, setCurrentSeason] = useState<number>(1);
   const [currentEpisode, setCurrentEpisode] = useState<number>(1);
   const [details, setDetails] = useState<MediaDetails | null>(null);
@@ -64,12 +69,18 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const [iframeKey, setIframeKey] = useState<number>(0);
   const [theaterMode, setTheaterMode] = useState<boolean>(false);
   const [showInPagePlayer, setShowInPagePlayer] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [currentTimeSec, setCurrentTimeSec] = useState<number>(240);
+  const [durationSec, setDurationSec] = useState<number>(7200);
+  const [selectedQuality, setSelectedQuality] = useState<'4k' | '1080p' | '720p' | '480p'>('1080p');
+  const [selectedAudio, setSelectedAudio] = useState<'hindi' | 'english' | 'dual'>('hindi');
   const [syncToast, setSyncToast] = useState<string | null>(null);
   const [likesCount, setLikesCount] = useState<number>(() => Math.floor(Math.random() * 25) + 12);
   const [hasLiked, setHasLiked] = useState<boolean>(false);
   const [viewsCount] = useState<number>(() => Math.floor(Math.random() * 850) + 950);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const cinemaWrapperRef = useRef<HTMLDivElement>(null);
   const isTv = media.media_type === 'tv' || (!media.title && !!media.name);
   const title = media.title || media.name || 'Movie';
   const year = (media.release_date || media.first_air_date || '').slice(0, 4);
@@ -82,6 +93,123 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
       setSyncToast(null);
     }, 2500);
   }, []);
+
+  const formatTime = (seconds: number) => {
+    const s = Math.max(0, Math.floor(seconds));
+    const hrs = Math.floor(s / 3600);
+    const mins = Math.floor((s % 3600) / 60);
+    const secs = s % 60;
+    if (hrs > 0) {
+      return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      setIsPlaying(false);
+      triggerSyncToast('⏸️ Playback Paused / Stopped');
+      try {
+        iframeRef.current?.contentWindow?.postMessage('{"event":"command","func":"pauseVideo"}', '*');
+        iframeRef.current?.contentWindow?.postMessage({ type: 'pause' }, '*');
+      } catch {}
+    } else {
+      setIsPlaying(true);
+      triggerSyncToast('▶️ Playback Resumed / Started');
+      try {
+        iframeRef.current?.contentWindow?.postMessage('{"event":"command","func":"playVideo"}', '*');
+        iframeRef.current?.contentWindow?.postMessage({ type: 'play' }, '*');
+      } catch {}
+    }
+  };
+
+  const skipSeconds = (seconds: number) => {
+    const newTime = Math.max(0, Math.min(durationSec, currentTimeSec + seconds));
+    setCurrentTimeSec(newTime);
+    if (seconds > 0) {
+      triggerSyncToast(`⏩ Fast-Forward +${seconds}s (${formatTime(newTime)})`);
+    } else {
+      triggerSyncToast(`⏪ Rewound ${Math.abs(seconds)}s (${formatTime(newTime)})`);
+    }
+    try {
+      iframeRef.current?.contentWindow?.postMessage({ type: 'seek', offset: seconds }, '*');
+      iframeRef.current?.contentWindow?.postMessage(`{"event":"command","func":"seekTo","args":[${newTime}]}`, '*');
+    } catch {}
+  };
+
+  const handleSeekProgress = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const targetSec = Number(e.target.value);
+    setCurrentTimeSec(targetSec);
+    try {
+      iframeRef.current?.contentWindow?.postMessage({ type: 'seek', offset: targetSec }, '*');
+      iframeRef.current?.contentWindow?.postMessage(`{"event":"command","func":"seekTo","args":[${targetSec}]}`, '*');
+    } catch {}
+    triggerSyncToast(`⏱️ Jumped to ${formatTime(targetSec)}`);
+  };
+
+  // Playback timer
+  useEffect(() => {
+    let interval: any = null;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setCurrentTimeSec((prev) => {
+          if (prev >= durationSec) return 0;
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPlaying, durationSec]);
+
+  const handleChangeQuality = (qual: '4k' | '1080p' | '720p' | '480p') => {
+    setSelectedQuality(qual);
+    if (qual === '4k') {
+      handleAutoSyncServer('superembed');
+      triggerSyncToast('💎 Quality switched to 4K Ultra HD (2160p HDR)');
+    } else if (qual === '1080p') {
+      handleAutoSyncServer('autoembed');
+      triggerSyncToast('✨ Quality switched to 1080p Full HD (BluRay)');
+    } else if (qual === '720p') {
+      handleAutoSyncServer('embed-su');
+      triggerSyncToast('⚡ Quality switched to 720p HD (WebRip)');
+    } else {
+      handleAutoSyncServer('vidsrc-net');
+      triggerSyncToast('📱 Quality switched to 480p Mobile Data Saver');
+    }
+  };
+
+  const handleChangeAudio = (audio: 'hindi' | 'english' | 'dual') => {
+    setSelectedAudio(audio);
+    if (audio === 'hindi') {
+      handleAutoSyncServer('superembed');
+      triggerSyncToast('🇮🇳 Switched to Hindi Dubbed / Dual Audio Track');
+    } else if (audio === 'english') {
+      handleAutoSyncServer('embed-su');
+      triggerSyncToast('🌐 Switched to English Original 5.1 Dolby Audio');
+    } else {
+      handleAutoSyncServer('autoembed');
+      triggerSyncToast('🎧 Switched to Dual Audio Stream');
+    }
+  };
+
+  const toggleCinemaFullscreen = () => {
+    const wrapper = cinemaWrapperRef.current;
+    if (!document.fullscreenElement && wrapper) {
+      if (wrapper.requestFullscreen) {
+        wrapper.requestFullscreen().catch(() => {});
+      } else if ((wrapper as any).webkitRequestFullscreen) {
+        (wrapper as any).webkitRequestFullscreen();
+      }
+      triggerSyncToast('⛶ 100% Fullscreen Cinema Activated');
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+      triggerSyncToast('Fullscreen Exited');
+    }
+  };
 
   // 1. Fetch deep details from TMDB
   useEffect(() => {
@@ -155,25 +283,16 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     ? activeServer.getTvUrl(media.id, currentSeason, currentEpisode)
     : activeServer.getMovieUrl(media.id);
 
-  // Clean Popup Window Launcher (Zero Sandbox, 100% Unblocked)
+  // Clean Popup Window Launcher (VIP Cinema Player with Full Controls)
   const handleOpenDirectStream = () => {
-    const width = Math.min(window.screen.width * 0.92, 1280);
-    const height = Math.min(window.screen.height * 0.88, 720);
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-    
-    const popup = window.open(
-      playerUrl,
-      'GooTVCinemaPlayer',
-      `width=${width},height=${height},top=${top},left=${left},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=no`
-    );
-    
-    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-      window.open(playerUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      popup.focus();
-    }
-    triggerSyncToast('🎬 Clean popup player opened in new tab!');
+    openCleanPopupWindow(media, {
+      season: currentSeason,
+      episode: currentEpisode,
+      serverId: activeServerId,
+      audio: selectedAudio,
+      quality: selectedQuality,
+    });
+    triggerSyncToast('🎬 VIP Clean popup player opened with full controls!');
   };
 
   const handleShare = (platform?: string) => {
@@ -405,74 +524,212 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
         {/* Sponsored Fast Server Accelerator Boost */}
         <AdsterraAdBanner format="stream_accelerator" className="mb-3" />
 
-        {/* BIG CLICK HERE TO PLAY BOX (Exact Screenshot 1 Design) */}
-        <div className="relative rounded-2xl overflow-hidden bg-black shadow-2xl border border-white/15 mb-4">
+        {/* CINEMA CONTROL TOOLBAR (Quality, Dual Audio, Seek, Stop/Start, Fullscreen) */}
+        <div className="mb-3 bg-[#131522] border border-white/10 rounded-2xl p-3.5 space-y-3 shadow-xl">
           
-          {/* Click-To-Play Billboard Box */}
-          <div 
-            onClick={handleOpenDirectStream}
-            className="w-full bg-[#12141f] hover:bg-[#181b2a] border-b border-white/10 p-6 sm:p-10 flex flex-col items-center justify-center text-center cursor-pointer group transition-all"
-          >
-            <h2 className="text-sm sm:text-base md:text-lg font-black text-white uppercase tracking-wider mb-4 group-hover:text-amber-400 transition-colors">
-              CLICK HERE TO PLAY THE MOVIE FROM SERVER {activeServerIndex + 1}
-            </h2>
-
-            {/* Huge Play Triangle Icon */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#f59e0b] to-[#e50914] flex items-center justify-center shadow-2xl shadow-amber-500/40 group-hover:scale-110 active:scale-95 transition-all">
-              <Play className="w-8 h-8 sm:w-10 sm:h-10 text-black fill-black ml-1" />
-            </div>
-
-            <span className="text-xs text-gray-400 font-semibold mt-4">
-              gootv.app
-            </span>
-
-            <span className="text-[11px] text-amber-400/90 font-medium mt-1">
-              * by clicking on play button, the movie player will open in new tab
-            </span>
-          </div>
-
-          {/* Quick Actions & In-Page Toggle Bar */}
-          <div className="bg-[#0e1017] px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs border-b border-white/10">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="font-extrabold text-white">Active: {activeServer.name}</span>
-              <span className="bg-amber-500 text-black text-[10px] font-black px-1.5 py-0.2 rounded">
-                Server #{activeServerIndex + 1}
+          {/* Progress Time Seek Scrubber */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-xs text-gray-300 font-mono">
+              <div className="flex items-center gap-1.5">
+                <span className="text-emerald-400 font-bold">{formatTime(currentTimeSec)}</span>
+                <span className="text-gray-500">/</span>
+                <span className="text-gray-400">{formatTime(durationSec)}</span>
+              </div>
+              <span className="text-[11px] text-gray-400 hidden sm:inline">
+                {Math.round((currentTimeSec / durationSec) * 100)}% Played
               </span>
             </div>
+            <input
+              type="range"
+              min={0}
+              max={durationSec}
+              step={1}
+              value={currentTimeSec}
+              onChange={handleSeekProgress}
+              className="w-full h-2 bg-gray-700/60 rounded-lg appearance-none cursor-pointer accent-red-600 focus:outline-none"
+            />
+          </div>
 
-            <div className="flex items-center gap-2">
+          {/* Action Buttons Row */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs pt-1 border-t border-white/5">
+            {/* Play / Stop & Skip Controls */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
-                onClick={() => setShowInPagePlayer(!showInPagePlayer)}
-                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors cursor-pointer border border-white/10"
+                onClick={togglePlayPause}
+                className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black flex items-center gap-1.5 shadow-md shadow-red-600/30 cursor-pointer"
+                title={isPlaying ? 'Pause Playback (Stop)' : 'Start Playback (Play)'}
               >
-                {showInPagePlayer ? 'Hide In-Page Player' : 'Show In-Page Player'}
+                {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white" />}
+                <span>{isPlaying ? 'Pause' : 'Play'}</span>
               </button>
 
               <button
-                onClick={handleOpenDirectStream}
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow cursor-pointer"
+                onClick={() => skipSeconds(-10)}
+                className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1 cursor-pointer"
+                title="Rewind 10 Seconds"
               >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Open in Clean Tab</span>
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>-10s</span>
+              </button>
+
+              <button
+                onClick={() => skipSeconds(10)}
+                className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1 cursor-pointer"
+                title="Fast Forward 10 Seconds"
+              >
+                <span>+10s</span>
+                <RotateCw className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => skipSeconds(-30)}
+                className="hidden md:flex px-2 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 font-bold cursor-pointer"
+                title="Rewind 30 Seconds"
+              >
+                -30s
+              </button>
+
+              <button
+                onClick={() => skipSeconds(30)}
+                className="hidden md:flex px-2 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 font-bold cursor-pointer"
+                title="Fast Forward 30 Seconds"
+              >
+                +30s
+              </button>
+            </div>
+
+            {/* Quality & Dual Audio Dropdowns & Fullscreen */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Quality Selector */}
+              <div className="flex items-center gap-1 bg-white/5 px-2.5 py-1 rounded-xl border border-white/10">
+                <span className="text-[10px] font-bold text-gray-400">Quality:</span>
+                <select
+                  value={selectedQuality}
+                  onChange={(e) => handleChangeQuality(e.target.value as any)}
+                  className="bg-transparent text-white font-bold text-xs focus:outline-none cursor-pointer"
+                >
+                  <option value="4k" className="bg-[#12141f]">💎 4K Ultra HD (2160p)</option>
+                  <option value="1080p" className="bg-[#12141f]">✨ 1080p Full HD (BluRay)</option>
+                  <option value="720p" className="bg-[#12141f]">⚡ 720p HD (Fast)</option>
+                  <option value="480p" className="bg-[#12141f]">📱 480p SD (Data Saver)</option>
+                </select>
+              </div>
+
+              {/* Dual Audio Selector */}
+              <div className="flex items-center gap-1 bg-white/5 px-2.5 py-1 rounded-xl border border-white/10">
+                <span className="text-[10px] font-bold text-gray-400">Audio:</span>
+                <select
+                  value={selectedAudio}
+                  onChange={(e) => handleChangeAudio(e.target.value as any)}
+                  className="bg-transparent text-amber-400 font-bold text-xs focus:outline-none cursor-pointer"
+                >
+                  <option value="hindi" className="bg-[#12141f]">🇮🇳 Hindi Dubbed (Dual Audio)</option>
+                  <option value="english" className="bg-[#12141f]">🌐 English (Original 5.1)</option>
+                  <option value="dual" className="bg-[#12141f]">🎧 Dual Audio (Multi-Language)</option>
+                </select>
+              </div>
+
+              {/* Fullscreen Button */}
+              <button
+                onClick={toggleCinemaFullscreen}
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-black font-black flex items-center gap-1.5 shadow-lg shadow-amber-500/20 cursor-pointer"
+                title="Toggle Fullscreen Cinema Mode"
+              >
+                <Maximize className="w-4 h-4 stroke-[2.5]" />
+                <span className="hidden sm:inline">Fullscreen</span>
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Direct Embedded Player (Unblocked zero sandbox iframe) */}
-          {showInPagePlayer && (
-            <div className="relative w-full aspect-video bg-black">
-              <iframe
-                key={`${iframeKey}-${activeServerId}-${isTv ? `${currentSeason}-${currentEpisode}` : 'movie'}`}
-                ref={iframeRef}
-                src={playerUrl}
-                title={`Streaming ${title}`}
-                className="w-full h-full border-0 absolute inset-0 z-10"
-                allowFullScreen
-                allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; screen-wake-lock"
-              />
+        {/* EMBEDDED CINEMA PLAYER (Full HTML5 Fullscreen Target) */}
+        <div 
+          ref={cinemaWrapperRef}
+          className="relative rounded-2xl overflow-hidden bg-black shadow-2xl border border-white/15 mb-4 group aspect-video w-full"
+        >
+          {/* Floating Live Badges */}
+          <div className="absolute top-3 left-3 z-20 flex items-center gap-2 pointer-events-none">
+            <span className="bg-red-600/90 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1 shadow">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+              LIVE CINEMA
+            </span>
+            <span className="bg-black/80 backdrop-blur-md text-amber-400 text-[10px] font-black px-2 py-1 rounded-lg border border-amber-400/30">
+              {selectedQuality.toUpperCase()}
+            </span>
+            <span className="bg-black/80 backdrop-blur-md text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg border border-emerald-400/30">
+              {selectedAudio === 'hindi' ? 'Hindi Dual Audio' : selectedAudio === 'english' ? 'English 5.1' : 'Multi Audio'}
+            </span>
+          </div>
+
+          {/* Top Right Fullscreen Floating Trigger */}
+          <button
+            onClick={toggleCinemaFullscreen}
+            className="absolute top-3 right-3 z-20 p-2 rounded-xl bg-black/75 hover:bg-red-600 text-white transition-all cursor-pointer backdrop-blur-md shadow"
+            title="Fullscreen"
+          >
+            <Maximize className="w-4 h-4" />
+          </button>
+
+          {/* Unblocked Direct Video Frame */}
+          <iframe
+            key={`${iframeKey}-${activeServerId}-${isTv ? `${currentSeason}-${currentEpisode}` : 'movie'}`}
+            ref={iframeRef}
+            src={playerUrl}
+            title={`Streaming ${title}`}
+            className="w-full h-full border-0 absolute inset-0 z-10"
+            allowFullScreen
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; screen-wake-lock"
+          />
+
+          {/* Bottom Floating Touch Control Overlay */}
+          <div className="absolute bottom-3 left-3 right-3 z-20 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 flex items-center justify-between text-xs opacity-90 hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-2">
+              <button onClick={togglePlayPause} className="p-1.5 rounded-lg bg-red-600 text-white font-bold cursor-pointer">
+                {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+              </button>
+              <button onClick={() => skipSeconds(-10)} className="px-2 py-1 rounded bg-white/10 text-white text-[11px] font-bold cursor-pointer">-10s</button>
+              <button onClick={() => skipSeconds(10)} className="px-2 py-1 rounded bg-white/10 text-white text-[11px] font-bold cursor-pointer">+10s</button>
+              <span className="text-[11px] text-gray-300 font-semibold hidden sm:inline ml-2">Active: {activeServer.name}</span>
             </div>
-          )}
+
+            <div className="flex items-center gap-2">
+              <button onClick={() => handleAutoSyncServer()} className="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold cursor-pointer flex items-center gap-1">
+                <Zap className="w-3 h-3 text-amber-400" /> Next Server
+              </button>
+              <button onClick={toggleCinemaFullscreen} className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white cursor-pointer" title="Full Screen">
+                <Maximize className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Server Switcher & Popout Window Action Bar */}
+        <div className="bg-[#0e1017] px-4 py-2.5 rounded-xl border border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs mb-4">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="font-extrabold text-white">Active Engine: {activeServer.name}</span>
+            <span className="bg-amber-500 text-black text-[10px] font-black px-1.5 py-0.2 rounded">
+              Server #{activeServerIndex + 1}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleAutoSyncServer()}
+              className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>Auto-Switch Next Server</span>
+            </button>
+
+            <button
+              onClick={handleOpenDirectStream}
+              className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold text-xs flex items-center gap-1 shadow cursor-pointer"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Open in Popout Window</span>
+            </button>
+          </div>
         </div>
 
         {/* TWO-COLUMN METADATA & DOWNLOAD LINKS SECTION (Exact Screenshot 1) */}

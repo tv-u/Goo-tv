@@ -18,6 +18,7 @@ import {
 import { MediaItem, MediaDetails } from '../types/movie';
 import { fetchMediaDetails, getImageUrl, getBackdropUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
+import { openCleanPopupWindow, getCleanPlayerUrl } from '../utils/playerUrl';
 
 interface DetailModalProps {
   media: MediaItem;
@@ -251,18 +252,17 @@ export const DetailModal: React.FC<DetailModalProps> = ({
                 Play Movie
               </button>
 
-              <a
-                href={isTv
-                  ? `https://multiembed.mov/?video_id=${media.id}&tmdb=1&s=1&e=1`
-                  : `https://multiembed.mov/?video_id=${media.id}&tmdb=1`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => {
+                  openCleanPopupWindow(media);
+                }}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-600/30 transition-all cursor-pointer transform hover:scale-105 active:scale-95"
+                title="Open in Clean Popup Window with Full Controls (Skip, Play/Pause, 4K Quality, Hindi Dual Audio)"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Clean Popup Window</span>
-              </a>
+              </button>
 
               <button
                 onClick={() => {
