@@ -32,11 +32,22 @@ async function tmdbFetch<T>(endpoint: string, params: Record<string, string | nu
     ...Object.entries(params).reduce((acc, [k, v]) => ({ ...acc, [k]: String(v) }), {}),
   });
 
-  const response = await fetch(`${BASE_URL}${endpoint}?${queryParams.toString()}`);
-  if (!response.ok) {
-    throw new Error(`TMDB API Error: ${response.status} ${response.statusText}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 9000);
+
+  try {
+    const response = await fetch(`${BASE_URL}${endpoint}?${queryParams.toString()}`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) {
+      throw new Error(`TMDB API Error: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
-  return response.json();
 }
 
 export interface PaginatedResult<T> {

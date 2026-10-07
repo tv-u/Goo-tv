@@ -21,6 +21,21 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="CineSphere VIP" />
 
+    <!-- GitHub Pages Path Normalizer (Ensures assets resolve correctly on repo subpaths) -->
+    <script>
+      (function() {
+        try {
+          var p = window.location.pathname;
+          if (window.location.hostname.endsWith('github.io')) {
+            var parts = p.split('/').filter(Boolean);
+            if (parts.length === 1 && !p.endsWith('/')) {
+              window.location.replace(window.location.origin + p + '/' + window.location.search + window.location.hash);
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Pure Dark Mode CSS (Prevents Any White Screen Flicker on Any Host) -->
     <style>
       html, body {
@@ -111,6 +126,11 @@
         <div style="width:160px;height:4px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;">
           <div style="width:50%;height:100%;background:linear-gradient(to right,#e50914,#f59e0b);border-radius:999px;"></div>
         </div>
+        <div id="app-loader-action" style="margin-top:20px;display:none;">
+          <button onclick="window.location.reload()" style="background:linear-gradient(135deg,#e50914,#f59e0b);color:#fff;border:none;padding:10px 22px;border-radius:12px;font-weight:800;font-size:12px;cursor:pointer;box-shadow:0 6px 20px rgba(229,9,20,0.4);">
+            Enter Cinema
+          </button>
+        </div>
       </div>
     </div>
 
@@ -120,10 +140,16 @@
     <!-- Fail-Safe Cinema Loader Watchdog -->
     <script>
       (function() {
-        // Global unhandled error recovery to prevent white screen
+        // Global unhandled error recovery
         window.addEventListener('error', function(e) {
           console.warn('System notice caught:', e.message);
         });
+
+        // Watchdog to reveal enter cinema button if network is slow
+        setTimeout(function() {
+          var action = document.getElementById('app-loader-action');
+          if (action) action.style.display = 'block';
+        }, 3000);
       })();
     </script>
   </body>

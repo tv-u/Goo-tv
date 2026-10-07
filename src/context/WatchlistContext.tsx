@@ -42,27 +42,39 @@ export const WatchlistProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   });
 
   const [preferredServer, setPreferredServerState] = useState<string>(() => {
-    const saved = localStorage.getItem('cinesphere_server');
-    if (!saved || saved === 'vidsrc-to' || saved === 'vidlink') {
-      localStorage.setItem('cinesphere_server', 'superembed');
+    try {
+      const saved = localStorage.getItem('cinesphere_server');
+      if (!saved || saved === 'vidsrc-to' || saved === 'vidlink') {
+        try { localStorage.setItem('cinesphere_server', 'superembed'); } catch {}
+        return 'superembed';
+      }
+      return saved;
+    } catch {
       return 'superembed';
     }
-    return saved;
   });
 
   const [playerSkin, setPlayerSkinState] = useState<string>(() => {
-    return localStorage.getItem('cinesphere_skin') || 'videojs';
+    try {
+      return localStorage.getItem('cinesphere_skin') || 'videojs';
+    } catch {
+      return 'videojs';
+    }
   });
 
   const [autoSyncServers, setAutoSyncServersState] = useState<boolean>(() => {
-    return localStorage.getItem('cinesphere_autosync') !== 'false';
+    try {
+      return localStorage.getItem('cinesphere_autosync') !== 'false';
+    } catch {
+      return true;
+    }
   });
 
   useEffect(() => {
     try {
       localStorage.setItem('cinesphere_watchlist', JSON.stringify(watchlist));
     } catch (e) {
-      console.error('Failed to save watchlist to localStorage', e);
+      console.warn('LocalStorage save failed:', e);
     }
   }, [watchlist]);
 
@@ -70,20 +82,26 @@ export const WatchlistProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     try {
       localStorage.setItem('cinesphere_history', JSON.stringify(history));
     } catch (e) {
-      console.error('Failed to save history to localStorage', e);
+      console.warn('LocalStorage save failed:', e);
     }
   }, [history]);
 
   useEffect(() => {
-    localStorage.setItem('cinesphere_server', preferredServer);
+    try {
+      localStorage.setItem('cinesphere_server', preferredServer);
+    } catch {}
   }, [preferredServer]);
 
   useEffect(() => {
-    localStorage.setItem('cinesphere_skin', playerSkin);
+    try {
+      localStorage.setItem('cinesphere_skin', playerSkin);
+    } catch {}
   }, [playerSkin]);
 
   useEffect(() => {
-    localStorage.setItem('cinesphere_autosync', String(autoSyncServers));
+    try {
+      localStorage.setItem('cinesphere_autosync', String(autoSyncServers));
+    } catch {}
   }, [autoSyncServers]);
 
   const addToWatchlist = useCallback((item: MediaItem) => {
