@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Film, 
-  Search, 
-  Bookmark, 
-  History, 
-  Menu, 
-  X, 
-  Server, 
-  Star, 
-  Tv, 
-  Clapperboard, 
+import {
+  Film,
+  Search,
+  Bookmark,
+  History,
+  Menu,
+  X,
+  Server,
+  Star,
+  Tv,
+  Clapperboard,
   Sparkles,
   Flame,
   Globe2
 } from 'lucide-react';
 import { MediaItem } from '../types/movie';
-import { searchMulti, getImageUrl } from '../services/tmdb';
+import { searchSmartMedia, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
 import { STREAMING_SERVERS } from '../services/servers';
 
@@ -67,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const data = await searchMulti(searchQuery, 1);
+        const data = await searchSmartMedia(searchQuery, 1);
         setSearchResults(data.results.slice(0, 7));
         setShowSearchDropdown(true);
       } catch (err) {
@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
-          
+
           {/* Logo */}
           <div className="flex items-center gap-8">
             <button
@@ -162,14 +162,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Search + Server Status + Controls */}
           <div className="flex items-center gap-3">
-            
+
             {/* Live Search Bar */}
             <div ref={searchRef} className="relative w-44 sm:w-64 md:w-72">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search movies, series..."
+                  placeholder="Search movies, KDrama, Hindi dubbed..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}

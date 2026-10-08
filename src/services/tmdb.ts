@@ -235,6 +235,135 @@ export const searchMulti = async (query: string, page = 1): Promise<PaginatedRes
   };
 };
 
+
+// Smart natural-language search.
+// Uses TMDB's real metadata and keeps normal title search as fallback.
+export const searchSmartMedia = async (
+  rawQuery: string,
+  page = 1
+): Promise<PaginatedResult<MediaItem>> => {
+  const original = rawQuery.trim();
+
+  if (!original) {
+    return {
+      page: 1,
+      results: [],
+      total_pages: 0,
+      total_results: 0,
+    };
+  }
+
+  const normalized = original
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const koreanIntent =
+    /\bk[\s-]?drama\b/.test(normalized) ||
+    /\bkorean\b/.test(normalized) ||
+    /\bkorea\b/.test(normalized);
+
+  const hindiIntent =
+    /\bhindi\b/.test(normalized) ||
+    /\bhindi[\s-]+dubbed\b/.test(normalized) ||
+    /\bhindi[\s-]+dub\b/.test(normalized) ||
+    /\bhindi[\s-]+audio\b/.test(normalized);
+
+  const animeIntent = /\banime\b/.test(normalized);
+
+  const cleanedQuery = normalized
+    .replace(/\bk[\s-]?drama\b/g, ' ')
+    .replace(/\bkorean\b/g, ' ')
+    .replace(/\bkorea\b/g, ' ')
+    .replace(/\bhindi[\s-]+dubbed\b/g, ' ')
+    .replace(/\bhindi[\s-]+dub\b/g, ' ')
+    .replace(/\bhindi[\s-]+audio\b/g, ' ')
+    .replace(/\bhindi\b/g, ' ')
+    .replace(/\banime\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Example:
+  // "KDrama" / "Korean drama" / "Korean series"
+  if (koreanIntent && !cleanedQuery) {
+    return fetchKDrama(page);
+  }
+
+  // Example:
+  // "KDrama Squid Game"
+  // "Korean drama Squid Game"
+  if (koreanIntent && cleanedQuery) {
+    const result = await searchMulti(cleanedQuery, page);
+
+    const korean = result.results.filter(
+      (item) =>
+        item.media_type === 'tv' &&
+        item.original_language === 'ko'
+    );
+
+    const rest = result.results.filter(
+      (item) =>
+        !(
+          item.media_type === 'tv' &&
+          item.original_language === 'ko'
+        )
+    );
+
+    return {
+      ...result,
+      results: [...korean, ...rest],
+    };
+  }
+
+  // Example:
+  // "anime Naruto"
+  if (animeIntent && cleanedQuery) {
+    const result = await searchMulti(cleanedQuery, page);
+
+    const anime = result.results.filter(
+      (item) =>
+        item.original_language === 'ja' ||
+        item.original_language === 'zh'
+    );
+
+    const rest = result.results.filter(
+      (item) =>
+        item.original_language !== 'ja' &&
+        item.original_language !== 'zh'
+    );
+
+    return {
+      ...result,
+      results: [...anime, ...rest],
+    };
+  }
+
+  // Hindi intent:
+  // prioritize Hindi-origin content.
+  // This does NOT falsely claim that TMDB verifies Hindi dubbing/audio.
+  if (hindiIntent) {
+    const query = cleanedQuery || original;
+    const result = await searchMulti(query, page);
+
+    const hindi = result.results.filter(
+      (item) => item.original_language === 'hi'
+    );
+
+    const rest = result.results.filter(
+      (item) => item.original_language !== 'hi'
+    );
+
+    return {
+      ...result,
+      results: [...hindi, ...rest],
+    };
+  }
+
+  // Normal exact/general search.
+  return searchMulti(original, page);
+};
+
 // 10. Details with Extras (credits, videos, similar)
 export const fetchMediaDetails = async (id: number | string, mediaType: 'movie' | 'tv' = 'movie'): Promise<MediaDetails> => {
   const data = await tmdbFetch<MediaDetails>(`/${mediaType}/${id}`, {

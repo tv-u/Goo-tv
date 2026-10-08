@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  RotateCw, 
-  Film, 
-  Tv, 
+import {
+  RotateCw,
+  Film,
+  Tv,
   ChevronDown,
   Sparkles,
   ArrowUp,
@@ -12,13 +12,13 @@ import {
   SlidersHorizontal
 } from 'lucide-react';
 import { MediaItem } from '../types/movie';
-import { 
-  discoverMedia, 
-  fetchBollywood, 
-  fetchAnime, 
-  fetchTopRatedMovies, 
-  MOVIE_GENRES, 
-  TV_GENRES 
+import {
+  discoverMedia,
+  fetchBollywood,
+  fetchAnime,
+  fetchTopRatedMovies,
+  MOVIE_GENRES,
+  TV_GENRES
 } from '../services/tmdb';
 import { MediaCard } from './MediaCard';
 import { AdsterraAdBanner } from './AdsterraAdBanner';
@@ -92,8 +92,23 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         });
       }
 
-      setTotalPages(result.total_pages || 500);
-      setItems((prev) => (append ? [...prev, ...result.results] : result.results));
+      setTotalPages(Math.max(1, result.total_pages || 1));
+      setItems((prev) => {
+        if (!append) return result.results;
+
+        const seen = new Set(
+          prev.map((item) => `${item.media_type}:${item.id}`)
+        );
+
+        const incoming = result.results.filter((item) => {
+          const key = `${item.media_type}:${item.id}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        return [...prev, ...incoming];
+      });
     } catch (err) {
       console.error('Failed to discover media', err);
     } finally {
@@ -180,7 +195,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24 min-h-screen">
-      
+
       {/* Visual Breadcrumb Navigation */}
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-gray-400 mb-3">
         <span>Home</span>
@@ -245,7 +260,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
       {/* Advanced Filters Toolbar */}
       <div className="my-6 bg-[#131522] border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-3.5">
-        
+
         {/* Genre Selector */}
         <div>
           <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">

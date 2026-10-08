@@ -1,5 +1,13 @@
 import React, { useRef } from 'react';
 import { Sparkles, ExternalLink, Zap, Download, ShieldCheck } from 'lucide-react';
+const SMARTLINKS = [
+  "https://www.profitableratecpmnetwork.com/hr65xsh7?key=dc01c1237bd130c5ef9bcfef4f0928ed",
+  "https://www.profitableratecpmnetwork.com/sa8mca36sv?key=3711015d24018cf89ccb362976c4a2e0",
+  "https://www.profitableratecpmnetwork.com/x0wcj4zk?key=c2b46070b44982014166acafd6074c3d",
+] as const;
+
+const smartlinkUrl =
+  SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
 
 interface AdsterraAdBannerProps {
   zoneId?: string;
@@ -12,9 +20,8 @@ export const AdsterraAdBanner: React.FC<AdsterraAdBannerProps> = ({
   className = '',
 }) => {
   // High-CPM Adsterra Smartlink (Configured for cinema & download traffic)
-  const smartlinkUrl = 'https://www.profitablecpmrate.com/c17x0t4u0?key=adsterra_smartlink_stream';
 
-  if (format === 'download_sponsor') {
+if (format === 'download_sponsor') {
     return (
       <div className={`rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-[#181a27] to-red-950/40 p-3 sm:p-4 shadow-xl ${className}`}>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
