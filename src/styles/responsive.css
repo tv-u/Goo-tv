@@ -1,0 +1,316 @@
+/*
+ * GOO TV — Universal Responsive Foundation
+ *
+ * Designed for:
+ * - Small Android phones
+ * - Large Android/iPhone phones
+ * - Tablets
+ * - Foldables
+ * - Laptops
+ * - Desktop monitors
+ * - Wide screens
+ *
+ * Does not modify player/server logic.
+ */
+
+:root {
+  --goo-safe-top: env(safe-area-inset-top, 0px);
+  --goo-safe-right: env(safe-area-inset-right, 0px);
+  --goo-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --goo-safe-left: env(safe-area-inset-left, 0px);
+
+  --goo-content-max: 1600px;
+
+  --goo-space-1: clamp(4px, 0.35vw, 6px);
+  --goo-space-2: clamp(8px, 0.7vw, 12px);
+  --goo-space-3: clamp(12px, 1vw, 18px);
+  --goo-space-4: clamp(16px, 1.5vw, 24px);
+  --goo-space-5: clamp(20px, 2vw, 32px);
+
+  --goo-radius-sm: clamp(8px, 0.7vw, 12px);
+  --goo-radius-md: clamp(12px, 1vw, 18px);
+  --goo-radius-lg: clamp(16px, 1.5vw, 26px);
+}
+
+html {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  padding-left: var(--goo-safe-left);
+  padding-right: var(--goo-safe-right);
+  padding-bottom: var(--goo-safe-bottom);
+}
+
+#root {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Prevent accidental fixed desktop widths */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+/* Universal content container */
+.goo-responsive-container,
+main,
+[role="main"] {
+  width: min(100%, var(--goo-content-max));
+  box-sizing: border-box;
+}
+
+/* Flexible grids */
+.goo-responsive-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        min(100%, 180px),
+        1fr
+      )
+    );
+  gap: var(--goo-space-3);
+  width: 100%;
+}
+
+/* Flexible rows */
+.goo-responsive-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--goo-space-3);
+  min-width: 0;
+}
+
+/* Prevent flex children from causing horizontal overflow */
+.goo-responsive-row > *,
+.goo-responsive-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Text wrapping */
+.goo-wrap,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span {
+  overflow-wrap: anywhere;
+}
+
+/* Touch targets */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea,
+  a {
+    touch-action: manipulation;
+  }
+}
+
+/* -----------------------------------------------
+   SMALL PHONES
+   ----------------------------------------------- */
+
+@media (max-width: 359px) {
+  :root {
+    --goo-content-max: 100%;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  .goo-responsive-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+/* -----------------------------------------------
+   NORMAL PHONES
+   ----------------------------------------------- */
+
+@media (min-width: 360px) and (max-width: 599px) {
+  .goo-responsive-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+/* -----------------------------------------------
+   LARGE PHONES / SMALL TABLETS
+   ----------------------------------------------- */
+
+@media (min-width: 600px) and (max-width: 767px) {
+  .goo-responsive-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* -----------------------------------------------
+   TABLETS
+   ----------------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .goo-responsive-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* -----------------------------------------------
+   LAPTOPS
+   ----------------------------------------------- */
+
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .goo-responsive-grid {
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* -----------------------------------------------
+   DESKTOP
+   ----------------------------------------------- */
+
+@media (min-width: 1440px) {
+  .goo-responsive-grid {
+    grid-template-columns:
+      repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* -----------------------------------------------
+   VERY WIDE MONITORS
+   ----------------------------------------------- */
+
+@media (min-width: 1920px) {
+  :root {
+    --goo-content-max: 1800px;
+  }
+}
+
+/* -----------------------------------------------
+   LANDSCAPE PHONE
+   ----------------------------------------------- */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  body {
+    min-height: 100dvh;
+  }
+}
+
+/* -----------------------------------------------
+   NOTCH / SAFE AREA
+   ----------------------------------------------- */
+
+@supports (padding: max(0px)) {
+  body {
+    padding-left:
+      max(var(--goo-safe-left), 0px);
+
+    padding-right:
+      max(var(--goo-safe-right), 0px);
+
+    padding-bottom:
+      max(var(--goo-safe-bottom), 0px);
+  }
+}
+
+/* -----------------------------------------------
+   REDUCE MOTION
+   ----------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -----------------------------------------------
+   DARK / LIGHT OS COMPATIBILITY
+   ----------------------------------------------- */
+
+@media (forced-colors: active) {
+  *,
+  *::before,
+  *::after {
+    forced-color-adjust: auto;
+  }
+}
+
+/* -----------------------------------------------
+   HIGH DPI / RETINA
+   ----------------------------------------------- */
+
+@media (min-resolution: 2dppx) {
+  img {
+    image-rendering: auto;
+  }
+}
+
+/* -----------------------------------------------
+   PRINT
+   ----------------------------------------------- */
+
+@media print {
+  body {
+    overflow: visible;
+  }
+
+  nav,
+  footer,
+  button {
+    display: none !important;
+  }
+}

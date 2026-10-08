@@ -1,9 +1,10 @@
+import { Suspense } from 'react';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import './styles/responsive.css';
 
-import './i18n';
 import './i18n';
 interface Props {
   children: ReactNode;
@@ -56,7 +57,7 @@ const rootEl = document.getElementById('root');
 if (rootEl) {
   createRoot(rootEl).render(
     <ErrorBoundary>
-      <App />
+      <Suspense fallback={<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#888',fontSize:'14px'}}>Loading…</div>}><App /></Suspense>
     </ErrorBoundary>
   );
 }
