@@ -1,4 +1,5 @@
 import { MediaItem, MediaDetails, Season } from '../types/movie';
+import { getTmdbLocale, getAppLocale } from '../i18n';
 
 const TMDB_API_KEY = '5bf61a62fd4647aa7debed7d6f2db079';
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -28,7 +29,7 @@ export const getAvatarUrl = (path: string | null | undefined): string => {
 async function tmdbFetch<T>(endpoint: string, params: Record<string, string | number> = {}): Promise<T> {
   const queryParams = new URLSearchParams({
     api_key: TMDB_API_KEY,
-    language: 'en-US',
+    language: getTmdbLocale(getAppLocale()),
     ...Object.entries(params).reduce((acc, [k, v]) => ({ ...acc, [k]: String(v) }), {}),
   });
 

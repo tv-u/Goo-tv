@@ -3,4 +3,16 @@
   <url>
     <loc>https://goo-tv.pages.dev/</loc>
   </url>
+  <url>
+    <loc>https://goo-tv.pages.dev/movies</loc>
+  </url>
+  <url>
+    <loc>https://goo-tv.pages.dev/tv</loc>
+  </url>
+  <url>
+    <loc>https://goo-tv.pages.dev/explore</loc>
+  </url>
+  <url>
+    <loc>https://goo-tv.pages.dev/search</loc>
+  </url>
 </urlset>

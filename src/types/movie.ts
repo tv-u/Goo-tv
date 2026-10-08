@@ -21,6 +21,7 @@ export interface MediaItem {
   tagline?: string;
   status?: string;
   imdb_id?: string;
+  original_language?: string;
 }
 
 export interface CastMember {
