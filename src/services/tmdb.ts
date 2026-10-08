@@ -1,7 +1,8 @@
+declare global { interface ImportMetaEnv { readonly VITE_TMDB_API_KEY: string; } }
 import { MediaItem, MediaDetails, Season } from '../types/movie';
 import { getTmdbLocale, getAppLocale } from '../i18n';
 
-const TMDB_API_KEY = '5bf61a62fd4647aa7debed7d6f2db079';
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 

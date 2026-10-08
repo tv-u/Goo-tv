@@ -1,61 +1,27 @@
-const english = {
-  translation: {
-    app: {
-      name: 'GOO TV',
-      tagline: 'Watch Movies & TV Shows Online',
-    },
-    nav: {
-      home: 'Home',
-      movies: 'Movies',
-      tv: 'TV Shows',
-      explore: 'Explore',
-      search: 'Search',
-      watchlist: 'Watchlist',
-      settings: 'Settings',
-    },
-    common: {
-      search: 'Search',
-      close: 'Close',
-      cancel: 'Cancel',
-      save: 'Save',
-      language: 'Language',
-      theme: 'Theme',
-      quality: 'Quality',
-      loading: 'Loading...',
-      error: 'Something went wrong',
-      retry: 'Retry',
-      back: 'Back',
-      next: 'Next',
-      previous: 'Previous',
-      all: 'All',
-      movie: 'Movie',
-      tv: 'TV Show',
-      year: 'Year',
-      rating: 'Rating',
-      genre: 'Genre',
-    },
-    seo: {
-      title: 'GOO TV — Watch Movies & TV Shows Online',
-      description:
-        'Discover movies and TV shows with search, genres, ratings, multiple qualities and a smooth cinema experience.',
-    },
-    settings: {
-      title: 'Settings',
-      appearance: 'Appearance',
-      playback: 'Playback',
-      language: 'Language',
-      theme: 'Theme',
-      cinema: 'Cinema Dark',
-      oled: 'OLED Midnight',
-      autosync: 'Auto Sync Servers',
-    },
-  },
-};
+// AUTO-GENERATED — loads real per-locale JSON from ./locales/*.json
+import { SUPPORTED_LOCALES } from "./locales";
 
-export const resources = {
-  en: english,
-};
+// Vite: eager import of all locale JSONs at build time
+const files = import.meta.glob<Record<string, string>>("./locales/*.json", {
+  eager: true,
+  import: "default",
+});
 
-export function getResources() {
-  return resources;
+function load(code: string): Record<string, string> {
+  const hit = files[`./locales/${code}.json`];
+  if (hit) return hit;
+  // English fallback
+  return files[`./locales/en.json`] ?? {};
 }
+
+export const LOCALE_CODES = SUPPORTED_LOCALES.map(l => l.code);
+export type LocaleCode = (typeof LOCALE_CODES)[number];
+
+export const resources = LOCALE_CODES.reduce<
+  Record<string, { translation: Record<string, string> }>
+>((acc, code) => {
+  acc[code] = { translation: load(code) };
+  return acc;
+}, {});
+
+export default resources;

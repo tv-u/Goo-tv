@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
+<url>
     <loc>https://goo-tv.pages.dev/</loc>
   </url>
-  <url>
+<url>
     <loc>https://goo-tv.pages.dev/movies</loc>
   </url>
-  <url>
+<url>
     <loc>https://goo-tv.pages.dev/tv</loc>
   </url>
-  <url>
+<url>
     <loc>https://goo-tv.pages.dev/explore</loc>
   </url>
-  <url>
-    <loc>https://goo-tv.pages.dev/search</loc>
-  </url>
+  <url><loc>https://goo-tv.pages.dev/trending</loc><lastmod>2026-10-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://goo-tv.pages.dev/top-rated</loc><lastmod>2026-10-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://goo-tv.pages.dev/genres</loc><lastmod>2026-10-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

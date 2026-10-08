@@ -3,304 +3,204 @@
   "count": 50,
   "locales": [
     {
-      "code": "en",
-      "name": "English",
-      "nativeName": "English",
-      "tmdb": "en-US"
-    },
-    {
-      "code": "hi",
-      "name": "Hindi",
-      "nativeName": "हिन्दी",
-      "tmdb": "hi-IN"
-    },
-    {
-      "code": "bn",
-      "name": "Bengali",
-      "nativeName": "বাংলা",
-      "tmdb": "bn-IN"
-    },
-    {
-      "code": "ta",
-      "name": "Tamil",
-      "nativeName": "தமிழ்",
-      "tmdb": "ta-IN"
-    },
-    {
-      "code": "te",
-      "name": "Telugu",
-      "nativeName": "తెలుగు",
-      "tmdb": "te-IN"
-    },
-    {
-      "code": "mr",
-      "name": "Marathi",
-      "nativeName": "मराठी",
-      "tmdb": "mr-IN"
-    },
-    {
-      "code": "gu",
-      "name": "Gujarati",
-      "nativeName": "ગુજરાતી",
-      "tmdb": "gu-IN"
-    },
-    {
-      "code": "kn",
-      "name": "Kannada",
-      "nativeName": "ಕನ್ನಡ",
-      "tmdb": "kn-IN"
-    },
-    {
-      "code": "ml",
-      "name": "Malayalam",
-      "nativeName": "മലയാളം",
-      "tmdb": "ml-IN"
-    },
-    {
-      "code": "pa",
-      "name": "Punjabi",
-      "nativeName": "ਪੰਜਾਬੀ",
-      "tmdb": "pa-IN"
-    },
-    {
-      "code": "ur",
-      "name": "Urdu",
-      "nativeName": "اردو",
-      "tmdb": "ur-PK"
+      "code": "af",
+      "path": "/locales/af.json"
     },
     {
       "code": "ar",
-      "name": "Arabic",
-      "nativeName": "العربية",
-      "tmdb": "ar-SA"
-    },
-    {
-      "code": "fa",
-      "name": "Persian",
-      "nativeName": "فارسی",
-      "tmdb": "fa-IR"
-    },
-    {
-      "code": "tr",
-      "name": "Turkish",
-      "nativeName": "Türkçe",
-      "tmdb": "tr-TR"
-    },
-    {
-      "code": "fr",
-      "name": "French",
-      "nativeName": "Français",
-      "tmdb": "fr-FR"
-    },
-    {
-      "code": "de",
-      "name": "German",
-      "nativeName": "Deutsch",
-      "tmdb": "de-DE"
-    },
-    {
-      "code": "es",
-      "name": "Spanish",
-      "nativeName": "Español",
-      "tmdb": "es-ES"
-    },
-    {
-      "code": "pt",
-      "name": "Portuguese",
-      "nativeName": "Português",
-      "tmdb": "pt-BR"
-    },
-    {
-      "code": "it",
-      "name": "Italian",
-      "nativeName": "Italiano",
-      "tmdb": "it-IT"
-    },
-    {
-      "code": "nl",
-      "name": "Dutch",
-      "nativeName": "Nederlands",
-      "tmdb": "nl-NL"
-    },
-    {
-      "code": "ru",
-      "name": "Russian",
-      "nativeName": "Русский",
-      "tmdb": "ru-RU"
-    },
-    {
-      "code": "uk",
-      "name": "Ukrainian",
-      "nativeName": "Українська",
-      "tmdb": "uk-UA"
-    },
-    {
-      "code": "pl",
-      "name": "Polish",
-      "nativeName": "Polski",
-      "tmdb": "pl-PL"
-    },
-    {
-      "code": "cs",
-      "name": "Czech",
-      "nativeName": "Čeština",
-      "tmdb": "cs-CZ"
-    },
-    {
-      "code": "sk",
-      "name": "Slovak",
-      "nativeName": "Slovenčina",
-      "tmdb": "sk-SK"
-    },
-    {
-      "code": "ro",
-      "name": "Romanian",
-      "nativeName": "Română",
-      "tmdb": "ro-RO"
-    },
-    {
-      "code": "hu",
-      "name": "Hungarian",
-      "nativeName": "Magyar",
-      "tmdb": "hu-HU"
-    },
-    {
-      "code": "el",
-      "name": "Greek",
-      "nativeName": "Ελληνικά",
-      "tmdb": "el-GR"
-    },
-    {
-      "code": "sv",
-      "name": "Swedish",
-      "nativeName": "Svenska",
-      "tmdb": "sv-SE"
-    },
-    {
-      "code": "da",
-      "name": "Danish",
-      "nativeName": "Dansk",
-      "tmdb": "da-DK"
-    },
-    {
-      "code": "no",
-      "name": "Norwegian",
-      "nativeName": "Norsk",
-      "tmdb": "no-NO"
-    },
-    {
-      "code": "fi",
-      "name": "Finnish",
-      "nativeName": "Suomi",
-      "tmdb": "fi-FI"
-    },
-    {
-      "code": "is",
-      "name": "Icelandic",
-      "nativeName": "Íslenska",
-      "tmdb": "is-IS"
-    },
-    {
-      "code": "he",
-      "name": "Hebrew",
-      "nativeName": "עברית",
-      "tmdb": "he-IL"
-    },
-    {
-      "code": "th",
-      "name": "Thai",
-      "nativeName": "ไทย",
-      "tmdb": "th-TH"
-    },
-    {
-      "code": "vi",
-      "name": "Vietnamese",
-      "nativeName": "Tiếng Việt",
-      "tmdb": "vi-VN"
-    },
-    {
-      "code": "id",
-      "name": "Indonesian",
-      "nativeName": "Bahasa Indonesia",
-      "tmdb": "id-ID"
-    },
-    {
-      "code": "ms",
-      "name": "Malay",
-      "nativeName": "Bahasa Melayu",
-      "tmdb": "ms-MY"
-    },
-    {
-      "code": "fil",
-      "name": "Filipino",
-      "nativeName": "Filipino",
-      "tmdb": "fil-PH"
-    },
-    {
-      "code": "ja",
-      "name": "Japanese",
-      "nativeName": "日本語",
-      "tmdb": "ja-JP"
-    },
-    {
-      "code": "ko",
-      "name": "Korean",
-      "nativeName": "한국어",
-      "tmdb": "ko-KR"
-    },
-    {
-      "code": "zh",
-      "name": "Chinese",
-      "nativeName": "中文",
-      "tmdb": "zh-CN"
-    },
-    {
-      "code": "zh-TW",
-      "name": "Traditional Chinese",
-      "nativeName": "繁體中文",
-      "tmdb": "zh-TW"
-    },
-    {
-      "code": "sw",
-      "name": "Swahili",
-      "nativeName": "Kiswahili",
-      "tmdb": "sw-TZ"
-    },
-    {
-      "code": "af",
-      "name": "Afrikaans",
-      "nativeName": "Afrikaans",
-      "tmdb": "af-ZA"
-    },
-    {
-      "code": "sq",
-      "name": "Albanian",
-      "nativeName": "Shqip",
-      "tmdb": "sq-AL"
+      "path": "/locales/ar.json"
     },
     {
       "code": "bg",
-      "name": "Bulgarian",
-      "nativeName": "Български",
-      "tmdb": "bg-BG"
+      "path": "/locales/bg.json"
+    },
+    {
+      "code": "bn",
+      "path": "/locales/bn.json"
+    },
+    {
+      "code": "cs",
+      "path": "/locales/cs.json"
+    },
+    {
+      "code": "da",
+      "path": "/locales/da.json"
+    },
+    {
+      "code": "de",
+      "path": "/locales/de.json"
+    },
+    {
+      "code": "el",
+      "path": "/locales/el.json"
+    },
+    {
+      "code": "en",
+      "path": "/locales/en.json"
+    },
+    {
+      "code": "es",
+      "path": "/locales/es.json"
+    },
+    {
+      "code": "fa",
+      "path": "/locales/fa.json"
+    },
+    {
+      "code": "fi",
+      "path": "/locales/fi.json"
+    },
+    {
+      "code": "fil",
+      "path": "/locales/fil.json"
+    },
+    {
+      "code": "fr",
+      "path": "/locales/fr.json"
+    },
+    {
+      "code": "gu",
+      "path": "/locales/gu.json"
+    },
+    {
+      "code": "he",
+      "path": "/locales/he.json"
+    },
+    {
+      "code": "hi",
+      "path": "/locales/hi.json"
     },
     {
       "code": "hr",
-      "name": "Croatian",
-      "nativeName": "Hrvatski",
-      "tmdb": "hr-HR"
+      "path": "/locales/hr.json"
     },
     {
-      "code": "sr",
-      "name": "Serbian",
-      "nativeName": "Српски",
-      "tmdb": "sr-RS"
+      "code": "hu",
+      "path": "/locales/hu.json"
+    },
+    {
+      "code": "id",
+      "path": "/locales/id.json"
+    },
+    {
+      "code": "is",
+      "path": "/locales/is.json"
+    },
+    {
+      "code": "it",
+      "path": "/locales/it.json"
+    },
+    {
+      "code": "ja",
+      "path": "/locales/ja.json"
+    },
+    {
+      "code": "kn",
+      "path": "/locales/kn.json"
+    },
+    {
+      "code": "ko",
+      "path": "/locales/ko.json"
+    },
+    {
+      "code": "ml",
+      "path": "/locales/ml.json"
+    },
+    {
+      "code": "mr",
+      "path": "/locales/mr.json"
+    },
+    {
+      "code": "ms",
+      "path": "/locales/ms.json"
+    },
+    {
+      "code": "nl",
+      "path": "/locales/nl.json"
+    },
+    {
+      "code": "no",
+      "path": "/locales/no.json"
+    },
+    {
+      "code": "pa",
+      "path": "/locales/pa.json"
+    },
+    {
+      "code": "pl",
+      "path": "/locales/pl.json"
+    },
+    {
+      "code": "pt",
+      "path": "/locales/pt.json"
+    },
+    {
+      "code": "ro",
+      "path": "/locales/ro.json"
+    },
+    {
+      "code": "ru",
+      "path": "/locales/ru.json"
+    },
+    {
+      "code": "sk",
+      "path": "/locales/sk.json"
     },
     {
       "code": "sl",
-      "name": "Slovenian",
-      "nativeName": "Slovenščina",
-      "tmdb": "sl-SI"
+      "path": "/locales/sl.json"
+    },
+    {
+      "code": "sq",
+      "path": "/locales/sq.json"
+    },
+    {
+      "code": "sr",
+      "path": "/locales/sr.json"
+    },
+    {
+      "code": "sv",
+      "path": "/locales/sv.json"
+    },
+    {
+      "code": "sw",
+      "path": "/locales/sw.json"
+    },
+    {
+      "code": "ta",
+      "path": "/locales/ta.json"
+    },
+    {
+      "code": "te",
+      "path": "/locales/te.json"
+    },
+    {
+      "code": "th",
+      "path": "/locales/th.json"
+    },
+    {
+      "code": "tr",
+      "path": "/locales/tr.json"
+    },
+    {
+      "code": "uk",
+      "path": "/locales/uk.json"
+    },
+    {
+      "code": "ur",
+      "path": "/locales/ur.json"
+    },
+    {
+      "code": "vi",
+      "path": "/locales/vi.json"
+    },
+    {
+      "code": "zh-TW",
+      "path": "/locales/zh-TW.json"
+    },
+    {
+      "code": "zh",
+      "path": "/locales/zh.json"
     }
   ]
 }

@@ -1,3 +1,4 @@
+import { lazy } from 'react';
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Film, 
@@ -38,15 +39,15 @@ import { Navbar } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { MediaRow } from './components/MediaRow';
 import { PlayerModal } from './components/PlayerModal';
-import { TrailerModal } from './components/TrailerModal';
-import { DetailModal } from './components/DetailModal';
-import { DownloadModal } from './components/DownloadModal';
-import { WatchlistDrawer } from './components/WatchlistDrawer';
+const TrailerModal = lazy(() => import("./components/TrailerModal").then(m => ({ default: m.TrailerModal })));
+const DetailModal = lazy(() => import("./components/DetailModal").then(m => ({ default: m.DetailModal })));
+const DownloadModal = lazy(() => import("./components/DownloadModal").then(m => ({ default: m.DownloadModal })));
+const WatchlistDrawer = lazy(() => import("./components/WatchlistDrawer").then(m => ({ default: m.WatchlistDrawer })));
 import { ServersListModal } from './components/ServersListModal';
-import { MobileBottomNav } from './components/MobileBottomNav';
-import { ExploreView } from './components/ExploreView';
+const MobileBottomNav = lazy(() => import("./components/MobileBottomNav").then(m => ({ default: m.MobileBottomNav })));
+const ExploreView = lazy(() => import("./components/ExploreView").then(m => ({ default: m.ExploreView })));
 import { PolicyModal, PolicyPageType } from './components/PolicyModal';
-import { AdsterraAdBanner } from './components/AdsterraAdBanner';
+const AdsterraAdBanner = lazy(() => import("./components/AdsterraAdBanner").then(m => ({ default: m.AdsterraAdBanner })));
 import { STREAMING_SERVERS } from './services/servers';
 import { CleanCinemaPlayerWindow } from './components/CleanCinemaPlayerWindow';
 
