@@ -47,7 +47,7 @@ import { ServersListModal } from './components/ServersListModal';
 const MobileBottomNav = lazy(() => import("./components/MobileBottomNav").then(m => ({ default: m.MobileBottomNav })));
 const ExploreView = lazy(() => import("./components/ExploreView").then(m => ({ default: m.ExploreView })));
 import { PolicyModal, PolicyPageType } from './components/PolicyModal';
-const AdsterraAdBanner = lazy(() => import("./components/AdsterraAdBanner").then(m => ({ default: m.AdsterraAdBanner })));
+import { AdsterraAdBanner } from './components/AdsterraAdBanner';
 import { STREAMING_SERVERS } from './services/servers';
 import { CleanCinemaPlayerWindow } from './components/CleanCinemaPlayerWindow';
 
