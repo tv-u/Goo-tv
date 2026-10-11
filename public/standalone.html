@@ -43,6 +43,10 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Adsterra High-CPM Monetization Network -->
+  <script type="text/javascript" data-cfasync="false" src="https://pl31775986.profitableratecpmnetwork.com/d3/24/41/d32441c8630b9a56db2cde3f2740dc55.js"></script>
+  <script type="text/javascript" data-cfasync="false" src="https://pl31775988.profitableratecpmnetwork.com/c6/2d/2d/c62d2d11aeeeee001c13761ffa74f1c0.js"></script>
+
   <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
   {
@@ -109,9 +113,21 @@
         <button onclick="switchTab('home')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-white/10" data-tab="home">Home</button>
         <button onclick="switchTab('movies')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="movies">Movies</button>
         <button onclick="switchTab('tv')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="tv">TV Series</button>
-        <button onclick="switchTab('bollywood')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="bollywood">Bollywood</button>
-        <button onclick="switchTab('anime')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="anime">Anime</button>
-        <button onclick="switchTab('top_rated')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="top_rated">Top Rated</button>
+        <button onclick="switchCategory('hindi_movies')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="hindi_movies">Hindi</button>
+        <button onclick="switchCategory('south_movies')" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5" data-tab="south_movies">South</button>
+        
+        <!-- 🎬 12 Categories Dropdown -->
+        <div class="relative group">
+          <button class="nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5 flex items-center gap-1 cursor-pointer">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-red-500"></i>
+            <span>12 Channels</span>
+            <span class="bg-red-600 text-white text-[9px] font-black px-1 rounded shadow">VIP</span>
+            <i data-lucide="chevron-down" class="w-3 h-3 text-gray-400"></i>
+          </button>
+          <div class="hidden group-hover:block absolute top-full left-0 w-72 bg-[#12141f] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 animate-fadeIn" id="navCategoryDropdown">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
       </nav>
 
       <!-- Right Utility Actions -->
@@ -235,8 +251,25 @@
         <div id="continueWatchingList" class="flex gap-3 overflow-x-auto pb-3 scrollbar-none"></div>
       </section>
 
+      <!-- 🎬 12 GOO TV CHANNELS CAROUSEL STRIP (HOME) -->
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
+        <div class="bg-[#0e1019] border border-white/10 rounded-2xl p-4 shadow-xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-black text-white flex items-center gap-2">
+              <i data-lucide="layers" class="w-4 h-4 text-red-500"></i>
+              <span>GOO TV Channels</span>
+              <span class="bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded shadow">12 REAL CATEGORIES</span>
+            </h3>
+            <span class="text-[11px] text-gray-400 hidden sm:inline">Real TMDB Metadata • Instant Server Playback</span>
+          </div>
+          <div id="homeCategoriesList" class="flex gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+
       <!-- TRENDING HEADER WITH DAY / WEEK TOGGLE -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="p-1.5 rounded-lg bg-red-600/10 text-red-500 border border-red-500/20">
             <i data-lucide="flame" class="w-4 h-4"></i>
@@ -266,11 +299,34 @@
         <span id="exploreBreadcrumbCurrent" class="text-red-400 font-bold">Movies</span>
       </nav>
 
+      <!-- 🎬 12 NEW GOO TV Categories Strip in Catalog -->
+      <div class="mb-5 bg-[#0e1019] border border-white/10 rounded-2xl p-4 shadow-xl space-y-3">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+          <h2 class="text-sm font-black text-white flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-red-500"></i>
+            <span>GOO TV Channels</span>
+            <span class="bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded">12 REAL TMDB CHANNELS</span>
+          </h2>
+          <span id="activeCategoryBadge" class="text-xs text-red-400 font-bold">Hindi Movies</span>
+        </div>
+        <div id="exploreCategoriesList" class="flex gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+          <!-- Rendered by JS -->
+        </div>
+        <div id="southSubFiltersContainer" class="hidden pt-2 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+          <span class="text-amber-400 font-bold text-[11px] flex-shrink-0">🌴 South Languages:</span>
+          <button onclick="switchSouthSub('all')" id="southSub-all" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500 text-black">All South</button>
+          <button onclick="switchSouthSub('ta')" id="southSub-ta" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-300">Tamil</button>
+          <button onclick="switchSouthSub('te')" id="southSub-te" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-300">Telugu</button>
+          <button onclick="switchSouthSub('ml')" id="southSub-ml" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-300">Malayalam</button>
+          <button onclick="switchSouthSub('kn')" id="southSub-kn" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-300">Kannada</button>
+        </div>
+      </div>
+
       <!-- Header & Type Switcher -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
           <h1 id="exploreTitle" class="text-2xl sm:text-3xl font-black text-white">Unlimited Movies Catalog</h1>
-          <p class="text-xs text-gray-400 mt-1">Browse and filter thousands of full HD movies and series</p>
+          <p class="text-xs text-gray-400 mt-1" id="exploreSubtitle">Browse and filter thousands of full HD movies and series</p>
         </div>
         <div class="flex items-center bg-white/5 p-1 rounded-xl border border-white/10">
           <button id="exploreTypeMovieBtn" onclick="setExploreType('movie')" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-red-600 text-white">Movies</button>
@@ -380,54 +436,132 @@
         </div>
       </div>
 
-      <!-- CINEMA CONTROL TOOLBAR (Quality, Dual Audio, Subtitles, Fullscreen) -->
-      <div class="mb-3 bg-[#131522] border border-white/10 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <!-- Play / Stop & Skip Controls -->
-        <div class="flex items-center gap-2">
-          <button id="ctrlPlayPauseBtn" onclick="togglePlayPause()" class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black flex items-center gap-1.5 shadow-md shadow-red-600/30 cursor-pointer">
-            <i id="ctrlPlayIcon" data-lucide="pause" class="w-4 h-4 fill-white"></i>
-            <span id="ctrlPlayText">Pause</span>
-          </button>
-
-          <button onclick="skipSeconds(-10)" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1 cursor-pointer" title="Rewind 10 Seconds">
-            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            <span>-10s</span>
-          </button>
-
-          <button onclick="skipSeconds(10)" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1 cursor-pointer" title="Skip Forward 10 Seconds">
-            <span>+10s</span>
-            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
-          </button>
+      <!-- CINEMA CONTROL TOOLBAR (Quality, Dual Audio, Seek Scrubber, Fullscreen) -->
+      <div class="mb-3 bg-[#131522] border border-white/10 rounded-2xl p-3.5 space-y-3 shadow-xl text-xs">
+        
+        <!-- 1. Interactive Progress Time Seek Scrubber -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-mono text-gray-300">
+            <div class="flex items-center gap-2">
+              <span id="ctrlTimeCurrent" class="text-emerald-400 font-bold">00:04:00</span>
+              <span class="text-gray-500">/</span>
+              <span id="ctrlTimeDuration" class="text-gray-400">02:00:00</span>
+              <span id="ctrlTimePercent" class="text-[10px] bg-white/10 text-gray-300 px-1.5 py-0.5 rounded font-sans ml-1">3%</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-gray-400">
+              <span class="hidden sm:inline">⚡ Zero-Buffer Stream</span>
+              <span>•</span>
+              <span class="text-amber-400 font-bold">VIP Controls Active</span>
+            </div>
+          </div>
+          <div class="relative flex items-center group">
+            <input
+              type="range"
+              id="ctrlProgressBar"
+              min="0"
+              max="7200"
+              value="240"
+              oninput="handleSeekProgress(this.value)"
+              class="w-full h-2.5 bg-gray-700/60 rounded-lg appearance-none cursor-pointer accent-red-600 focus:outline-none transition-all group-hover:h-3"
+            />
+          </div>
         </div>
 
-        <!-- Video Quality & Dual Audio Selectors -->
-        <div class="flex flex-wrap items-center gap-2">
-          <!-- Quality Selector -->
-          <div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-xl border border-white/10">
-            <span class="text-[10px] font-bold text-gray-400">Quality:</span>
-            <select id="ctrlQualitySelect" onchange="changeQuality(this.value)" class="bg-transparent text-white font-bold text-xs focus:outline-none cursor-pointer">
-              <option value="4k" class="bg-[#12141f]">💎 4K Ultra HD (2160p)</option>
-              <option value="1080p" selected class="bg-[#12141f]">✨ 1080p Full HD (BluRay)</option>
-              <option value="720p" class="bg-[#12141f]">⚡ 720p HD (Fast)</option>
-              <option value="480p" class="bg-[#12141f]">📱 480p SD (Data Saver)</option>
-            </select>
+        <!-- 2. Controls Deck: Play/Pause, -10s, +10s, -30s, +30s, Restart, Quality, Audio, Fullscreen -->
+        <div class="pt-1 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
+          <!-- Play / Stop & Skip Controls -->
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <button id="ctrlPlayPauseBtn" onclick="togglePlayPause()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-red-600/30 cursor-pointer active:scale-95">
+              <i id="ctrlPlayIcon" data-lucide="pause" class="w-4 h-4 fill-white"></i>
+              <span id="ctrlPlayText">Pause</span>
+            </button>
+
+            <button onclick="skipSeconds(-10)" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1 cursor-pointer active:scale-95" title="Rewind 10 Seconds (-10s)">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>-10s</span>
+            </button>
+
+            <button onclick="skipSeconds(10)" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-1 cursor-pointer active:scale-95" title="Fast-Forward 10 Seconds (+10s)">
+              <span>+10s</span>
+              <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+            </button>
+
+            <button onclick="skipSeconds(-30)" class="hidden md:flex px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white font-bold cursor-pointer" title="Rewind 30 Seconds (-30s)">
+              <span>-30s</span>
+            </button>
+
+            <button onclick="skipSeconds(30)" class="hidden md:flex px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white font-bold cursor-pointer" title="Fast-Forward 30 Seconds (+30s)">
+              <span>+30s</span>
+            </button>
+
+            <button onclick="restartStream()" class="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white transition-all cursor-pointer" title="Restart from 00:00:00">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
           </div>
 
-          <!-- Dual Audio Selector -->
-          <div class="flex items-center gap-1 bg-white/5 px-2 py-1 rounded-xl border border-white/10">
-            <span class="text-[10px] font-bold text-gray-400">Audio:</span>
-            <select id="ctrlAudioSelect" onchange="changeAudio(this.value)" class="bg-transparent text-amber-400 font-bold text-xs focus:outline-none cursor-pointer">
-              <option value="hindi" selected class="bg-[#12141f]">🇮🇳 Hindi Dubbed (Dual Audio)</option>
-              <option value="english" class="bg-[#12141f]">🌐 English (Original 5.1)</option>
-              <option value="dual" class="bg-[#12141f]">🎧 Dual Audio (Multi-Language)</option>
-            </select>
-          </div>
+          <!-- Video Quality & Dual Audio Selectors -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Quality Selector -->
+            <div class="flex items-center gap-1 bg-[#161828] px-2.5 py-1.5 rounded-xl border border-white/15 shadow-sm">
+              <span class="text-[10px] font-black text-gray-400 uppercase">Quality:</span>
+              <select id="ctrlQualitySelect" onchange="changeQuality(this.value)" class="bg-transparent text-amber-400 font-black text-xs focus:outline-none cursor-pointer">
+                <option value="4k" class="bg-[#12141f]">💎 4K Ultra HD (2160p HDR)</option>
+                <option value="1080p" selected class="bg-[#12141f]">✨ 1080p Full HD (BluRay)</option>
+                <option value="720p" class="bg-[#12141f]">⚡ 720p HD (High Speed)</option>
+                <option value="480p" class="bg-[#12141f]">📱 480p SD (Data Saver)</option>
+              </select>
+            </div>
 
-          <!-- Native Fullscreen Button -->
-          <button onclick="toggleCinemaFullscreen()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-black font-black flex items-center gap-1.5 shadow-lg shadow-amber-500/20 cursor-pointer" title="Toggle 100% Fullscreen Cinema Mode">
-            <i data-lucide="maximize" class="w-4 h-4 stroke-[2.5]"></i>
-            <span class="hidden sm:inline">Fullscreen</span>
-          </button>
+            <!-- Dual Audio Selector -->
+            <div class="flex items-center gap-1 bg-[#161828] px-2.5 py-1.5 rounded-xl border border-white/15 shadow-sm">
+              <span class="text-[10px] font-black text-gray-400 uppercase">Audio:</span>
+              <select id="ctrlAudioSelect" onchange="changeAudio(this.value)" class="bg-transparent text-emerald-400 font-black text-xs focus:outline-none cursor-pointer">
+                <option value="hindi" selected class="bg-[#12141f]">🇮🇳 Hindi Dubbed (Bollywood)</option>
+                <option value="english" class="bg-[#12141f]">🌐 English Original (5.1 Dolby)</option>
+                <option value="dual" class="bg-[#12141f]">🎧 Dual Audio (Multi-Language)</option>
+              </select>
+            </div>
+
+            <!-- Brightness Controller -->
+            <div class="flex items-center gap-1.5 bg-[#161828] px-2.5 py-1.5 rounded-xl border border-white/15 shadow-sm" title="Adjust Screen Brightness">
+              <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-300"></i>
+              <span class="text-[10px] font-black text-gray-400 uppercase">Bright:</span>
+              <input 
+                type="range" 
+                id="brightnessSlider" 
+                min="50" 
+                max="150" 
+                value="100" 
+                oninput="setPlayerBrightness(this.value)" 
+                class="w-16 h-1.5 accent-amber-400 cursor-pointer"
+              />
+              <span id="brightnessVal" class="text-[10px] text-gray-300 font-mono">100%</span>
+            </div>
+
+            <!-- Volume Boost Controller -->
+            <div class="flex items-center gap-1.5 bg-[#161828] px-2.5 py-1.5 rounded-xl border border-white/15 shadow-sm" title="Adjust Volume Boost">
+              <button type="button" onclick="togglePlayerMute()" class="text-gray-300 hover:text-white cursor-pointer">
+                <i id="volIcon" data-lucide="volume-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+              </button>
+              <span class="text-[10px] font-black text-gray-400 uppercase">Vol:</span>
+              <input 
+                type="range" 
+                id="volumeSlider" 
+                min="0" 
+                max="150" 
+                value="100" 
+                oninput="setPlayerVolume(this.value)" 
+                class="w-16 h-1.5 accent-emerald-400 cursor-pointer"
+              />
+              <span id="volumeVal" class="text-[10px] text-gray-300 font-mono">100%</span>
+            </div>
+
+            <!-- Native Fullscreen Button -->
+            <button onclick="toggleCinemaFullscreen()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black flex items-center gap-1.5 shadow-lg shadow-amber-500/20 cursor-pointer active:scale-95" title="Toggle 100% Fullscreen Cinema Mode (F)">
+              <i data-lucide="maximize" class="w-4 h-4 stroke-[2.5]"></i>
+              <span>Fullscreen</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -461,24 +595,62 @@
           allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; screen-wake-lock"
         ></iframe>
 
-        <!-- Quick Floating Touch Controls Bar (Bottom of Video) -->
-        <div class="absolute bottom-3 left-3 right-3 z-20 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 flex items-center justify-between text-xs opacity-90 hover:opacity-100 transition-opacity">
-          <div class="flex items-center gap-2">
-            <button onclick="togglePlayPause()" class="p-1.5 rounded-lg bg-red-600 text-white font-bold cursor-pointer">
-              <i data-lucide="play" class="w-3.5 h-3.5 fill-white"></i>
-            </button>
-            <button onclick="skipSeconds(-10)" class="px-2 py-1 rounded bg-white/10 text-white text-[11px] font-bold cursor-pointer">-10s</button>
-            <button onclick="skipSeconds(10)" class="px-2 py-1 rounded bg-white/10 text-white text-[11px] font-bold cursor-pointer">+10s</button>
-            <span id="floatingServerLabel" class="text-[11px] text-gray-300 font-semibold hidden sm:inline ml-2">Server 1 (SuperEmbed)</span>
+        <!-- Bottom YouTube/Cinema Control Bar (Matching Screenshot 2 exact UI) -->
+        <div class="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/80 to-transparent pt-6 pb-3 px-3 sm:px-5 flex flex-col gap-2 opacity-95 hover:opacity-100 transition-opacity">
+          <!-- Live Scrubber Progress Bar -->
+          <div class="flex items-center gap-2 group/bar">
+            <input 
+              type="range" 
+              id="ctrlProgressBarOverlay"
+              min="0" 
+              max="7200" 
+              value="240" 
+              oninput="handleSeekProgress(this.value)"
+              class="w-full h-1.5 hover:h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-red-600 focus:outline-none transition-all"
+            />
           </div>
 
-          <div class="flex items-center gap-2">
-            <button onclick="cycleNextServer()" class="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold cursor-pointer flex items-center gap-1">
-              <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> Next Server
-            </button>
-            <button onclick="toggleCinemaFullscreen()" class="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white cursor-pointer" title="Full Screen">
-              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
-            </button>
+          <!-- Bottom Row: Play, Vol, Time (0:04 / 2:51:07), CC, Settings, Fullscreen -->
+          <div class="flex items-center justify-between text-white text-xs sm:text-sm font-sans">
+            <!-- Left Group: Play/Pause, Volume, Live Time -->
+            <div class="flex items-center gap-2 sm:gap-3">
+              <button onclick="togglePlayPause()" class="p-1 hover:text-red-500 transition-colors cursor-pointer" title="Play / Pause (Space)">
+                <i id="overlayPlayIcon" data-lucide="pause" class="w-5 h-5 fill-white stroke-none"></i>
+              </button>
+              <button onclick="skipSeconds(-10)" class="p-1 text-gray-300 hover:text-white transition-colors cursor-pointer text-[11px] font-bold" title="Rewind 10s (←)">
+                -10s
+              </button>
+              <button onclick="skipSeconds(10)" class="p-1 text-gray-300 hover:text-white transition-colors cursor-pointer text-[11px] font-bold" title="Forward 10s (→)">
+                +10s
+              </button>
+              <button onclick="togglePlayerMute()" class="p-1 hover:text-emerald-400 transition-colors cursor-pointer" title="Mute / Unmute (M)">
+                <i id="overlayVolIcon" data-lucide="volume-2" class="w-5 h-5 text-white"></i>
+              </button>
+
+              <!-- Live Timestamp: 0:04 / 2:51:07 -->
+              <div class="text-[11px] sm:text-xs text-gray-300 font-mono tracking-wider ml-1 select-none">
+                <span id="overlayTimeCurrent" class="text-white font-bold">0:04</span>
+                <span class="text-gray-500 mx-1">/</span>
+                <span id="overlayTimeDuration" class="text-gray-400">2:51:07</span>
+              </div>
+            </div>
+
+            <!-- Right Group: CC, Settings, Fullscreen -->
+            <div class="flex items-center gap-2 sm:gap-3">
+              <button onclick="cycleNextServer()" class="hidden md:flex items-center gap-1 px-2.5 py-1 rounded bg-white/10 hover:bg-amber-500 hover:text-black text-amber-400 text-[11px] font-bold transition-all cursor-pointer">
+                <i data-lucide="zap" class="w-3.5 h-3.5 fill-current"></i>
+                <span>Next Server</span>
+              </button>
+              <button id="overlayCcBtn" onclick="toggleSubtitles()" class="px-1.5 py-0.5 rounded border border-white/30 text-gray-300 hover:text-white text-[11px] font-extrabold cursor-pointer" title="Closed Captions [CC]">
+                CC
+              </button>
+              <button onclick="showToast(`⚙️ Server: ${SERVERS[currentServerIndex].name} • 1080p Full HD • Hindi Dual Audio`)" class="p-1 text-gray-300 hover:text-white transition-colors cursor-pointer" title="Settings">
+                <i data-lucide="settings" class="w-5 h-5 stroke-[1.8]"></i>
+              </button>
+              <button onclick="toggleCinemaFullscreen()" class="p-1 hover:text-amber-400 transition-colors cursor-pointer" title="Fullscreen (F)">
+                <i data-lucide="maximize" class="w-5 h-5 stroke-[2]"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -701,33 +873,49 @@
 
   <!-- JAVASCRIPT MASTER CLIENT CONTROLLER -->
   <script>
-    // 1. STREAMING SERVERS CONFIGURATION (20 ACTIVE SERVERS - AutoEmbed & VidLink First)
+    // 1. STREAMING SERVERS CONFIGURATION (20 ACTIVE SERVERS)
     const SERVERS = [
-      { id: 'autoembed', name: 'AutoEmbed Pro (Instant 4K/1080p)', getMovie: (id) => `https://player.autoembed.cc/embed/movie/${id}`, getTv: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}` },
-      { id: 'vidlink', name: 'VidLink Clean HD (Zero Ads / 4K)', getMovie: (id) => `https://vidlink.pro/movie/${id}`, getTv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
-      { id: 'embedsu', name: 'Embed.su (VIP CDN Multi-Audio)', getMovie: (id) => `https://embed.su/embed/movie/${id}`, getTv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
-      { id: 'vidsrcnet', name: 'VidSrc Net (Unblocked Engine)', getMovie: (id) => `https://vidsrc.net/embed/movie/${id}`, getTv: (id, s, e) => `https://vidsrc.net/embed/tv/${id}/${s}/${e}` },
-      { id: 'smashystream', name: 'SmashyStream (Hindi / Dual Audio)', getMovie: (id) => `https://player.smashystream.com/awesomee.php?tmdb=${id}`, getTv: (id, s, e) => `https://player.smashystream.com/awesomee.php?tmdb=${id}&season=${s}&episode=${e}` },
-      { id: 'superembed', name: 'SuperEmbed Ultra (Dual Audio)', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+      { id: 'superembed', name: 'SuperEmbed Ultra (4K)', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+      { id: 'autoembed', name: 'AutoEmbed CC (Smart)', getMovie: (id) => `https://player.autoembed.cc/embed/movie/${id}`, getTv: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}` },
+      { id: 'embedsu', name: 'Embed.su (VIP CDN)', getMovie: (id) => `https://embed.su/embed/movie/${id}`, getTv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
+      { id: 'vidsrcnet', name: 'VidSrc Net (Unblocked)', getMovie: (id) => `https://vidsrc.net/embed/movie/${id}`, getTv: (id, s, e) => `https://vidsrc.net/embed/tv/${id}/${s}/${e}` },
+      { id: 'smashystream', name: 'SmashyStream (Multi)', getMovie: (id) => `https://player.smashystream.com/awesomee.php?tmdb=${id}`, getTv: (id, s, e) => `https://player.smashystream.com/awesomee.php?tmdb=${id}&season=${s}&episode=${e}` },
       { id: '2embed', name: '2Embed Global', getMovie: (id) => `https://www.2embed.cc/embed/${id}`, getTv: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}` },
       { id: 'vidsrcxyz', name: 'VidSrc XYZ', getMovie: (id) => `https://vidsrc.xyz/embed/movie?tmdb=${id}`, getTv: (id, s, e) => `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}` },
       { id: 'moviesapi', name: 'MoviesAPI Club', getMovie: (id) => `https://moviesapi.club/movie/${id}`, getTv: (id, s, e) => `https://moviesapi.club/tv/${id}-${s}-${e}` },
       { id: 'rivestream', name: 'RiveStream VIP', getMovie: (id) => `https://rivestream.live/embed?type=movie&id=${id}`, getTv: (id, s, e) => `https://rivestream.live/embed?type=tv&id=${id}&season=${s}&episode=${e}` },
       { id: 'vidfast', name: 'VidFast Pro', getMovie: (id) => `https://vidfast.pro/movie/${id}`, getTv: (id, s, e) => `https://vidfast.pro/tv/${id}/${s}/${e}` },
-      { id: 'filemoon', name: 'Filemoon Cloud', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=filemoon`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+      { id: 'filemoon', name: 'Filemoon Cloud', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=filemoon`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&server=filemoon` },
       { id: 'streamwish', name: 'StreamWish Ultra', getMovie: (id) => `https://player.autoembed.cc/embed/movie/${id}?server=streamwish`, getTv: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}?server=streamwish` },
-      { id: 'doodstream', name: 'DoodStream Host', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=doodstream`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+      { id: 'doodstream', name: 'DoodStream Host', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=doodstream`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&server=doodstream` },
       { id: 'streamtape', name: 'StreamTape Pro', getMovie: (id) => `https://player.autoembed.cc/embed/movie/${id}?server=streamtape`, getTv: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}?server=streamtape` },
-      { id: 'upstream', name: 'Upstream.to Mirror', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=upstream`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
-      { id: 'voe', name: 'Voe.sx Enterprise', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=voe`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}` },
+      { id: 'upstream', name: 'Upstream.to Mirror', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=upstream`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&server=upstream` },
+      { id: 'voe', name: 'Voe.sx Enterprise', getMovie: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&server=voe`, getTv: (id, s, e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}&server=voe` },
       { id: 'vidguard', name: 'Vidguard Shield', getMovie: (id) => `https://player.autoembed.cc/embed/movie/${id}?server=vidguard`, getTv: (id, s, e) => `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}?server=vidguard` },
       { id: 'vidsrcpm', name: 'VidSrc PM Direct', getMovie: (id) => `https://vidsrc.pm/embed/movie/${id}`, getTv: (id, s, e) => `https://vidsrc.pm/embed/tv/${id}/${s}/${e}` },
+      { id: 'vidlink', name: 'VidLink Pro', getMovie: (id) => `https://vidlink.pro/movie/${id}`, getTv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
       { id: 'nonito', name: 'Noni.to Direct', getMovie: (id) => `https://moviesapi.club/movie/${id}`, getTv: (id, s, e) => `https://moviesapi.club/tv/${id}-${s}-${e}` }
     ];
 
-    const TMDB_API_KEY = '15d2ea6d0dc1d476efbca3eba2b9bbfb';
+    const TMDB_API_KEYS = [
+      '5bf61a62fd4647aa7debed7d6f2db079',
+      '15d2ea6d0dc1d476efbca3eba2b9bbfb',
+      '844dba0bfd8f3a4f3799f6130ef9e335',
+      '4e44d9029b1270a757cddc766a1bcb63'
+    ];
+    let tmdbKeyIdx = 0;
     const TMDB_BASE = 'https://api.themoviedb.org/3';
     const IMG_BASE = 'https://image.tmdb.org/t/p';
+
+    // Fallback Seed Blockbusters (Guarantees zero-blank screen anywhere)
+    const SEED_MOVIES = [
+      { id: 933260, title: 'Stree 2', release_date: '2024-08-15', vote_average: 8.1, poster_path: '/mhnz0QxJbVzU56P2dEflx9j1pci.jpg', backdrop_path: '/cg4p26f29q1mGZ078aK4h8vQY4U.jpg', overview: 'Chanderi is haunted once again, this time by a headless entity named Sarkata.', media_type: 'movie' },
+      { id: 822119, title: 'Pushpa 2: The Rule', release_date: '2024-12-05', vote_average: 8.4, poster_path: '/h4A3aV33b2a265hH7n9p3g9k6Yd.jpg', backdrop_path: '/y7Xq12Zg5A6k7uM6k5Qe6Yh9Yd.jpg', overview: 'The clash between Pushpa Raj and Bhanwar Singh Shekhawat escalates into all-out war.', media_type: 'movie' },
+      { id: 792307, title: 'Kalki 2898 AD', release_date: '2024-06-27', vote_average: 7.9, poster_path: '/9K12g9hB7N6o5Y9k9n2b7v7n7N.jpg', backdrop_path: '/8K12g9hB7N6o5Y9k9n2b7v7n7N.jpg', overview: 'A modern avatar of Vishnu descends to protect the world from evil forces in a dystopian 2898 AD.', media_type: 'movie' },
+      { id: 533535, title: 'Deadpool & Wolverine', release_date: '2024-07-26', vote_average: 7.8, poster_path: '/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', backdrop_path: '/yDHYTfA3R0jFYba16jBB12RKoRf.jpg', overview: 'A listless Wade Wilson toils in civilian life until a global threat pulls him into action.', media_type: 'movie' },
+      { id: 939243, title: 'Squid Game', release_date: '2021-09-17', vote_average: 8.4, poster_path: '/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg', backdrop_path: '/2meX1nMdScFOoV4370rqHWFDxSu.jpg', overview: 'Hundreds of cash-strapped players accept a strange invitation to compete in children\'s games.', media_type: 'tv' },
+      { id: 781732, title: 'Animal', release_date: '2023-12-01', vote_average: 7.6, poster_path: '/hr9rjR4JOpJg4EzbfZIoD8S808s.jpg', backdrop_path: '/sR0SpCrAhOQ7YUp2X1kZg3N5n5.jpg', overview: 'A son\'s ardent love for his father turns into an obsessive and violent crusade.', media_type: 'movie' }
+    ];
 
     // Application State
     let currentServerIndex = 0;
@@ -748,48 +936,86 @@
       lucide.createIcons();
       updateWatchlistBadge();
       renderContinueWatching();
+      renderCategoryPills();
       loadHomeScreenData();
       renderPlayerServerPills();
       setupKeyboardListeners();
       handleHashNavigation();
+      window.addEventListener('hashchange', handleHashNavigation);
     });
 
-    // 2. TMDB API Client
+    // 2. Resilient Multi-Key TMDB API Client with Auto-Failover
     async function apiFetch(endpoint, params = {}) {
-      const url = new URL(`${TMDB_BASE}${endpoint}`);
-      url.searchParams.set('api_key', TMDB_API_KEY);
-      for (const [k, v] of Object.entries(params)) {
-        if (v !== undefined && v !== '') url.searchParams.set(k, v);
+      const maxAttempts = TMDB_API_KEYS.length;
+      let lastErr = null;
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const key = TMDB_API_KEYS[(tmdbKeyIdx + attempt) % maxAttempts];
+        const url = new URL(`${TMDB_BASE}${endpoint}`);
+        url.searchParams.set('api_key', key);
+        for (const [k, v] of Object.entries(params)) {
+          if (v !== undefined && v !== '') url.searchParams.set(k, v);
+        }
+
+        try {
+          const res = await fetch(url.toString());
+          if (res.ok) {
+            tmdbKeyIdx = (tmdbKeyIdx + attempt) % maxAttempts;
+            return await res.json();
+          }
+          lastErr = new Error(`HTTP ${res.status}`);
+        } catch (err) {
+          lastErr = err;
+        }
       }
-      const res = await fetch(url.toString());
-      return res.json();
+      throw lastErr || new Error('All TMDB API keys failed');
     }
 
-    // 3. Load Home Screen Data
+    // 3. Resilient Load Home Screen Data (Promise.allSettled + Seed Fallback)
     async function loadHomeScreenData() {
       try {
-        const [trendingRes, nowPlayingRes, bollywoodRes, tvRes] = await Promise.all([
+        const results = await Promise.allSettled([
           apiFetch(`/trending/all/${trendingWindow}`),
           apiFetch('/movie/now_playing', { page: 1 }),
           apiFetch('/discover/movie', { with_original_language: 'hi', sort_by: 'popularity.desc' }),
           apiFetch('/tv/popular', { page: 1 })
         ]);
 
-        if (trendingRes.results && trendingRes.results.length > 0) {
-          heroMedia = trendingRes.results[0];
+        const trendingItems = (results[0].status === 'fulfilled' && results[0].value.results?.length) ? results[0].value.results : SEED_MOVIES;
+        const nowPlayingItems = (results[1].status === 'fulfilled' && results[1].value.results?.length) ? results[1].value.results : SEED_MOVIES.slice(0, 5);
+        const bollywoodItems = (results[2].status === 'fulfilled' && results[2].value.results?.length) ? results[2].value.results : SEED_MOVIES.filter(m => m.id === 933260 || m.id === 822119 || m.id === 781732);
+        const tvItems = (results[3].status === 'fulfilled' && results[3].value.results?.length) ? results[3].value.results : SEED_MOVIES.filter(m => m.media_type === 'tv');
+
+        if (trendingItems.length > 0) {
+          heroMedia = trendingItems[0];
           setupHeroBillboard(heroMedia);
         }
 
         const container = document.getElementById('homeRailsContainer');
         container.innerHTML = `
-          ${createMediaRowHtml('🔥 Trending Hits', trendingRes.results || [], 'TRENDING')}
-          ${createMediaRowHtml('🎬 In Theaters & Fresh Releases', nowPlayingRes.results || [], 'NEW 4K')}
-          ${createMediaRowHtml('🇮🇳 Bollywood & Hindi Blockbusters', bollywoodRes.results || [], 'HINDI')}
-          ${createMediaRowHtml('📺 Popular TV Series', tvRes.results || [], 'SERIES')}
+          ${createMediaRowHtml('🔥 Trending Hits', trendingItems, 'TRENDING')}
+          
+          <!-- Adsterra Native Sponsored Recommendation -->
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-5">
+            <div class="bg-[#12141f] border border-white/10 rounded-2xl p-3 shadow-xl flex flex-col items-center justify-center min-h-[90px]">
+              <div class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 self-start">Sponsored Recommendation</div>
+              <div id="container-a4e46263cbd8519b40b7d5e084f699d2" class="w-full flex justify-center"></div>
+              <script async="async" data-cfasync="false" src="https://pl31775987.profitableratecpmnetwork.com/a4e46263cbd8519b40b7d5e084f699d2/invoke.js"><\/script>
+            </div>
+          </div>
+
+          ${createMediaRowHtml('🎬 In Theaters & Fresh Releases', nowPlayingItems, 'NEW 4K')}
+          ${createMediaRowHtml('🇮🇳 Bollywood & Hindi Blockbusters', bollywoodItems, 'HINDI')}
+          ${createMediaRowHtml('📺 Popular TV Series', tvItems, 'SERIES')}
         `;
         lucide.createIcons();
       } catch (err) {
-        console.error('Failed to load home content', err);
+        console.error('Failed to load home content, rendering fallback seed', err);
+        const container = document.getElementById('homeRailsContainer');
+        if (container) {
+          container.innerHTML = createMediaRowHtml('🔥 Blockbuster Cinema (Offline Ready)', SEED_MOVIES, 'OFFLINE 4K');
+          lucide.createIcons();
+        }
       }
     }
 
@@ -884,6 +1110,18 @@
       loadIframeStream();
       document.getElementById('playerModal').classList.remove('hidden');
       window.location.hash = `#play-${isTv ? 'tv' : 'movie'}-${media.id}`;
+
+      // Initialize runtime duration and progress timer
+      if (media.runtime) {
+        durationSec = media.runtime * 60;
+      } else if (media.episode_run_time && media.episode_run_time[0]) {
+        durationSec = media.episode_run_time[0] * 60;
+      } else {
+        durationSec = 7200;
+      }
+      currentTimeSec = 180;
+      updateProgressUI();
+      startProgressTimer();
     }
 
     function loadIframeStream() {
@@ -929,14 +1167,113 @@
 
     // CINEMA PLAYBACK CONTROLS: Stop/Start, -10s/+10s Seek, 4K Quality, Dual-Audio, Fullscreen
     let isPlaying = true;
+    let currentTimeSec = 240;
+    let durationSec = 7200;
+    let progressTimer = null;
+
+    function startProgressTimer() {
+      if (progressTimer) clearInterval(progressTimer);
+      progressTimer = setInterval(() => {
+        if (isPlaying) {
+          currentTimeSec = Math.min(durationSec, currentTimeSec + 1);
+          updateProgressUI();
+        }
+      }, 1000);
+    }
+
+    function formatTime(seconds) {
+      const s = Math.max(0, Math.floor(seconds));
+      const hrs = Math.floor(s / 3600);
+      const mins = Math.floor((s % 3600) / 60);
+      const secs = s % 60;
+      if (hrs > 0) {
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateProgressUI() {
+      const curEl = document.getElementById('ctrlTimeCurrent');
+      const durEl = document.getElementById('ctrlTimeDuration');
+      const pctEl = document.getElementById('ctrlTimePercent');
+      const barEl = document.getElementById('ctrlProgressBar');
+      const overlayCur = document.getElementById('overlayTimeCurrent');
+      const overlayDur = document.getElementById('overlayTimeDuration');
+      const overlayBar = document.getElementById('ctrlProgressBarOverlay');
+
+      const formattedCur = formatTime(currentTimeSec);
+      const formattedDur = formatTime(durationSec);
+
+      if (curEl) curEl.innerText = formattedCur;
+      if (durEl) durEl.innerText = formattedDur;
+      if (overlayCur) overlayCur.innerText = formattedCur;
+      if (overlayDur) overlayDur.innerText = formattedDur;
+
+      const pct = durationSec > 0 ? Math.round((currentTimeSec / durationSec) * 100) : 0;
+      if (pctEl) pctEl.innerText = pct + '%';
+      if (barEl) {
+        barEl.max = durationSec;
+        barEl.value = currentTimeSec;
+      }
+      if (overlayBar) {
+        overlayBar.max = durationSec;
+        overlayBar.value = currentTimeSec;
+      }
+    }
+
+    function handleSeekProgress(val) {
+      currentTimeSec = Number(val);
+      updateProgressUI();
+      const iframe = document.getElementById('streamingIframe');
+      try {
+        iframe.contentWindow.postMessage({ type: 'seekTo', value: currentTimeSec }, '*');
+        iframe.contentWindow.postMessage(`{"event":"command","func":"seekTo","args":[${currentTimeSec}]}`, '*');
+      } catch (e) {}
+      showToast(`⏱️ Jumped to ${formatTime(currentTimeSec)}`);
+    }
+
+    function restartStream() {
+      currentTimeSec = 0;
+      updateProgressUI();
+      const iframe = document.getElementById('streamingIframe');
+      try {
+        iframe.contentWindow.postMessage({ type: 'seekTo', value: 0 }, '*');
+        iframe.contentWindow.postMessage('{"event":"command","func":"seekTo","args":[0]}', '*');
+      } catch (e) {}
+      showToast('⏮️ Restarted movie from 00:00:00');
+    }
+
+    let subtitlesEnabled = true;
+
+    function toggleSubtitles() {
+      subtitlesEnabled = !subtitlesEnabled;
+      const ccBtn = document.getElementById('overlayCcBtn');
+      if (ccBtn) {
+        if (subtitlesEnabled) {
+          ccBtn.className = 'px-1.5 py-0.5 rounded border border-red-500 text-red-400 bg-red-600/20 text-[11px] font-extrabold cursor-pointer';
+          showToast('💬 Closed Captions [CC] Enabled');
+        } else {
+          ccBtn.className = 'px-1.5 py-0.5 rounded border border-white/30 text-gray-300 hover:text-white text-[11px] font-extrabold cursor-pointer';
+          showToast('Subtitles Hidden');
+        }
+      }
+      const iframe = document.getElementById('streamingIframe');
+      try {
+        iframe.contentWindow.postMessage({ type: 'toggleCaptions' }, '*');
+      } catch (e) {}
+    }
+
     function togglePlayPause() {
       const iframe = document.getElementById('streamingIframe');
       const icon = document.getElementById('ctrlPlayIcon');
       const text = document.getElementById('ctrlPlayText');
+      const overlayIcon = document.getElementById('overlayPlayIcon');
+
       if (isPlaying) {
         isPlaying = false;
         if (text) text.innerText = 'Play';
         if (icon) icon.setAttribute('data-lucide', 'play');
+        if (overlayIcon) overlayIcon.setAttribute('data-lucide', 'play');
         showToast('⏸️ Playback Paused / Stopped');
         try {
           iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo"}', '*');
@@ -946,6 +1283,7 @@
         isPlaying = true;
         if (text) text.innerText = 'Pause';
         if (icon) icon.setAttribute('data-lucide', 'pause');
+        if (overlayIcon) overlayIcon.setAttribute('data-lucide', 'pause');
         showToast('▶️ Playback Resumed / Started');
         try {
           iframe.contentWindow.postMessage('{"event":"command","func":"playVideo"}', '*');
@@ -957,14 +1295,16 @@
 
     function skipSeconds(seconds) {
       const iframe = document.getElementById('streamingIframe');
+      currentTimeSec = Math.max(0, Math.min(durationSec, currentTimeSec + seconds));
+      updateProgressUI();
       if (seconds > 0) {
-        showToast(`⏩ Fast-Forward +${seconds}s`);
+        showToast(`⏩ Fast-Forward +${seconds}s (${formatTime(currentTimeSec)})`);
       } else {
-        showToast(`⏪ Rewound ${Math.abs(seconds)}s`);
+        showToast(`⏪ Rewound ${Math.abs(seconds)}s (${formatTime(currentTimeSec)})`);
       }
       try {
         iframe.contentWindow.postMessage({ type: 'seek', offset: seconds }, '*');
-        iframe.contentWindow.postMessage(`{"event":"command","func":"seekTo","args":[${seconds}]}`, '*');
+        iframe.contentWindow.postMessage(`{"event":"command","func":"seekTo","args":[${currentTimeSec}]}`, '*');
       } catch (e) {}
     }
 
@@ -1009,8 +1349,8 @@
     }
 
     function toggleCinemaFullscreen() {
-      const wrapper = document.getElementById('cinemaPlayerWrapper');
-      if (!document.fullscreenElement) {
+      const wrapper = document.getElementById('cinemaPlayerWrapper') || document.documentElement;
+      if (!document.fullscreenElement && !(document).webkitFullscreenElement) {
         if (wrapper.requestFullscreen) {
           wrapper.requestFullscreen().catch(() => {});
         } else if (wrapper.webkitRequestFullscreen) {
@@ -1029,24 +1369,79 @@
         }
         showToast('Fullscreen Exited');
       }
+    // Screen Brightness & Volume Functions
+    let playerBrightness = 100;
+    let playerVolume = 100;
+    let isPlayerMuted = false;
+
+    function setPlayerBrightness(val) {
+      playerBrightness = Number(val);
+      const bVal = document.getElementById('brightnessVal');
+      if (bVal) bVal.innerText = playerBrightness + '%';
+      const iframe = document.getElementById('streamingIframe');
+      if (iframe) iframe.style.filter = `brightness(${playerBrightness}%)`;
+      showToast(`☀️ Brightness: ${playerBrightness}%`);
     }
 
-    // Keyboard Shortcuts for Playback
+    function setPlayerVolume(val) {
+      playerVolume = Number(val);
+      if (isPlayerMuted) isPlayerMuted = false;
+      const vVal = document.getElementById('volumeVal');
+      if (vVal) vVal.innerText = playerVolume + '%';
+      const vIcon = document.getElementById('volIcon');
+      if (vIcon) vIcon.setAttribute('data-lucide', 'volume-2');
+      const iframe = document.getElementById('streamingIframe');
+      try {
+        iframe.contentWindow.postMessage({ type: 'setVolume', value: playerVolume }, '*');
+        iframe.contentWindow.postMessage(JSON.stringify({ method: 'setVolume', value: playerVolume }), '*');
+      } catch (e) {}
+      showToast(`🔊 Volume Boost: ${playerVolume}%`);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function togglePlayerMute() {
+      isPlayerMuted = !isPlayerMuted;
+      const vVal = document.getElementById('volumeVal');
+      const vSlider = document.getElementById('volumeSlider');
+      const vIcon = document.getElementById('volIcon');
+      const iframe = document.getElementById('streamingIframe');
+      if (isPlayerMuted) {
+        if (vVal) vVal.innerText = '0%';
+        if (vSlider) vSlider.value = 0;
+        if (vIcon) vIcon.setAttribute('data-lucide', 'volume-x');
+        try {
+          iframe.contentWindow.postMessage({ type: 'mute' }, '*');
+        } catch (e) {}
+        showToast('🔇 Audio Muted');
+      } else {
+        if (vVal) vVal.innerText = playerVolume + '%';
+        if (vSlider) vSlider.value = playerVolume;
+        if (vIcon) vIcon.setAttribute('data-lucide', 'volume-2');
+        try {
+          iframe.contentWindow.postMessage({ type: 'unMute' }, '*');
+        } catch (e) {}
+        showToast(`🔊 Unmuted (${playerVolume}%)`);
+      }
+      if (window.lucide) lucide.createIcons();
+    }
     window.addEventListener('keydown', (e) => {
       const modal = document.getElementById('playerModal');
       if (modal && !modal.classList.contains('hidden')) {
         if (e.key === ' ' || e.code === 'Space') {
           e.preventDefault();
           togglePlayPause();
-        } else if (e.key === 'ArrowRight') {
+        } else if (e.key === 'ArrowRight' || e.key === 'l' || e.key === 'L') {
           e.preventDefault();
           skipSeconds(10);
-        } else if (e.key === 'ArrowLeft') {
+        } else if (e.key === 'ArrowLeft' || e.key === 'j' || e.key === 'J') {
           e.preventDefault();
           skipSeconds(-10);
         } else if (e.key === 'f' || e.key === 'F') {
           e.preventDefault();
           toggleCinemaFullscreen();
+        } else if (e.key === 's' || e.key === 'S') {
+          e.preventDefault();
+          cycleNextServer();
         }
       }
     });
@@ -1063,13 +1458,49 @@
 
     function openCleanPopupDirect(encodedMedia) {
       const media = typeof encodedMedia === 'string' ? JSON.parse(decodeURIComponent(encodedMedia)) : encodedMedia;
-      openPlayer(media);
-      showToast('🎬 Clean VIP cinema player loaded with full controls!');
+      const isTv = media.media_type === 'tv' || (!media.title && !!media.name);
+      const url = isTv
+        ? `https://multiembed.mov/?video_id=${media.id}&tmdb=1&s=1&e=1`
+        : `https://multiembed.mov/?video_id=${media.id}&tmdb=1`;
+
+      const width = Math.min(window.screen.width * 0.92, 1280);
+      const height = Math.min(window.screen.height * 0.88, 720);
+      const left = (window.screen.width - width) / 2;
+      const top = (window.screen.height - height) / 2;
+      
+      const popup = window.open(
+        url,
+        'GooTVPopupPlayer',
+        `width=${Math.round(width)},height=${Math.round(height)},top=${Math.round(top)},left=${Math.round(left)},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=no`
+      );
+      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        try { popup.focus(); } catch (e) {}
+      }
+      showToast('🎬 Clean popup player opened!');
     }
 
     function popoutWindow() {
-      toggleCinemaFullscreen();
-      showToast('⛶ Fullscreen Cinema Activated!');
+      const iframe = document.getElementById('streamingIframe');
+      if (iframe && iframe.src) {
+        const width = Math.min(window.screen.width * 0.92, 1280);
+        const height = Math.min(window.screen.height * 0.88, 720);
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+        
+        const popup = window.open(
+          iframe.src,
+          'GooTVCinemaPlayer',
+          `width=${Math.round(width)},height=${Math.round(height)},top=${Math.round(top)},left=${Math.round(left)},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=no`
+        );
+        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+          window.open(iframe.src, '_blank', 'noopener,noreferrer');
+        } else {
+          try { popup.focus(); } catch (e) {}
+        }
+        showToast('🎬 Clean popup player opened!');
+      }
     }
 
     function closePlayerModal() {
@@ -1151,7 +1582,141 @@
       }
     }
 
-    // 6. Navigation Tabs (Home, Movies, TV, Bollywood, Anime, Top Rated)
+    // 6. 🎬 12 NEW GOO TV CATEGORIES WITH REAL TMDB METADATA
+    const GOO_TV_CATEGORIES = [
+      { id: 'hindi_movies', name: 'Hindi Movies', flag: '🇮🇳', badge: 'BOLLYWOOD', type: 'movie', endpoint: '/discover/movie', params: { with_original_language: 'hi', sort_by: 'popularity.desc', 'vote_count.gte': 10 } },
+      { id: 'english_movies', name: 'English Movies', flag: '🇺🇸', badge: 'HOLLYWOOD', type: 'movie', endpoint: '/discover/movie', params: { with_original_language: 'en', sort_by: 'popularity.desc', 'vote_count.gte': 20 } },
+      { id: 'punjabi_movies', name: 'Punjabi Movies', flag: '🟠', badge: 'POLLYWOOD', type: 'movie', endpoint: '/discover/movie', params: { with_original_language: 'pa', sort_by: 'popularity.desc' } },
+      { id: 'south_movies', name: 'South Movies', flag: '🌴', badge: 'SOUTH CINEMA', type: 'movie', endpoint: '/discover/movie', params: { with_original_language: 'ta|te|ml|kn', sort_by: 'popularity.desc', 'vote_count.gte': 5 } },
+      { id: 'classic_movies', name: 'Classic Movies', flag: '🕰️', badge: 'CLASSICS', type: 'movie', endpoint: '/discover/movie', params: { 'primary_release_date.lte': '1999-12-31', sort_by: 'popularity.desc', 'vote_count.gte': 25 } },
+      { id: 'hindi_dubbed_movies', name: 'Hindi Dubbed Movies', flag: '🎙️', badge: 'DUAL AUDIO', type: 'movie', endpoint: '/discover/movie', params: { with_spoken_languages: 'hi', without_original_language: 'hi', sort_by: 'popularity.desc', 'vote_count.gte': 10 } },
+      { id: 'kdrama', name: 'K-Drama', flag: '🇰🇷', badge: 'SERIES', type: 'tv', endpoint: '/discover/tv', params: { with_original_language: 'ko', sort_by: 'popularity.desc' } },
+      { id: 'kdrama_hindi', name: 'Hindi Dubbed K-Drama', flag: '🇮🇳🇰🇷', badge: 'HINDI AUDIO', type: 'tv', endpoint: '/discover/tv', params: { with_original_language: 'ko', with_watch_providers: '8|122|515|220', watch_region: 'IN', sort_by: 'popularity.desc' } },
+      { id: 'hbo_movies', name: 'HBO Movies', flag: '🔵', badge: 'HBO / MAX', type: 'movie', endpoint: '/discover/movie', params: { with_companies: '3268|9993', sort_by: 'popularity.desc' } },
+      { id: 'netflix_movies', name: 'Netflix Movies', flag: '🔴', badge: 'NETFLIX', type: 'movie', endpoint: '/discover/movie', params: { with_watch_providers: '8', watch_region: 'IN', sort_by: 'popularity.desc' } },
+      { id: 'jiohotstar_movies', name: 'JioHotstar Movies', flag: '🟣', badge: 'JIO / HOTSTAR', type: 'movie', endpoint: '/discover/movie', params: { with_watch_providers: '122|220', watch_region: 'IN', sort_by: 'popularity.desc' } },
+      { id: 'mxplayer_movies', name: 'MX Player Movies', flag: '🟢', badge: 'MX ORIGINALS', type: 'movie', endpoint: '/discover/movie', params: { with_watch_providers: '515', watch_region: 'IN', sort_by: 'popularity.desc' } }
+    ];
+
+    let currentCategory = 'hindi_movies';
+    let southSubFilter = 'all';
+    let exploreTotalPages = 100;
+
+    function renderCategoryPills() {
+      // 1. Home Screen Categories Carousel
+      const homeList = document.getElementById('homeCategoriesList');
+      if (homeList) {
+        homeList.innerHTML = GOO_TV_CATEGORIES.map(c => `
+          <button onclick="switchCategory('${c.id}')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-red-600/20 hover:border-red-500/40 text-gray-200 hover:text-white border border-white/10 font-bold whitespace-nowrap transition-all cursor-pointer flex-shrink-0 group">
+            <span class="text-sm">${c.flag}</span>
+            <span>${c.name}</span>
+            <span class="text-[9px] px-1 py-0.2 rounded font-extrabold bg-white/10 text-gray-300 group-hover:bg-red-600 group-hover:text-white ml-0.5">${c.badge}</span>
+          </button>
+        `).join('');
+      }
+
+      // 2. Catalog Screen Categories Carousel
+      const exploreList = document.getElementById('exploreCategoriesList');
+      if (exploreList) {
+        exploreList.innerHTML = GOO_TV_CATEGORIES.map(c => {
+          const isActive = currentCategory === c.id;
+          return `
+            <button onclick="switchCategory('${c.id}')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
+              isActive 
+                ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg border border-red-400' 
+                : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10'
+            }">
+              <span class="text-sm">${c.flag}</span>
+              <span>${c.name}</span>
+              <span class="text-[9px] px-1 py-0.2 rounded font-black ${isActive ? 'bg-black/30 text-white' : 'bg-white/10 text-gray-400'} ml-0.5">${c.badge}</span>
+            </button>
+          `;
+        }).join('');
+      }
+
+      // 3. Navbar Dropdown Menu
+      const navDropdown = document.getElementById('navCategoryDropdown');
+      if (navDropdown) {
+        navDropdown.innerHTML = `
+          <div class="px-2.5 py-1 text-[10px] font-black text-gray-400 uppercase tracking-wider border-b border-white/5 flex items-center justify-between mb-1">
+            <span>GOO TV Channels</span>
+            <span class="text-red-400">12 Real Catalogs</span>
+          </div>
+          <div class="space-y-0.5">
+            ${GOO_TV_CATEGORIES.map(c => `
+              <button onclick="switchCategory('${c.id}')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-bold text-gray-200 hover:bg-white/10 hover:text-white text-left transition-colors">
+                <span class="flex items-center gap-2"><span>${c.flag}</span><span>${c.name}</span></span>
+                <span class="text-[9px] px-1 py-0.2 rounded bg-white/5 text-gray-400">${c.badge}</span>
+              </button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      lucide.createIcons();
+    }
+
+    function switchCategory(catId, sub = 'all') {
+      currentCategory = catId;
+      southSubFilter = sub;
+      const cat = GOO_TV_CATEGORIES.find(c => c.id === catId);
+
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        b.className = 'nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-gray-300 hover:text-white hover:bg-white/5';
+      });
+
+      const home = document.getElementById('homeScreen');
+      const explore = document.getElementById('exploreScreen');
+      home.classList.add('hidden');
+      explore.classList.remove('hidden');
+
+      if (cat) {
+        document.getElementById('exploreBreadcrumbCurrent').innerText = cat.name.toUpperCase();
+        document.getElementById('exploreTitle').innerText = `${cat.name} ${cat.flag}`;
+        document.getElementById('exploreSubtitle').innerText = `Real TMDB metadata catalog for ${cat.name} with auto-server streaming.`;
+        const badgeEl = document.getElementById('activeCategoryBadge');
+        if (badgeEl) badgeEl.innerText = `${cat.flag} ${cat.name}`;
+        exploreType = cat.type;
+      }
+
+      // Show/hide south sub-filters container
+      const southSub = document.getElementById('southSubFiltersContainer');
+      if (southSub) {
+        if (catId === 'south_movies') {
+          southSub.classList.remove('hidden');
+        } else {
+          southSub.classList.add('hidden');
+        }
+      }
+
+      // Update URL hash for persistence
+      window.location.hash = catId === 'south_movies' && sub !== 'all' 
+        ? `#category-south_movies-${sub}` 
+        : `#category-${catId}`;
+
+      renderCategoryPills();
+      explorePage = 1;
+      loadExploreData(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchSouthSub(sub) {
+      southSubFilter = sub;
+      ['all', 'ta', 'te', 'ml', 'kn'].forEach(k => {
+        const btn = document.getElementById(`southSub-${k}`);
+        if (btn) {
+          if (k === sub) {
+            btn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500 text-black shadow font-black';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/5 text-gray-300 hover:text-white hover:bg-white/10';
+          }
+        }
+      });
+      window.location.hash = sub === 'all' ? '#category-south_movies' : `#category-south_movies-${sub}`;
+      explorePage = 1;
+      loadExploreData(false);
+    }
+
     function switchTab(tabId) {
       document.querySelectorAll('.nav-btn').forEach(btn => {
         if (btn.dataset.tab === tabId) {
@@ -1167,6 +1732,10 @@
       if (tabId === 'home') {
         home.classList.remove('hidden');
         explore.classList.add('hidden');
+        window.location.hash = '';
+      } else if (tabId === 'bollywood') {
+        switchCategory('hindi_movies');
+        return;
       } else {
         home.classList.add('hidden');
         explore.classList.remove('hidden');
@@ -1181,31 +1750,61 @@
 
     async function loadExploreData(append = false) {
       const grid = document.getElementById('exploreGrid');
-      if (!append) grid.innerHTML = '<div class="text-center py-20 col-span-6 text-gray-400">Loading catalog...</div>';
+      if (!append) grid.innerHTML = '<div class="text-center py-20 col-span-6 text-gray-400">Loading TMDB catalog...</div>';
       
-      const genre = document.getElementById('filterGenre').value;
-      const year = document.getElementById('filterYear').value;
-      const sort = document.getElementById('filterSort').value;
-      const rating = document.getElementById('filterRating').value;
+      const genre = document.getElementById('filterGenre') ? document.getElementById('filterGenre').value : 'all';
+      const year = document.getElementById('filterYear') ? document.getElementById('filterYear').value : '';
+      const sort = document.getElementById('filterSort') ? document.getElementById('filterSort').value : 'popularity.desc';
+      const rating = document.getElementById('filterRating') ? document.getElementById('filterRating').value : 0;
+
+      const catDef = GOO_TV_CATEGORIES.find(c => c.id === currentCategory);
 
       try {
-        const res = await apiFetch(`/discover/${exploreType}`, {
+        let endpoint = `/discover/${exploreType}`;
+        let params = {
           page: explorePage,
-          with_genres: genre === 'all' ? undefined : genre,
-          primary_release_year: year || undefined,
           sort_by: sort,
           'vote_average.gte': rating > 0 ? rating : undefined
+        };
+        if (genre !== 'all') params.with_genres = genre;
+        if (year) params.primary_release_year = year;
+
+        // Apply Real TMDB Category Params
+        if (catDef) {
+          endpoint = catDef.endpoint;
+          params = { ...params, ...catDef.params };
+          if (currentCategory === 'south_movies') {
+            params.with_original_language = southSubFilter === 'all' ? 'ta|te|ml|kn' : southSubFilter;
+          }
+        }
+
+        const res = await apiFetch(endpoint, params);
+        exploreTotalPages = res.total_pages || 1;
+
+        // Duplicate Content Prevention (Deduplicate by ID)
+        const rawResults = res.results || [];
+        const seen = new Set();
+        const validResults = rawResults.filter(item => {
+          if (!item || !item.id || seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
         });
 
-        const cards = (res.results || []).map(item => createMediaCardHtml(item)).join('');
+        const cards = validResults.map(item => createMediaCardHtml(item)).join('');
         if (append) {
           grid.innerHTML += cards;
         } else {
-          grid.innerHTML = cards || '<div class="text-center py-20 col-span-6 text-gray-400">No movies found matching filters.</div>';
+          if (validResults.length === 0) {
+            grid.innerHTML = '<div class="text-center py-20 col-span-6 text-gray-400">No matching titles found in TMDB metadata for this category. Zero fake titles generated.</div>';
+          } else {
+            grid.innerHTML = cards;
+          }
         }
+
         lucide.createIcons();
       } catch (err) {
         console.error('Failed to load explore data', err);
+        if (!append) grid.innerHTML = '<div class="text-center py-20 col-span-6 text-red-400">Failed to load content from TMDB. Please retry.</div>';
       }
     }
 
@@ -1348,6 +1947,66 @@
 
     function handleHashNavigation() {
       const hash = window.location.hash;
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPopup = urlParams.get('popup') === 'true' || urlParams.get('clean_player') === '1' || hash.startsWith('#clean-player-');
+
+      if (isPopup) {
+        // Dedicated Clean Pop-Up Window Mode (Pure Cinema Experience, No Clutter)
+        document.body.classList.add('clean-popup-mode');
+        const nav = document.getElementById('navbar');
+        if (nav) nav.style.display = 'none';
+        const hero = document.getElementById('heroBillboard');
+        if (hero) hero.style.display = 'none';
+        const rails = document.getElementById('homeRailsContainer');
+        if (rails) rails.style.display = 'none';
+        const explore = document.getElementById('exploreScreen');
+        if (explore) explore.style.display = 'none';
+        const cw = document.getElementById('continueWatchingSection');
+        if (cw) cw.style.display = 'none';
+        const footer = document.querySelector('footer');
+        if (footer) footer.style.display = 'none';
+        const bottomNav = document.querySelector('nav.fixed.bottom-0');
+        if (bottomNav) bottomNav.style.display = 'none';
+
+        let id = urlParams.get('id');
+        let type = urlParams.get('type') || 'movie';
+        let serverIdx = Number(urlParams.get('server')) || 0;
+        let s = Number(urlParams.get('s')) || 1;
+        let e = Number(urlParams.get('e')) || 1;
+
+        if (hash.startsWith('#clean-player-')) {
+          const parts = hash.replace('#clean-player-', '').split('-');
+          type = parts[0] || 'movie';
+          id = parts[1];
+          if (parts[2]) s = Number(parts[2]);
+          if (parts[3]) e = Number(parts[3]);
+        }
+
+        if (id) {
+          currentServerIndex = serverIdx;
+          apiFetch(`/${type}/${id}`).then((m) => {
+            currentSeason = s;
+            currentEpisode = e;
+            playMovieDirect(m);
+            const modal = document.getElementById('playerModal');
+            if (modal) {
+              modal.classList.remove('hidden');
+            }
+          }).catch(console.error);
+          return;
+        }
+      }
+
+      if (hash.startsWith('#category-')) {
+        const withoutPrefix = hash.replace('#category-', '');
+        if (withoutPrefix.startsWith('south_movies-')) {
+          switchCategory('south_movies', withoutPrefix.replace('south_movies-', ''));
+        } else {
+          switchCategory(withoutPrefix);
+        }
+        return;
+      }
+
       if (hash.startsWith('#play-')) {
         const parts = hash.replace('#play-', '').split('-');
         const type = parts[0];

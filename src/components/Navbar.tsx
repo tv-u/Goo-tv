@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  Film,
-  Search,
-  Bookmark,
-  History,
-  Menu,
-  X,
-  Server,
-  Star,
-  Tv,
-  Clapperboard,
+import { 
+  Film, 
+  Search, 
+  Bookmark, 
+  History, 
+  Menu, 
+  X, 
+  Server, 
+  Star, 
+  Tv, 
+  Clapperboard, 
   Sparkles,
   Flame,
-  Globe2
+  Globe2,
+  ChevronDown,
+  Layers
 } from 'lucide-react';
 import { MediaItem } from '../types/movie';
-import { searchSmartMedia, getImageUrl } from '../services/tmdb';
+import { advancedSearchMedia, getImageUrl, GOO_TV_CATEGORIES } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
 import { STREAMING_SERVERS } from '../services/servers';
 
@@ -26,6 +28,7 @@ interface NavbarProps {
   onOpenWatchlist: () => void;
   onOpenHistory: () => void;
   onOpenServersList: () => void;
+  onSearchSubmit?: (query: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -35,16 +38,20 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenWatchlist,
   onOpenHistory,
   onOpenServersList,
+  onSearchSubmit,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<MediaItem[]>([]);
+  const [detectedIntent, setDetectedIntent] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
+  const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const { watchlist, history, preferredServer } = useWatchlist();
   const searchRef = useRef<HTMLDivElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
 
   const currentServerObj = STREAMING_SERVERS.find((s) => s.id === preferredServer) || STREAMING_SERVERS[0];
 
@@ -56,10 +63,25 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Debounced real-time TMDB search
+  // Click outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSearchDropdown(false);
+      }
+      if (categoriesRef.current && !categoriesRef.current.contains(e.target as Node)) {
+        setShowCategoriesDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Debounced real-time Advanced Semantic search
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setDetectedIntent('');
       setShowSearchDropdown(false);
       return;
     }
@@ -67,18 +89,30 @@ export const Navbar: React.FC<NavbarProps> = ({
     const timer = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const data = await searchSmartMedia(searchQuery, 1);
-        setSearchResults(data.results.slice(0, 7));
+        const data = await advancedSearchMedia(searchQuery, 1);
+        setSearchResults((data.results || []).slice(0, 8));
+        setDetectedIntent(data.detectedIntent || 'Smart Results');
         setShowSearchDropdown(true);
       } catch (err) {
         console.error('Search error', err);
       } finally {
         setIsSearching(false);
       }
-    }, 300);
+    }, 280);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  const handleTriggerFullSearch = (q = searchQuery) => {
+    const term = q.trim();
+    if (!term) return;
+    setShowSearchDropdown(false);
+    if (onSearchSubmit) {
+      onSearchSubmit(term);
+    } else {
+      onSelectTab('search');
+    }
+  };
 
   // Click outside to close search dropdown
   useEffect(() => {
@@ -110,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4">
-
+          
           {/* Logo */}
           <div className="flex items-center gap-8">
             <button
@@ -157,49 +191,137 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                 );
               })}
+
+              {/* 🎬 12 NEW GOO TV Categories Dropdown */}
+              <div ref={categoriesRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowCategoriesDropdown(!showCategoriesDropdown)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                    showCategoriesDropdown || GOO_TV_CATEGORIES.some((c) => c.id === currentTab)
+                      ? 'text-white bg-red-600/20 text-red-400 border border-red-500/30 shadow-sm shadow-red-500/20'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5 text-red-500" />
+                  <span>Categories</span>
+                  <span className="bg-red-600 text-[10px] font-black text-white px-1 py-0.2 rounded shadow">
+                    12
+                  </span>
+                  <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${showCategoriesDropdown ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showCategoriesDropdown && (
+                  <div className="absolute top-full mt-2.5 left-0 w-80 bg-[#10121b] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 grid grid-cols-1 gap-1 max-h-[460px] overflow-y-auto scrollbar-none animate-fadeIn">
+                    <div className="px-3 py-1.5 text-[10px] font-black text-gray-400 uppercase tracking-wider border-b border-white/5 flex items-center justify-between">
+                      <span>GOO TV Channels</span>
+                      <span className="text-red-400">12 Real TMDB Catalogs</span>
+                    </div>
+                    {GOO_TV_CATEGORIES.map((cat) => {
+                      const isCatActive = currentTab === cat.id;
+                      return (
+                        <button
+                          key={cat.id}
+                          type="button"
+                          onClick={() => {
+                            onSelectTab(cat.id);
+                            setShowCategoriesDropdown(false);
+                            window.location.hash = `#category-${cat.id}`;
+                          }}
+                          className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                            isCatActive
+                              ? 'bg-red-600 text-white shadow-md'
+                              : 'hover:bg-white/10 text-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm">{cat.flag}</span>
+                            <span>{cat.name}</span>
+                          </div>
+                          {cat.badge && (
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
+                              isCatActive ? 'bg-black/30 text-white' : 'bg-white/10 text-gray-400'
+                            }`}>
+                              {cat.badge}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </nav>
           </div>
 
           {/* Search + Server Status + Controls */}
           <div className="flex items-center gap-3">
-
+            
             {/* Live Search Bar */}
-            <div ref={searchRef} className="relative w-44 sm:w-64 md:w-72">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <div ref={searchRef} className="relative w-44 sm:w-64 md:w-80">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleTriggerFullSearch();
+                }}
+                className="relative"
+              >
+                <button
+                  type="submit"
+                  title="Search movies & series"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
                 <input
                   type="text"
-                  placeholder="Search movies, KDrama, Hindi dubbed..."
+                  placeholder="Search K-Drama, Hindi, Anime..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleTriggerFullSearch();
+                    }
+                  }}
                   className="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-8 py-1.5 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:bg-white/10 focus:ring-1 focus:ring-red-500 transition-all"
                 />
                 {searchQuery && (
                   <button
+                    type="button"
                     onClick={() => {
                       setSearchQuery('');
                       setSearchResults([]);
                       setShowSearchDropdown(false);
                     }}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
-              </div>
+              </form>
 
-              {/* Autocomplete Dropdown */}
+              {/* Autocomplete Dropdown with Semantic Intent Recognition */}
               {showSearchDropdown && (
-                <div className="absolute top-full mt-2 w-72 sm:w-80 right-0 sm:left-0 sm:right-auto bg-[#13151f] border border-white/10 rounded-2xl shadow-2xl shadow-black overflow-hidden z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
-                  <div className="p-2 border-b border-white/5 flex items-center justify-between text-[11px] text-gray-400">
-                    <span>{isSearching ? 'Searching TMDB...' : `Found ${searchResults.length} results`}</span>
-                    <span className="text-red-400 font-semibold">Live Real-time</span>
+                <div className="absolute top-full mt-2 w-72 sm:w-88 right-0 sm:left-0 sm:right-auto bg-[#13151f] border border-white/10 rounded-2xl shadow-2xl shadow-black overflow-hidden z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
+                  <div className="p-2.5 border-b border-white/5 flex items-center justify-between text-[11px] text-gray-400">
+                    <span className="font-semibold truncate max-w-[200px]">
+                      {isSearching ? 'Analyzing keywords...' : detectedIntent || `Found ${searchResults.length} results`}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleTriggerFullSearch()}
+                      className="text-red-400 hover:text-red-300 font-bold flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <span>Explore</span> →
+                    </button>
                   </div>
+                  
                   <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
                     {searchResults.length === 0 && !isSearching ? (
                       <div className="p-4 text-center text-xs text-gray-400">
-                        No movies or shows found for &quot;{searchQuery}&quot;
+                        Searching across 20 streaming servers for &quot;{searchQuery}&quot;...
                       </div>
                     ) : (
                       searchResults.map((item) => {
@@ -213,15 +335,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                               setShowSearchDropdown(false);
                               setSearchQuery('');
                             }}
-                            className="flex items-center gap-3 p-2.5 hover:bg-white/10 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 p-2.5 hover:bg-white/10 transition-colors cursor-pointer group"
                           >
                             <img
                               src={getImageUrl(item.poster_path, 'w300')}
                               alt={title}
-                              className="w-10 h-14 object-cover rounded-md flex-shrink-0 bg-gray-800"
+                              className="w-10 h-14 object-cover rounded-md flex-shrink-0 bg-gray-800 border border-white/5 group-hover:border-red-500/50"
                             />
                             <div className="min-w-0 flex-1">
-                              <p className="text-xs font-bold text-white truncate">{title}</p>
+                              <p className="text-xs font-bold text-white truncate group-hover:text-red-400 transition-colors">{title}</p>
                               <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-400">
                                 <span className="uppercase text-[9px] font-black px-1.5 py-0.5 rounded bg-white/10 text-gray-300">
                                   {item.media_type || (item.title ? 'Movie' : 'TV')}
@@ -237,6 +359,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                         );
                       })
                     )}
+                  </div>
+
+                  {/* View All Results Button in Dropdown */}
+                  <div className="p-2 bg-[#0d0e17] border-t border-white/5 text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleTriggerFullSearch()}
+                      className="w-full py-1.5 px-3 rounded-xl bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>View All &quot;{searchQuery}&quot; (Unlimited Load More)</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -292,32 +426,66 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-3 pt-3 border-t border-white/10 grid grid-cols-2 gap-2 pb-2">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = currentTab === link.id;
-              return (
-                <button
-                  key={link.id}
-                  onClick={() => {
-                    onSelectTab(link.id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-left transition-colors cursor-pointer ${
-                    isActive ? 'bg-red-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {link.label}
-                </button>
-              );
-            })}
+          <div className="lg:hidden mt-3 pt-3 border-t border-white/10 space-y-3 pb-2 max-h-[75vh] overflow-y-auto">
+            <div className="grid grid-cols-2 gap-2">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = currentTab === link.id;
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => {
+                      onSelectTab(link.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-left transition-colors cursor-pointer ${
+                      isActive ? 'bg-red-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {link.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* 12 NEW GOO TV Categories on Mobile */}
+            <div className="pt-2 border-t border-white/10">
+              <div className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>12 GOO TV Categories</span>
+                <span className="text-red-400 font-bold">Real TMDB</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {GOO_TV_CATEGORIES.map((cat) => {
+                  const isCatActive = currentTab === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => {
+                        onSelectTab(cat.id);
+                        setMobileMenuOpen(false);
+                        window.location.hash = `#category-${cat.id}`;
+                      }}
+                      className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-[11px] font-bold text-left transition-colors cursor-pointer truncate ${
+                        isCatActive 
+                          ? 'bg-red-600 text-white' 
+                          : 'bg-white/5 text-gray-300 hover:bg-white/10'
+                      }`}
+                    >
+                      <span className="text-xs">{cat.flag}</span>
+                      <span className="truncate">{cat.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <button
               onClick={() => {
                 onOpenServersList();
                 setMobileMenuOpen(false);
               }}
-              className="col-span-2 flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-bold"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-bold"
             >
               <div className="flex items-center gap-2">
                 <Server className="w-4 h-4" />

@@ -25,11 +25,12 @@ import {
   Radio, 
   HelpCircle,
   Clock,
-  Gauge
+  Gauge,
+  Sun
 } from 'lucide-react';
 import { MediaItem, Season } from '../types/movie';
 import { STREAMING_SERVERS } from '../services/servers';
-import { fetchMediaDetails, fetchTVSeason, getImageUrl } from '../services/tmdb';
+import { fetchMediaDetails, fetchTVSeason, getImageUrl, fetchTrending } from '../services/tmdb';
 import { AdsterraAdBanner } from './AdsterraAdBanner';
 
 interface CleanCinemaPlayerWindowProps {
@@ -53,10 +54,21 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
   onClose,
   onOpenDownload,
 }) => {
-  const isTv = media.media_type === 'tv' || (!media.title && !!media.name);
-  const title = media.title || media.name || 'Movie';
-  const year = (media.release_date || media.first_air_date || '').slice(0, 4);
-  const rating = media.vote_average ? media.vote_average.toFixed(1) : '8.2';
+  const [currentMedia, setCurrentMedia] = useState<MediaItem>(media);
+  const [relatedItems, setRelatedItems] = useState<MediaItem[]>([]);
+  const [relatedPage, setRelatedPage] = useState<number>(1);
+
+  const isTv = currentMedia.media_type === 'tv' || (!currentMedia.title && !!currentMedia.name);
+  const title = currentMedia.title || currentMedia.name || 'Movie';
+  const year = (currentMedia.release_date || currentMedia.first_air_date || '').slice(0, 4);
+  const rating = currentMedia.vote_average ? currentMedia.vote_average.toFixed(1) : '8.2';
+
+  // Load Related / Trending media for unlimited pagination
+  useEffect(() => {
+    fetchTrending('all', 'day').then((items) => {
+      setRelatedItems(items.filter((i) => i.id !== currentMedia.id));
+    }).catch(console.error);
+  }, [currentMedia.id]);
 
   // Player State
   const [activeServerId, setActiveServerId] = useState<string>(initialServerId);
@@ -72,6 +84,7 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [volumeLevel, setVolumeLevel] = useState<number>(100); // 0-200% with audio boost
+  const [brightnessLevel, setBrightnessLevel] = useState<number>(100); // 50-150% screen brightness
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [theaterMode, setTheaterMode] = useState<boolean>(false);
   const [iframeKey, setIframeKey] = useState<number>(1);
@@ -277,7 +290,7 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
   // 10. Fetch Deep Details & TV Seasons
   useEffect(() => {
     let isMounted = true;
-    fetchMediaDetails(media.id, isTv ? 'tv' : 'movie')
+    fetchMediaDetails(currentMedia.id, isTv ? 'tv' : 'movie')
       .then((data) => {
         if (!isMounted) return;
         setDetails(data);
@@ -290,14 +303,14 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
       .catch(console.error);
 
     return () => { isMounted = false; };
-  }, [media.id, isTv]);
+  }, [currentMedia.id, isTv]);
 
   useEffect(() => {
     if (!isTv) return;
     let isMounted = true;
     setLoadingEpisodes(true);
 
-    fetchTVSeason(media.id, currentSeason)
+    fetchTVSeason(currentMedia.id, currentSeason)
       .then((data) => {
         if (isMounted) {
           setSeasonData(data);
@@ -310,7 +323,7 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
       });
 
     return () => { isMounted = false; };
-  }, [media.id, currentSeason, isTv]);
+  }, [currentMedia.id, currentSeason, isTv]);
 
   // 11. Full Keyboard Shortcuts (Space, Arrows, F, S, H, Q)
   useEffect(() => {
@@ -349,8 +362,8 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
 
   // Compute Current Server URL
   const playerUrl = isTv
-    ? activeServer.getTvUrl(media.id, currentSeason, currentEpisode)
-    : activeServer.getMovieUrl(media.id);
+    ? activeServer.getTvUrl(currentMedia.id, currentSeason, currentEpisode)
+    : activeServer.getMovieUrl(currentMedia.id);
 
   // Copy Permastream Link
   const handleCopyLink = () => {
@@ -623,6 +636,7 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
             src={playerUrl}
             title={`Streaming ${title}`}
             className="w-full h-full border-0 absolute inset-0 z-10 bg-black"
+            style={{ filter: `brightness(${brightnessLevel}%)` }}
             allowFullScreen
             allow="autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write; screen-wake-lock; display-capture"
           />
@@ -825,6 +839,57 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
                 </select>
               </div>
 
+              {/* Screen Brightness Controller */}
+              <div className="flex items-center gap-1.5 bg-[#161828] px-2.5 py-1.5 rounded-xl border border-white/15 shadow-sm" title="Adjust Cinema Screen Brightness">
+                <Sun className="w-3.5 h-3.5 text-amber-300" />
+                <span className="text-[10px] font-black text-gray-400 uppercase">Bright:</span>
+                <input
+                  type="range"
+                  min={50}
+                  max={150}
+                  value={brightnessLevel}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setBrightnessLevel(val);
+                    triggerToast(`☀️ Brightness: ${val}%`);
+                  }}
+                  className="w-16 h-1.5 accent-amber-400 cursor-pointer"
+                />
+                <span className="text-[10px] text-gray-300 font-mono">{brightnessLevel}%</span>
+              </div>
+
+              {/* Volume Boost Controller */}
+              <div className="flex items-center gap-1.5 bg-[#161828] px-2.5 py-1.5 rounded-xl border border-white/15 shadow-sm" title="Adjust Player Volume Boost">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !isMuted;
+                    setIsMuted(next);
+                    postPlayerMessage(next ? 'mute' : 'unMute');
+                    triggerToast(next ? '🔇 Audio Muted' : `🔊 Unmuted (${volumeLevel}%)`);
+                  }}
+                  className="text-gray-300 hover:text-white cursor-pointer"
+                >
+                  {isMuted ? <VolumeX className="w-3.5 h-3.5 text-red-400" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
+                </button>
+                <span className="text-[10px] font-black text-gray-400 uppercase">Vol:</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={150}
+                  value={isMuted ? 0 : volumeLevel}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setVolumeLevel(val);
+                    if (isMuted) setIsMuted(false);
+                    postPlayerMessage('setVolume', val);
+                    triggerToast(`🔊 Volume Boost: ${val}%`);
+                  }}
+                  className="w-16 h-1.5 accent-emerald-400 cursor-pointer"
+                />
+                <span className="text-[10px] text-gray-300 font-mono">{isMuted ? '0%' : `${volumeLevel}%`}</span>
+              </div>
+
               {/* True Fullscreen Action Button */}
               <button
                 onClick={toggleFullscreen}
@@ -897,6 +962,67 @@ export const CleanCinemaPlayerWindow: React.FC<CleanCinemaPlayerWindowProps> = (
             </button>
           </div>
         </div>
+
+        {/* UNLIMITED PAGINATION MEDIA HUB: MORE MOVIES & TV SERIES (AUTO-SYNC STREAM) */}
+        {relatedItems.length > 0 && (
+          <section className="bg-[#0f111e] border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <h3 className="font-extrabold text-white text-sm uppercase tracking-wider">
+                  Unlimited Cinema Hub: More Movies & Series
+                </h3>
+              </div>
+              <span className="text-[11px] text-gray-400 hidden sm:inline">1-Click Auto-Sync Playback</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-1">
+              {relatedItems.slice(0, relatedPage * 6).map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    setCurrentMedia(item);
+                    setCurrentSeason(1);
+                    setCurrentEpisode(1);
+                    setIframeKey((k) => k + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    triggerToast(`🎬 Now Streaming: ${item.title || item.name}`);
+                  }}
+                  className="group relative rounded-xl overflow-hidden bg-black/60 border border-white/10 hover:border-red-500/60 transition-all cursor-pointer shadow-lg hover:scale-105"
+                >
+                  <div className="aspect-[2/3] w-full overflow-hidden bg-[#181a24]">
+                    <img
+                      src={getImageUrl(item.poster_path, 'w300')}
+                      alt={item.title || item.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-2 space-y-1">
+                    <h4 className="text-[11px] font-bold text-white group-hover:text-red-400 truncate">
+                      {item.title || item.name}
+                    </h4>
+                    <div className="flex items-center justify-between text-[10px] text-gray-400">
+                      <span>★ {item.vote_average ? item.vote_average.toFixed(1) : '8.0'}</span>
+                      <span className="text-emerald-400 font-bold">Auto-Play</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {relatedItems.length > relatedPage * 6 && (
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setRelatedPage((p) => p + 1)}
+                  className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition-colors cursor-pointer border border-white/10"
+                >
+                  ⚡ Load More Titles ({relatedPage * 6} of {relatedItems.length})
+                </button>
+              </div>
+            )}
+          </section>
+        )}
       </main>
 
       {/* HELP & SHORTCUTS MODAL */}

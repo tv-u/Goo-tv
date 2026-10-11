@@ -118,17 +118,18 @@ export const MediaCard: React.FC<MediaCardProps> = ({
               {isBookmarked ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Direct Clean Popup Window button */}
-            <a
-              href={popupStreamUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleOpenPopup}
-              title="Open in Clean Popup Window (Zero Sandbox)"
-              className="p-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 border border-emerald-400/50 text-white backdrop-blur-md transition-all cursor-pointer shadow-md"
+            {/* Play on Same Screen Fixed Clean Cinema Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPlay(item);
+              }}
+              title="Play on Screen (Fixed Clean Cinema Player)"
+              className="p-1.5 rounded-lg bg-red-600 hover:bg-red-500 border border-red-400/50 text-white backdrop-blur-md transition-all cursor-pointer shadow-md"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+              <Play className="w-3.5 h-3.5 fill-white" />
+            </button>
 
             {/* Download Button in Overlay */}
             <button

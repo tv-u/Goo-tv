@@ -1,4 +1,5 @@
 import { MediaItem } from '../types/movie';
+import { STREAMING_SERVERS } from '../services/servers';
 
 export interface PlayerUrlOptions {
   season?: number;
@@ -9,52 +10,39 @@ export interface PlayerUrlOptions {
 }
 
 /**
- * Returns the URL for opening the Clean Cinema Player in a pop-up window or standalone mode.
- * Uses both query params and hash for maximum compatibility across GitHub Pages and custom domains.
+ * Returns the direct stream URL for opening in a clean popup player or tab.
+ * Uses verified streaming engine (multiembed or active server) matching Goo TV clean popup trick.
  */
 export const getCleanPlayerUrl = (media: MediaItem, options: PlayerUrlOptions = {}): string => {
   const isTv = media.media_type === 'tv' || (!media.title && !!media.name);
-  const mediaType = isTv ? 'tv' : 'movie';
   const season = options.season || 1;
   const episode = options.episode || 1;
-  const server = options.serverId || 'autoembed';
-  const audio = options.audio || 'hindi';
-  const quality = options.quality || '1080p';
 
-  const origin = window.location.origin;
-  const pathname = window.location.pathname;
-
-  const url = new URL(`${origin}${pathname}`);
-  url.searchParams.set('clean_player', '1');
-  url.searchParams.set('type', mediaType);
-  url.searchParams.set('id', String(media.id));
-  if (isTv) {
-    url.searchParams.set('s', String(season));
-    url.searchParams.set('e', String(episode));
+  if (options.serverId) {
+    const srv = STREAMING_SERVERS.find((s) => s.id === options.serverId);
+    if (srv) {
+      return isTv ? srv.getTvUrl(media.id, season, episode) : srv.getMovieUrl(media.id);
+    }
   }
-  url.searchParams.set('server', server);
-  url.searchParams.set('audio', audio);
-  url.searchParams.set('quality', quality);
 
-  // Fallback hash for static hosts like GitHub Pages SPA routing
-  url.hash = `clean-player-${mediaType}-${media.id}-${season}-${episode}`;
-
-  return url.toString();
+  // Primary direct stream engine (Zero sandbox issue, unblocked 1080p/4K)
+  return isTv
+    ? `https://multiembed.mov/?video_id=${media.id}&tmdb=1&s=${season}&e=${episode}`
+    : `https://multiembed.mov/?video_id=${media.id}&tmdb=1`;
 };
 
 /**
- * Opens the Clean Cinema Player in a dedicated, high-performance pop-up window
- * with all VIP playback controls (Skip, Stop/Start, 4K Quality, Hindi Dual Audio, Fullscreen).
+ * Opens the Clean Cinema Player in a dedicated, high-performance pop-up window.
+ * This completely avoids all iframe sandbox restrictions and plays smoothly everywhere.
  */
 export const openCleanPopupWindow = (media: MediaItem, options: PlayerUrlOptions = {}): void => {
   const cleanUrl = getCleanPlayerUrl(media, options);
 
-  // Compute optimum pop-up window dimensions
   const screenW = window.screen.availWidth || window.screen.width || 1280;
   const screenH = window.screen.availHeight || window.screen.height || 720;
 
-  const width = Math.min(screenW * 0.94, 1360);
-  const height = Math.min(screenH * 0.92, 820);
+  const width = Math.min(screenW * 0.92, 1280);
+  const height = Math.min(screenH * 0.88, 720);
   const left = Math.max(0, (screenW - width) / 2);
   const top = Math.max(0, (screenH - height) / 2);
 
@@ -68,10 +56,10 @@ export const openCleanPopupWindow = (media: MediaItem, options: PlayerUrlOptions
     'toolbar=no',
     'location=no',
     'resizable=yes',
-    'scrollbars=yes',
+    'scrollbars=no',
   ].join(',');
 
-  const popup = window.open(cleanUrl, `GooTVCinema_${media.id}`, windowFeatures);
+  const popup = window.open(cleanUrl, 'GooTVCinemaPlayer', windowFeatures);
 
   if (!popup || popup.closed || typeof popup.closed === 'undefined') {
     // If pop-up blocker triggered, open safely in new tab
@@ -84,3 +72,4 @@ export const openCleanPopupWindow = (media: MediaItem, options: PlayerUrlOptions
     }
   }
 };
+

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Sparkles, ExternalLink, Zap, Download, ShieldCheck } from 'lucide-react';
 const SMARTLINKS = [
   "https://www.profitableratecpmnetwork.com/hr65xsh7?key=dc01c1237bd130c5ef9bcfef4f0928ed",
@@ -9,9 +9,40 @@ const SMARTLINKS = [
 const smartlinkUrl =
   SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
 
+export const AdsterraNativeContainer: React.FC<{ className?: string }> = ({ className = '' }) => {
+  useEffect(() => {
+    const containerId = 'container-a4e46263cbd8519b40b7d5e084f699d2';
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const scriptSrc = 'https://pl31775987.profitableratecpmnetwork.com/a4e46263cbd8519b40b7d5e084f699d2/invoke.js';
+    const existing = document.querySelector(`script[src="${scriptSrc}"]`);
+    if (!existing) {
+      const script = document.createElement('script');
+      script.src = scriptSrc;
+      script.async = true;
+      script.setAttribute('data-cfasync', 'false');
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  return (
+    <div className={`my-4 mx-auto max-w-5xl rounded-2xl border border-white/10 bg-[#12141f] p-3 shadow-xl overflow-hidden ${className}`}>
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/5 text-[10px] text-gray-400 font-bold tracking-wider">
+        <span className="flex items-center gap-1.5 text-amber-400">
+          <Sparkles className="w-3 h-3" />
+          <span>SPONSORED RECOMMENDATION</span>
+        </span>
+        <span className="bg-white/5 px-2 py-0.5 rounded text-[9px] text-gray-400">ADSTERRA VIP</span>
+      </div>
+      <div id="container-a4e46263cbd8519b40b7d5e084f699d2" className="w-full flex justify-center min-h-[60px]" />
+    </div>
+  );
+};
+
 interface AdsterraAdBannerProps {
   zoneId?: string;
-  format?: 'banner_728x90' | 'banner_300x250' | 'native_bar' | 'download_sponsor' | 'stream_accelerator';
+  format?: 'banner_728x90' | 'banner_300x250' | 'native_bar' | 'download_sponsor' | 'stream_accelerator' | 'native_container';
   className?: string;
 }
 
@@ -19,6 +50,10 @@ export const AdsterraAdBanner: React.FC<AdsterraAdBannerProps> = ({
   format = 'native_bar',
   className = '',
 }) => {
+  if (format === 'native_container') {
+    return <AdsterraNativeContainer className={className} />;
+  }
+
   // High-CPM Adsterra Smartlink (Configured for cinema & download traffic)
 
 if (format === 'download_sponsor') {

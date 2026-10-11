@@ -1,11 +1,8 @@
-import { Suspense } from 'react';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import './styles/responsive.css';
 
-import './i18n';
 interface Props {
   children: ReactNode;
 }
@@ -55,18 +52,14 @@ class ErrorBoundary extends Component<Props, State> {
 
 const rootEl = document.getElementById('root');
 if (rootEl) {
-  createRoot(rootEl).render(
-    <ErrorBoundary>
-      <Suspense fallback={<div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#888',fontSize:'14px'}}>Loading…</div>}><App /></Suspense>
-    </ErrorBoundary>
-  );
+  try {
+    const root = createRoot(rootEl);
+    root.render(
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    );
+  } catch (err) {
+    console.error('Fatal cinema client initialization error:', err);
+  }
 }
-
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch((error) => {
-      console.warn("GOO TV service worker registration failed:", error);
-    });
-  });
-}
-

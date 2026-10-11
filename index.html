@@ -8,34 +8,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
     
     <!-- Primary SEO Meta Tags (High CTR & Long-Tail Optimization) -->
-    <title>CineSphere VIP - World Class Movie & TV Streaming | GOO TV</title>
-    <meta name="title" content="CineSphere VIP - World Class Movie & TV Streaming | GOO TV" />
-    <meta name="description" content="Stream unlimited movies and TV series with 20+ active streaming servers, TMDB live sync, seasons & episodes selector, and 4K cinema player." />
+    <title>GOO TV - Watch Movies & Series Online Free | 12 Channels 4K VIP Cinema</title>
+    <meta name="title" content="GOO TV - Watch Movies & Series Online Free | 12 Channels 4K VIP Cinema" />
+    <meta name="description" content="Stream unlimited movies and TV series across 12 channels (Hindi, English, Punjabi, South Indian, K-Drama, Classics, Netflix, HBO, JioHotstar, MX Player) with 20 active fallback servers, TMDB live metadata sync, and 4K cinema player." />
     
     <!-- Zero-Competition & Long-Tail Keywords -->
-    <meta name="keywords" content="watch free movies online no sign up, watch hindi dubbed movies online full hd 1080p, stream hollywood movies free without registration, zero buffering streaming player, download movies direct mp4 streamtape, 4k ultra hd movie streaming website, tv series all seasons episodes watch online, unblocked movies streaming server switch, bollywood movies watch free online, anime episodes full english sub dub, streamtape direct download link, streamwish fast player, filemoon resumable storage, doodstream mirror online, cinesphere vip, goo tv free cinema" />
-    <meta name="author" content="CineSphere VIP" />
+    <meta name="keywords" content="goo tv, goo tv free cinema, watch free movies online no sign up, watch hindi dubbed movies online full hd 1080p, stream hollywood movies free without registration, south movies in hindi dubbed, punjabi movies watch online free, kdrama hindi dubbed full episodes, netflix movies free streaming, hbo movies online hd, jio cinema hotstar movies free, mx player web series watch online, zero buffering streaming player, download movies direct mp4 streamtape, 4k ultra hd movie streaming website, tv series all seasons episodes watch online, unblocked movies streaming server switch" />
+    <meta name="author" content="GOO TV VIP" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#0b0c10" />
-    <link rel="canonical" href="https://gootv.app/" />
+    <link rel="canonical" href="https://goo-tv.pages.dev/" />
     <link rel="manifest" href="./manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="CineSphere VIP" />
+    <meta name="apple-mobile-web-app-title" content="GOO TV" />
 
-    <!-- GitHub Pages Immediate Cinema Launcher (Zero-Freeze Guarantee) -->
+    <!-- Universal Host Launcher: Edge-Ready for Cloudflare Pages, GitHub Pages & Custom Domains -->
     <script>
       (function() {
         try {
-          if (window.location.hostname.endsWith('github.io')) {
-            // Direct GitHub Pages static hosting: launch standalone cinema client immediately
+          var searchParams = new URLSearchParams(window.location.search);
+          if (searchParams.get('standalone') === '1' || searchParams.get('classic') === '1') {
             var target = './standalone.html' + (window.location.search || '') + (window.location.hash || '');
             window.location.replace(target);
           }
         } catch (e) {}
       })();
     </script>
+
+    <!-- Adsterra High-CPM Monetization Network (Optimized Non-Intrusive Engine) -->
+    <script type="text/javascript" data-cfasync="false" src="https://pl31775986.profitableratecpmnetwork.com/d3/24/41/d32441c8630b9a56db2cde3f2740dc55.js"></script>
+    <script type="text/javascript" data-cfasync="false" src="https://pl31775988.profitableratecpmnetwork.com/c6/2d/2d/c62d2d11aeeeee001c13761ffa74f1c0.js"></script>
 
     <!-- Pure Dark Mode CSS (Prevents Any White Screen Flicker on Any Host) -->
     <style>
@@ -138,19 +142,30 @@
     <!-- Vite module entry for Dev Server and npm run build -->
     <script type="module" src="/src/main.tsx"></script>
 
-    <!-- Fail-Safe Cinema Loader Watchdog -->
+    <!-- Fail-Safe Cinema Loader Watchdog (Only on Unbuilt Static Hosts if React Fails) -->
     <script>
       (function() {
-        // Global unhandled error recovery
-        window.addEventListener('error', function(e) {
-          console.warn('System notice caught:', e.message);
-        });
+        var hostname = window.location.hostname || '';
+        var isDev = hostname === 'localhost' || hostname === '127.0.0.1' || window.location.port === '3000' || window.location.port === '5173' || hostname.indexOf('ais-') !== -1;
 
-        // Watchdog to reveal enter cinema button if network is slow
-        setTimeout(function() {
-          var action = document.getElementById('app-loader-action');
-          if (action) action.style.display = 'block';
-        }, 3000);
+        // If raw .tsx fails to execute on raw uncompiled hosts
+        window.addEventListener('error', function(e) {
+          if (e.target && e.target.tagName === 'SCRIPT' && e.target.src && e.target.src.indexOf('main.tsx') !== -1) {
+            console.warn('Raw TSX not supported by host, loading standalone cinema fallback.');
+            window.location.replace('./standalone.html' + (window.location.search || '') + (window.location.hash || ''));
+          }
+        }, true);
+
+        // Safe Watchdog: If React hasn't mounted in 4.5 seconds on uncompiled static host, load fallback
+        if (!isDev) {
+          setTimeout(function() {
+            var root = document.getElementById('root');
+            if (root && root.querySelector('#app-loading-fallback')) {
+              var target = './standalone.html' + (window.location.search || '') + (window.location.hash || '');
+              window.location.replace(target);
+            }
+          }, 4500);
+        }
       })();
     </script>
   </body>

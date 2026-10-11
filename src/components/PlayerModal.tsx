@@ -27,6 +27,10 @@ import {
   Pause,
   RotateCcw,
   Volume2,
+  VolumeX,
+  Sun,
+  Subtitles,
+  Settings,
   Maximize
 } from 'lucide-react';
 import { MediaItem, MediaDetails, Season } from '../types/movie';
@@ -78,6 +82,10 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const [likesCount, setLikesCount] = useState<number>(() => Math.floor(Math.random() * 25) + 12);
   const [hasLiked, setHasLiked] = useState<boolean>(false);
   const [viewsCount] = useState<number>(() => Math.floor(Math.random() * 850) + 950);
+  const [brightness, setBrightness] = useState<number>(100);
+  const [volume, setVolume] = useState<number>(100);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [captionsEnabled, setCaptionsEnabled] = useState<boolean>(true);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const cinemaWrapperRef = useRef<HTMLDivElement>(null);
@@ -283,16 +291,26 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     ? activeServer.getTvUrl(media.id, currentSeason, currentEpisode)
     : activeServer.getMovieUrl(media.id);
 
-  // Clean Popup Window Launcher (VIP Cinema Player with Full Controls)
+  // Clean Popup Window Launcher (Exact Goo TV Clean Pop-Up Trick)
   const handleOpenDirectStream = () => {
-    openCleanPopupWindow(media, {
-      season: currentSeason,
-      episode: currentEpisode,
-      serverId: activeServerId,
-      audio: selectedAudio,
-      quality: selectedQuality,
-    });
-    triggerSyncToast('🎬 VIP Clean popup player opened with full controls!');
+    const screenW = window.screen.availWidth || window.screen.width || 1280;
+    const screenH = window.screen.availHeight || window.screen.height || 720;
+    const width = Math.min(screenW * 0.92, 1280);
+    const height = Math.min(screenH * 0.88, 720);
+    const left = Math.max(0, (screenW - width) / 2);
+    const top = Math.max(0, (screenH - height) / 2);
+
+    const popup = window.open(
+      playerUrl,
+      'GooTVCinemaPlayer',
+      `width=${Math.round(width)},height=${Math.round(height)},top=${Math.round(top)},left=${Math.round(left)},status=no,menubar=no,toolbar=no,location=no,resizable=yes,scrollbars=no`
+    );
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      window.open(playerUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      try { popup.focus(); } catch (e) {}
+    }
+    triggerSyncToast('🎬 Clean popup player opened!');
   };
 
   const handleShare = (platform?: string) => {
@@ -444,11 +462,11 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={handleOpenDirectStream}
-            title="Open in clean new tab / window"
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/30 cursor-pointer"
+            title="Open in Clean Pop-Up Window"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/30 cursor-pointer"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Open in New Tab</span>
+            <span className="hidden md:inline">Clean Pop-Up Player</span>
           </button>
 
           <button
@@ -629,6 +647,55 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 </select>
               </div>
 
+              {/* Brightness Controller */}
+              <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-xl border border-white/10" title="Adjust Cinema Screen Brightness">
+                <Sun className="w-3.5 h-3.5 text-amber-300" />
+                <span className="text-[10px] font-bold text-gray-400">Bright:</span>
+                <input
+                  type="range"
+                  min={50}
+                  max={150}
+                  value={brightness}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setBrightness(val);
+                    triggerSyncToast(`☀️ Brightness: ${val}%`);
+                  }}
+                  className="w-16 h-1.5 accent-amber-400 cursor-pointer"
+                />
+                <span className="text-[10px] text-gray-300 font-mono">{brightness}%</span>
+              </div>
+
+              {/* Volume Controller & Mute */}
+              <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-xl border border-white/10" title="Adjust Player Volume Boost">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !isMuted;
+                    setIsMuted(next);
+                    triggerSyncToast(next ? '🔇 Audio Muted' : `🔊 Unmuted (${volume}%)`);
+                  }}
+                  className="text-gray-300 hover:text-white cursor-pointer"
+                >
+                  {isMuted ? <VolumeX className="w-3.5 h-3.5 text-red-400" /> : <Volume2 className="w-3.5 h-3.5 text-emerald-400" />}
+                </button>
+                <span className="text-[10px] font-bold text-gray-400">Vol:</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={150}
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setVolume(val);
+                    if (isMuted) setIsMuted(false);
+                    triggerSyncToast(`🔊 Volume Boost: ${val}%`);
+                  }}
+                  className="w-16 h-1.5 accent-emerald-400 cursor-pointer"
+                />
+                <span className="text-[10px] text-gray-300 font-mono">{isMuted ? '0%' : `${volume}%`}</span>
+              </div>
+
               {/* Fullscreen Button */}
               <button
                 onClick={toggleCinemaFullscreen}
@@ -677,28 +744,152 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             src={playerUrl}
             title={`Streaming ${title}`}
             className="w-full h-full border-0 absolute inset-0 z-10"
+            style={{ filter: `brightness(${brightness}%)` }}
             allowFullScreen
             allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; screen-wake-lock"
           />
 
-          {/* Bottom Floating Touch Control Overlay */}
-          <div className="absolute bottom-3 left-3 right-3 z-20 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 flex items-center justify-between text-xs opacity-90 hover:opacity-100 transition-opacity">
-            <div className="flex items-center gap-2">
-              <button onClick={togglePlayPause} className="p-1.5 rounded-lg bg-red-600 text-white font-bold cursor-pointer">
-                {isPlaying ? <Pause className="w-3.5 h-3.5 fill-white" /> : <Play className="w-3.5 h-3.5 fill-white" />}
-              </button>
-              <button onClick={() => skipSeconds(-10)} className="px-2 py-1 rounded bg-white/10 text-white text-[11px] font-bold cursor-pointer">-10s</button>
-              <button onClick={() => skipSeconds(10)} className="px-2 py-1 rounded bg-white/10 text-white text-[11px] font-bold cursor-pointer">+10s</button>
-              <span className="text-[11px] text-gray-300 font-semibold hidden sm:inline ml-2">Active: {activeServer.name}</span>
+          {/* Bottom YouTube/Cinema Control Bar (Matching Screenshot 2 exact styling) */}
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/80 to-transparent pt-6 pb-3 px-3 sm:px-5 flex flex-col gap-2 opacity-95 hover:opacity-100 transition-opacity">
+            
+            {/* Live Progress Scrubber Bar on Video Canvas */}
+            <div className="flex items-center gap-2 group/bar">
+              <input
+                type="range"
+                min={0}
+                max={durationSec}
+                step={1}
+                value={currentTimeSec}
+                onChange={handleSeekProgress}
+                className="w-full h-1.5 hover:h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-red-600 focus:outline-none transition-all"
+              />
             </div>
 
-            <div className="flex items-center gap-2">
-              <button onClick={() => handleAutoSyncServer()} className="px-2.5 py-1 rounded-lg bg-white/15 hover:bg-white/25 text-white text-[11px] font-bold cursor-pointer flex items-center gap-1">
-                <Zap className="w-3 h-3 text-amber-400" /> Next Server
-              </button>
-              <button onClick={toggleCinemaFullscreen} className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white cursor-pointer" title="Full Screen">
-                <Maximize className="w-3.5 h-3.5" />
-              </button>
+            {/* Bottom Controls Row: Play, Vol, Time, CC, Settings, Fullscreen */}
+            <div className="flex items-center justify-between text-white text-xs sm:text-sm font-sans">
+              
+              {/* Left Group: Play/Pause, Volume, Live Timestamp (0:04 / 2:51:07) */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Play / Pause Toggle Button */}
+                <button
+                  type="button"
+                  onClick={togglePlayPause}
+                  className="p-1 rounded hover:text-red-500 transition-colors cursor-pointer"
+                  title={isPlaying ? 'Pause (Space)' : 'Play (Space)'}
+                >
+                  {isPlaying ? <Pause className="w-5 h-5 fill-white stroke-none" /> : <Play className="w-5 h-5 fill-white stroke-none" />}
+                </button>
+
+                {/* 10s Skip Controls */}
+                <button
+                  type="button"
+                  onClick={() => skipSeconds(-10)}
+                  className="p-1 text-gray-300 hover:text-white transition-colors cursor-pointer text-[11px] font-bold"
+                  title="Rewind 10s (←)"
+                >
+                  -10s
+                </button>
+                <button
+                  type="button"
+                  onClick={() => skipSeconds(10)}
+                  className="p-1 text-gray-300 hover:text-white transition-colors cursor-pointer text-[11px] font-bold"
+                  title="Forward 10s (→)"
+                >
+                  +10s
+                </button>
+
+                {/* Volume & Mute */}
+                <div className="flex items-center gap-1.5 group/vol">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = !isMuted;
+                      setIsMuted(next);
+                      triggerSyncToast(next ? '🔇 Muted' : `🔊 Volume ${volume}%`);
+                    }}
+                    className="p-1 hover:text-emerald-400 transition-colors cursor-pointer"
+                    title={isMuted ? 'Unmute (M)' : 'Mute (M)'}
+                  >
+                    {isMuted ? <VolumeX className="w-5 h-5 text-red-400" /> : <Volume2 className="w-5 h-5 text-white" />}
+                  </button>
+                  <input
+                    type="range"
+                    min={0}
+                    max={150}
+                    value={isMuted ? 0 : volume}
+                    onChange={(e) => {
+                      setVolume(Number(e.target.value));
+                      if (isMuted) setIsMuted(false);
+                    }}
+                    className="w-14 sm:w-20 h-1.5 accent-white opacity-80 group-hover/vol:opacity-100 cursor-pointer hidden xs:block"
+                  />
+                </div>
+
+                {/* Real Video Timestamp exact format: 0:04 / 2:51:07 */}
+                <div className="text-[11px] sm:text-xs text-gray-300 font-mono tracking-wider ml-1 select-none">
+                  <span className="text-white font-bold">{formatTime(currentTimeSec)}</span>
+                  <span className="text-gray-500 mx-1">/</span>
+                  <span className="text-gray-400">{formatTime(durationSec)}</span>
+                </div>
+              </div>
+
+              {/* Right Group: Captions [CC], Settings Gear, Fullscreen Button */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Auto Next Server Quick Pill */}
+                <button
+                  type="button"
+                  onClick={() => handleAutoSyncServer()}
+                  className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded bg-white/10 hover:bg-amber-500 hover:text-black text-amber-400 text-[11px] font-bold transition-all cursor-pointer"
+                  title="Switch to next working stream server"
+                >
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>Next Server</span>
+                </button>
+
+                {/* Captions / Subtitles [CC] Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !captionsEnabled;
+                    setCaptionsEnabled(next);
+                    triggerSyncToast(next ? '💬 Subtitles / Captions (CC) Enabled' : 'Subtitles Hidden');
+                    try {
+                      iframeRef.current?.contentWindow?.postMessage({ type: 'toggleCaptions' }, '*');
+                    } catch {}
+                  }}
+                  className={`px-1.5 py-0.5 rounded border text-[11px] font-extrabold transition-all cursor-pointer ${
+                    captionsEnabled 
+                      ? 'border-red-500 text-red-400 bg-red-600/20' 
+                      : 'border-white/30 text-gray-400 hover:text-white'
+                  }`}
+                  title="Subtitles / Closed Captions [CC]"
+                >
+                  CC
+                </button>
+
+                {/* Settings Gear Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerSyncToast(`⚙️ Active Server: ${activeServer.name} • ${selectedQuality.toUpperCase()} • ${selectedAudio.toUpperCase()}`);
+                  }}
+                  className="p-1 text-gray-300 hover:text-white transition-colors cursor-pointer"
+                  title="Stream & Audio Settings"
+                >
+                  <Settings className="w-5 h-5 stroke-[1.8]" />
+                </button>
+
+                {/* Fullscreen Button (Matching Screenshot 2) */}
+                <button
+                  type="button"
+                  onClick={toggleCinemaFullscreen}
+                  className="p-1 hover:text-amber-400 transition-colors cursor-pointer"
+                  title="100% Cinema Fullscreen (F)"
+                >
+                  <Maximize className="w-5 h-5 stroke-[2]" />
+                </button>
+              </div>
+
             </div>
           </div>
         </div>

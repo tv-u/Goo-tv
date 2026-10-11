@@ -32,7 +32,8 @@ import {
   fetchByGenre, 
   fetchTopRatedMovies,
   fetchMediaDetails,
-  getImageUrl
+  getImageUrl,
+  GOO_TV_CATEGORIES
 } from './services/tmdb';
 import { WatchlistProvider, useWatchlist } from './context/WatchlistContext';
 import { Navbar } from './components/Navbar';
@@ -63,6 +64,7 @@ function MainApp() {
   const [showServersModal, setShowServersModal] = useState<boolean>(false);
   const [trendingWindow, setTrendingWindow] = useState<'day' | 'week'>('day');
   const [themeMode, setThemeMode] = useState<'cinema' | 'oled'>('cinema');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Dedicated Clean Cinema Player Standalone Window State
   const [cleanPlayerState, setCleanPlayerState] = useState<{
@@ -243,9 +245,39 @@ function MainApp() {
         return;
       }
 
+      // Check category hash or query params (#category-..., ?category=...)
+      if (hash.startsWith('#category-')) {
+        const catVal = hash.replace('#category-', '').split('-')[0];
+        if (catVal) {
+          setCurrentTab(catVal);
+          return;
+        }
+      }
+      const queryCategory = urlParams.get('category');
+      if (queryCategory) {
+        setCurrentTab(queryCategory);
+        return;
+      }
+
       // Check policy hash links (#about, #terms, #privacy, #dmca)
       if (hash === '#about' || hash === '#terms' || hash === '#privacy' || hash === '#dmca') {
         setPolicyPage(hash.replace('#', '') as PolicyPageType);
+        return;
+      }
+
+      // Check search hash or query params (#search-..., ?q=..., ?search=...)
+      if (hash.startsWith('#search-')) {
+        const qVal = decodeURIComponent(hash.replace('#search-', ''));
+        if (qVal) {
+          setSearchQuery(qVal);
+          setCurrentTab('search');
+          return;
+        }
+      }
+      const querySearch = urlParams.get('q') || urlParams.get('search');
+      if (querySearch) {
+        setSearchQuery(querySearch);
+        setCurrentTab('search');
         return;
       }
 
@@ -368,6 +400,12 @@ function MainApp() {
           setShowWatchlist(true);
         }}
         onOpenServersList={() => setShowServersModal(true)}
+        onSearchSubmit={(q) => {
+          setSearchQuery(q);
+          setCurrentTab('search');
+          window.location.hash = `#search-${encodeURIComponent(q)}`;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
       {/* Main Content Area */}
@@ -499,6 +537,49 @@ function MainApp() {
               </div>
             </div>
 
+            {/* 🎬 12 NEW GOO TV Categories Strip (Fast 1-Click Access) */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+              <div className="bg-[#0f111a] border border-white/10 rounded-2xl p-4 shadow-xl">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1.5 rounded-lg bg-red-600/20 text-red-500 border border-red-500/30">
+                      <Layers className="w-4 h-4" />
+                    </span>
+                    <h3 className="text-sm font-black text-white tracking-tight flex items-center gap-2">
+                      <span>GOO TV Channels</span>
+                      <span className="bg-red-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded shadow">
+                        12 REAL CATEGORIES
+                      </span>
+                    </h3>
+                  </div>
+                  <span className="text-[11px] text-gray-400 font-medium hidden sm:inline">
+                    Real TMDB metadata • Auto Server Playback
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
+                  {GOO_TV_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        setCurrentTab(cat.id);
+                        window.location.hash = `#category-${cat.id}`;
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-red-600/20 hover:border-red-500/40 text-gray-200 hover:text-white border border-white/10 font-bold whitespace-nowrap transition-all cursor-pointer flex-shrink-0 group"
+                    >
+                      <span className="text-sm">{cat.flag}</span>
+                      <span>{cat.name}</span>
+                      {cat.badge && (
+                        <span className="text-[9px] px-1 py-0.2 rounded font-extrabold bg-white/10 text-gray-300 group-hover:bg-red-600 group-hover:text-white ml-0.5">
+                          {cat.badge}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Media Rows with Download options */}
             <div className="space-y-4">
               {loadingHome ? (
@@ -546,7 +627,7 @@ function MainApp() {
                 onPlayMedia={handlePlayMedia}
                 onOpenDetails={handleOpenDetails}
                 onDownload={handleOpenDownload}
-                onViewAll={() => setCurrentTab('bollywood')}
+                onViewAll={() => setCurrentTab('hindi_movies')}
               />
 
               <MediaRow
@@ -559,6 +640,11 @@ function MainApp() {
                 onDownload={handleOpenDownload}
                 onViewAll={() => setCurrentTab('tv')}
               />
+
+              {/* Adsterra High-CPM Native Banner Container */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+                <AdsterraAdBanner format="native_container" />
+              </div>
 
               {/* Mid-Feed High-Converting Sponsored VIP Banner */}
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
@@ -573,7 +659,7 @@ function MainApp() {
                 onPlayMedia={handlePlayMedia}
                 onOpenDetails={handleOpenDetails}
                 onDownload={handleOpenDownload}
-                onViewAll={() => setCurrentTab('movies')}
+                onViewAll={() => setCurrentTab('english_movies')}
               />
 
               <MediaRow
@@ -624,20 +710,21 @@ function MainApp() {
         ) : (
           /* Exploration / Unlimited Filter Catalog View with Download */
           <ExploreView
-            initialType={
-              currentTab === 'movies'
-                ? 'movie'
-                : currentTab === 'tv'
-                ? 'tv'
-                : currentTab === 'bollywood'
-                ? 'bollywood'
-                : currentTab === 'anime'
-                ? 'anime'
-                : 'top_rated'
-            }
+            initialType={currentTab}
+            initialCategory={currentTab}
+            searchQuery={searchQuery}
+            onSearchChange={(q) => {
+              setSearchQuery(q);
+              window.location.hash = `#search-${encodeURIComponent(q)}`;
+            }}
+            onClearSearch={() => {
+              setSearchQuery('');
+              window.location.hash = '';
+            }}
             onPlayMedia={handlePlayMedia}
             onOpenDetails={handleOpenDetails}
             onDownload={handleOpenDownload}
+            onCategorySelect={(catId) => setCurrentTab(catId)}
           />
         )}
       </main>

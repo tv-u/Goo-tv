@@ -1,6 +1,7 @@
 import React from 'react';
-import { Home, Film, Tv, Compass, Bookmark, Server } from 'lucide-react';
+import { Home, Film, Tv, Layers, Bookmark, Server } from 'lucide-react';
 import { useWatchlist } from '../context/WatchlistContext';
+import { GOO_TV_CATEGORIES } from '../services/tmdb';
 
 interface MobileBottomNavProps {
   currentTab: string;
@@ -17,11 +18,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
 }) => {
   const { watchlist, history } = useWatchlist();
 
+  const isCategoryActive = GOO_TV_CATEGORIES.some((c) => c.id === currentTab);
+
   const navItems = [
-    { id: 'home', label: 'Home', icon: Home, action: () => onSelectTab('home') },
-    { id: 'movies', label: 'Movies', icon: Film, action: () => onSelectTab('movies') },
-    { id: 'tv', label: 'Series', icon: Tv, action: () => onSelectTab('tv') },
-    { id: 'bollywood', label: 'Hindi', icon: Compass, action: () => onSelectTab('bollywood') },
+    { id: 'home', label: 'Home', icon: Home, action: () => onSelectTab('home'), active: currentTab === 'home' },
+    { id: 'categories', label: '12 Channels', icon: Layers, action: () => onSelectTab('hindi_movies'), active: isCategoryActive },
+    { id: 'movies', label: 'Movies', icon: Film, action: () => onSelectTab('english_movies'), active: currentTab === 'movies' || currentTab === 'english_movies' },
+    { id: 'tv', label: 'Series', icon: Tv, action: () => onSelectTab('tv'), active: currentTab === 'tv' || currentTab === 'kdrama' },
   ];
 
   return (
@@ -32,7 +35,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentTab === item.id;
+          const isActive = item.active !== undefined ? item.active : currentTab === item.id;
           return (
             <button
               key={item.id}
