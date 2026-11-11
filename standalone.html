@@ -907,14 +907,16 @@
     const TMDB_BASE = 'https://api.themoviedb.org/3';
     const IMG_BASE = 'https://image.tmdb.org/t/p';
 
-    // Fallback Seed Blockbusters (Guarantees zero-blank screen anywhere)
+    // Fallback Seed Blockbusters (Guarantees zero-blank screen anywhere, including Cloudflare Pages)
     const SEED_MOVIES = [
-      { id: 933260, title: 'Stree 2', release_date: '2024-08-15', vote_average: 8.1, poster_path: '/mhnz0QxJbVzU56P2dEflx9j1pci.jpg', backdrop_path: '/cg4p26f29q1mGZ078aK4h8vQY4U.jpg', overview: 'Chanderi is haunted once again, this time by a headless entity named Sarkata.', media_type: 'movie' },
-      { id: 822119, title: 'Pushpa 2: The Rule', release_date: '2024-12-05', vote_average: 8.4, poster_path: '/h4A3aV33b2a265hH7n9p3g9k6Yd.jpg', backdrop_path: '/y7Xq12Zg5A6k7uM6k5Qe6Yh9Yd.jpg', overview: 'The clash between Pushpa Raj and Bhanwar Singh Shekhawat escalates into all-out war.', media_type: 'movie' },
-      { id: 792307, title: 'Kalki 2898 AD', release_date: '2024-06-27', vote_average: 7.9, poster_path: '/9K12g9hB7N6o5Y9k9n2b7v7n7N.jpg', backdrop_path: '/8K12g9hB7N6o5Y9k9n2b7v7n7N.jpg', overview: 'A modern avatar of Vishnu descends to protect the world from evil forces in a dystopian 2898 AD.', media_type: 'movie' },
-      { id: 533535, title: 'Deadpool & Wolverine', release_date: '2024-07-26', vote_average: 7.8, poster_path: '/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', backdrop_path: '/yDHYTfA3R0jFYba16jBB12RKoRf.jpg', overview: 'A listless Wade Wilson toils in civilian life until a global threat pulls him into action.', media_type: 'movie' },
-      { id: 939243, title: 'Squid Game', release_date: '2021-09-17', vote_average: 8.4, poster_path: '/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg', backdrop_path: '/2meX1nMdScFOoV4370rqHWFDxSu.jpg', overview: 'Hundreds of cash-strapped players accept a strange invitation to compete in children\'s games.', media_type: 'tv' },
-      { id: 781732, title: 'Animal', release_date: '2023-12-01', vote_average: 7.6, poster_path: '/hr9rjR4JOpJg4EzbfZIoD8S808s.jpg', backdrop_path: '/sR0SpCrAhOQ7YUp2X1kZg3N5n5.jpg', overview: 'A son\'s ardent love for his father turns into an obsessive and violent crusade.', media_type: 'movie' }
+      { id: 105248, title: 'Cyberpunk: Edgerunners', release_date: '2022-09-13', vote_average: 8.5, poster_path: '/v3JuB15WybKmxDeT1hWdK3j6eSJ.jpg', backdrop_path: '/3UbHGmu9vIMSC5uNfnGt7DjetqT.jpg', overview: 'In a dystopia riddled with corruption, a reckless street kid strives to become a mercenary.', media_type: 'tv' },
+      { id: 1198654, title: 'Bad Apples', release_date: '2025-02-14', vote_average: 6.8, poster_path: '/pcPLnxCThCIo9JFQIMFX4kAE5Yz.jpg', backdrop_path: '/ch1g1X6TfezRwbmiBiYRpALTQjN.jpg', overview: 'A struggling primary school teacher is forced to take drastic action.', media_type: 'movie' },
+      { id: 1380417, title: 'By Any Means', release_date: '2025-01-24', vote_average: 7.0, poster_path: '/hxTjCfEmZJFAPW8h5S3tDQNaBi8.jpg', backdrop_path: '/1jANqIbqrWJZb8GM5Kb3L6U8iHi.jpg', overview: 'A young Black FBI agent partners with a mafia hitman to investigate murders.', media_type: 'movie' },
+      { id: 1400940, title: 'Clayface', release_date: '2025-02-28', vote_average: 8.1, poster_path: '/5jCpQnWPikggmQZoDp1eAi6BI6w.jpg', backdrop_path: '/uL4cIrNi2uaUnWIOQQ28EVnkETG.jpg', overview: "Matt Hagen's meteoric rise is cut short when an attack leaves him disfigured.", media_type: 'movie' },
+      { id: 1389172, title: 'Reporting Live', release_date: '2025-01-10', vote_average: 7.4, poster_path: '/xVabS4lTi6IMscr2FOucxydE6ZD.jpg', backdrop_path: '/faJB8DXU0LXwq5ebMLj5drz8S4N.jpg', overview: 'A young reporter chases a dangerous sand-mining racket in India.', media_type: 'movie' },
+      { id: 19404, title: 'Dilwale Dulhania Le Jayenge', release_date: '1995-10-20', vote_average: 8.5, poster_path: '/lfRkUr7DYdHldAqi3PwdQGBRBPM.jpg', backdrop_path: '/7VDLEHli74eLsYLNcq9djn1Gw76.jpg', overview: 'Raj and Simran meet across Europe and fall into a legendary love story.', media_type: 'movie' },
+      { id: 533535, title: 'Deadpool & Wolverine', release_date: '2024-07-26', vote_average: 7.8, poster_path: '/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', backdrop_path: '/yDHYTfA3R0jFYba16jBB12RKoRf.jpg', overview: 'Wade Wilson teams up with a reluctant Wolverine to save the multiverse.', media_type: 'movie' },
+      { id: 213562, title: 'Crystal Lake', release_date: '2024-10-31', vote_average: 8.5, poster_path: '/3ENhExiD2fcjk5FX0AcAXcvLu9N.jpg', backdrop_path: '/wxiBsKFEOOFK8eQStWOykNORlXY.jpg', overview: 'A mother uncovers terrifying secrets in the town of Crystal Lake.', media_type: 'tv' }
     ];
 
     // Application State

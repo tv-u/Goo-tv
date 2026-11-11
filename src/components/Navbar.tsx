@@ -14,12 +14,16 @@ import {
   Flame,
   Globe2,
   ChevronDown,
-  Layers
+  Layers,
+  Volume2,
+  VolumeX,
+  Palette
 } from 'lucide-react';
 import { MediaItem } from '../types/movie';
 import { advancedSearchMedia, getImageUrl, GOO_TV_CATEGORIES } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
 import { STREAMING_SERVERS } from '../services/servers';
+import { playGelPop, playGlassPing } from '../utils/gelSound';
 
 interface NavbarProps {
   currentTab: string;
@@ -29,6 +33,10 @@ interface NavbarProps {
   onOpenHistory: () => void;
   onOpenServersList: () => void;
   onSearchSubmit?: (query: string) => void;
+  theme?: 'pastel' | 'dark';
+  onToggleTheme?: () => void;
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -39,6 +47,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenHistory,
   onOpenServersList,
   onSearchSubmit,
+  theme = 'pastel',
+  onToggleTheme,
+  isMuted = false,
+  onToggleMute,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<MediaItem[]>([]);
@@ -57,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      setIsScrolled(window.scrollY > 25);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -106,6 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleTriggerFullSearch = (q = searchQuery) => {
     const term = q.trim();
     if (!term) return;
+    playGelPop(600, 'sine');
     setShowSearchDropdown(false);
     if (onSearchSubmit) {
       onSearchSubmit(term);
@@ -113,17 +126,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       onSelectTab('search');
     }
   };
-
-  // Click outside to close search dropdown
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowSearchDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const navLinks = [
     { id: 'home', label: 'Home', icon: Sparkles },
@@ -138,84 +140,103 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#0b0c10]/95 backdrop-blur-md border-b border-white/10 shadow-2xl shadow-black/80 py-2.5'
-          : 'bg-gradient-to-b from-black/90 via-black/50 to-transparent py-4'
+          ? 'py-2 px-3 sm:px-6'
+          : 'py-3.5 px-3 sm:px-6'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
+      {/* Floating 3D Liquid Glassmorphic Navigation Bar */}
+      <div className={`max-w-7xl mx-auto rounded-[28px] sm:rounded-full px-4 sm:px-6 py-2.5 transition-all ${
+        theme === 'pastel'
+          ? 'liquid-glass-plate'
+          : 'liquid-glass-plate-dark'
+      }`}>
+        <div className="flex items-center justify-between gap-3">
           
-          {/* Logo */}
-          <div className="flex items-center gap-8">
+          {/* Brand Logo (3D Pink Gel Squircle) */}
+          <div className="flex items-center gap-6">
             <button
-              onClick={() => onSelectTab('home')}
+              onClick={() => {
+                playGelPop(520, 'sine');
+                onSelectTab('home');
+              }}
               className="flex items-center gap-2.5 group cursor-pointer focus:outline-none"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-amber-500 p-0.5 shadow-lg shadow-red-600/30 group-hover:shadow-red-600/60 transition-all">
-                <div className="w-full h-full bg-[#0d0e15] rounded-[10px] flex items-center justify-center">
-                  <Film className="w-5 h-5 text-red-500 group-hover:rotate-12 transition-transform duration-300" />
-                </div>
+              <div className="w-10 h-10 rounded-2xl gel-pink flex items-center justify-center shadow-lg group-hover:scale-105 transition-all">
+                <div className="gel-sheen" />
+                <Film className="w-5 h-5 text-white stroke-[2.5]" />
               </div>
               <div className="text-left">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-2xl tracking-tight text-white group-hover:text-red-400 transition-colors">
-                    GOO <span className="text-red-600">TV</span>
+                  <span className={`font-black text-xl tracking-tight ${theme === 'pastel' ? 'text-[#2e1c24]' : 'text-white'}`}>
+                    GOO <span className="text-rose-600">TV</span>
                   </span>
-                  <span className="bg-gradient-to-r from-amber-500 to-red-500 text-[10px] font-black text-black px-1.5 py-0.5 rounded shadow">
-                    VIP
+                  <span className="gel-pink text-[9px] font-black text-white px-2 py-0.5 rounded-full shadow-sm">
+                    3D VIP
                   </span>
                 </div>
-                <p className="text-[10px] font-medium text-gray-400 -mt-1 hidden sm:block">
-                  20 Real Live Servers • 4K HDR
+                <p className="text-[10px] font-bold opacity-60 -mt-0.5 hidden sm:block">
+                  20 Live Servers • 4K HDR
                 </p>
               </div>
             </button>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            <nav className="hidden lg:flex items-center space-x-1.5">
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = currentTab === link.id;
                 return (
                   <button
                     key={link.id}
-                    onClick={() => onSelectTab(link.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                    onClick={() => {
+                      playGelPop(500, 'sine');
+                      onSelectTab(link.id);
+                    }}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${
                       isActive
-                        ? 'text-white bg-red-600/20 text-red-400 border border-red-500/30 shadow-sm shadow-red-500/20'
-                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                        ? 'gel-pink text-white shadow-md'
+                        : theme === 'pastel'
+                          ? 'text-stone-800 hover:gel-cream'
+                          : 'text-stone-200 hover:gel-obsidian'
                     }`}
                   >
-                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-red-500' : 'text-gray-400'}`} />
-                    {link.label}
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{link.label}</span>
                   </button>
                 );
               })}
 
-              {/* 🎬 12 NEW GOO TV Categories Dropdown */}
+              {/* 🎬 12 Channels Dropdown */}
               <div ref={categoriesRef} className="relative">
                 <button
                   type="button"
-                  onClick={() => setShowCategoriesDropdown(!showCategoriesDropdown)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                  onClick={() => {
+                    playGelPop(480, 'sine');
+                    setShowCategoriesDropdown(!showCategoriesDropdown);
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black transition-all cursor-pointer ${
                     showCategoriesDropdown || GOO_TV_CATEGORIES.some((c) => c.id === currentTab)
-                      ? 'text-white bg-red-600/20 text-red-400 border border-red-500/30 shadow-sm shadow-red-500/20'
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                      ? 'gel-pink text-white shadow-md'
+                      : theme === 'pastel'
+                        ? 'gel-cream text-stone-900 shadow-sm'
+                        : 'gel-obsidian text-stone-200'
                   }`}
                 >
-                  <Layers className="w-3.5 h-3.5 text-red-500" />
-                  <span>Categories</span>
-                  <span className="bg-red-600 text-[10px] font-black text-white px-1 py-0.2 rounded shadow">
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>Channels</span>
+                  <span className="bg-white/30 text-[9px] font-black px-1.5 py-0.2 rounded-full">
                     12
                   </span>
-                  <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${showCategoriesDropdown ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showCategoriesDropdown ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showCategoriesDropdown && (
-                  <div className="absolute top-full mt-2.5 left-0 w-80 bg-[#10121b] border border-white/10 rounded-2xl shadow-2xl p-2 z-50 grid grid-cols-1 gap-1 max-h-[460px] overflow-y-auto scrollbar-none animate-fadeIn">
-                    <div className="px-3 py-1.5 text-[10px] font-black text-gray-400 uppercase tracking-wider border-b border-white/5 flex items-center justify-between">
+                  <div className={`absolute top-full mt-3 left-0 w-80 rounded-[24px] shadow-2xl p-2.5 z-50 grid grid-cols-1 gap-1 max-h-[460px] overflow-y-auto scrollbar-none animate-fadeIn ${
+                    theme === 'pastel' ? 'liquid-glass-plate' : 'liquid-glass-plate-dark'
+                  }`}>
+                    <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider opacity-60 flex items-center justify-between border-b border-black/5">
                       <span>GOO TV Channels</span>
-                      <span className="text-red-400">12 Real TMDB Catalogs</span>
+                      <span className="text-rose-500 font-bold">12 Catalogs</span>
                     </div>
                     {GOO_TV_CATEGORIES.map((cat) => {
                       const isCatActive = currentTab === cat.id;
@@ -224,14 +245,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                           key={cat.id}
                           type="button"
                           onClick={() => {
+                            playGelPop(560, 'sine');
                             onSelectTab(cat.id);
                             setShowCategoriesDropdown(false);
                             window.location.hash = `#category-${cat.id}`;
                           }}
-                          className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                          className={`flex items-center justify-between px-3.5 py-2 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer ${
                             isCatActive
-                              ? 'bg-red-600 text-white shadow-md'
-                              : 'hover:bg-white/10 text-gray-200'
+                              ? 'gel-pink text-white shadow-md'
+                              : 'hover:bg-white/40'
                           }`}
                         >
                           <div className="flex items-center gap-2">
@@ -239,9 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             <span>{cat.name}</span>
                           </div>
                           {cat.badge && (
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded font-black ${
-                              isCatActive ? 'bg-black/30 text-white' : 'bg-white/10 text-gray-400'
-                            }`}>
+                            <span className="text-[9px] px-2 py-0.5 rounded-full font-black bg-white/40">
                               {cat.badge}
                             </span>
                           )}
@@ -255,10 +275,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Search + Server Status + Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             
-            {/* Live Search Bar */}
-            <div ref={searchRef} className="relative w-44 sm:w-64 md:w-80">
+            {/* Live Search Bar (3D Glass Inset Capsule) */}
+            <div ref={searchRef} className="relative w-36 sm:w-60 md:w-72">
               <form 
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -269,23 +289,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="submit"
                   title="Search movies & series"
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-0.5 text-stone-500 hover:text-rose-600 cursor-pointer transition-colors"
                 >
-                  <Search className="w-4 h-4" />
+                  <Search className="w-4 h-4 stroke-[2.5]" />
                 </button>
                 <input
                   type="text"
-                  placeholder="Search K-Drama, Hindi, Anime..."
+                  placeholder="Search 4K movies..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.trim() && setShowSearchDropdown(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      handleTriggerFullSearch();
-                    }
-                  }}
-                  className="w-full bg-white/5 border border-white/10 rounded-full pl-9 pr-8 py-1.5 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:bg-white/10 focus:ring-1 focus:ring-red-500 transition-all"
+                  className={`w-full rounded-full pl-9 pr-8 py-1.5 text-xs sm:text-sm font-semibold placeholder:opacity-60 focus:outline-none transition-all shadow-inner ${
+                    theme === 'pastel'
+                      ? 'bg-white/60 text-[#2e1c24] border border-white/80 focus:bg-white'
+                      : 'bg-black/40 text-white border border-white/10 focus:bg-black/60'
+                  }`}
                 />
                 {searchQuery && (
                   <button
@@ -295,204 +313,162 @@ export const Navbar: React.FC<NavbarProps> = ({
                       setSearchResults([]);
                       setShowSearchDropdown(false);
                     }}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-800 text-xs cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </form>
 
-              {/* Autocomplete Dropdown with Semantic Intent Recognition */}
+              {/* Autocomplete Dropdown */}
               {showSearchDropdown && (
-                <div className="absolute top-full mt-2 w-72 sm:w-88 right-0 sm:left-0 sm:right-auto bg-[#13151f] border border-white/10 rounded-2xl shadow-2xl shadow-black overflow-hidden z-50 backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200">
-                  <div className="p-2.5 border-b border-white/5 flex items-center justify-between text-[11px] text-gray-400">
-                    <span className="font-semibold truncate max-w-[200px]">
-                      {isSearching ? 'Analyzing keywords...' : detectedIntent || `Found ${searchResults.length} results`}
+                <div className={`absolute top-full mt-3 w-76 sm:w-88 right-0 rounded-[24px] shadow-2xl overflow-hidden z-50 p-2 ${
+                  theme === 'pastel' ? 'liquid-glass-plate' : 'liquid-glass-plate-dark'
+                }`}>
+                  <div className="p-2 border-b border-black/5 flex items-center justify-between text-[11px] font-bold opacity-75">
+                    <span className="truncate max-w-[200px]">
+                      {isSearching ? 'Analyzing...' : detectedIntent || `Found ${searchResults.length} results`}
                     </span>
                     <button
                       type="button"
                       onClick={() => handleTriggerFullSearch()}
-                      className="text-red-400 hover:text-red-300 font-bold flex items-center gap-0.5 cursor-pointer"
+                      className="text-rose-600 hover:underline font-black cursor-pointer"
                     >
-                      <span>Explore</span> →
+                      Explore →
                     </button>
                   </div>
                   
-                  <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
-                    {searchResults.length === 0 && !isSearching ? (
-                      <div className="p-4 text-center text-xs text-gray-400">
-                        Searching across 20 streaming servers for &quot;{searchQuery}&quot;...
-                      </div>
-                    ) : (
-                      searchResults.map((item) => {
-                        const title = item.title || item.name || 'Untitled';
-                        const year = (item.release_date || item.first_air_date || '').slice(0, 4);
-                        return (
-                          <div
-                            key={item.id}
-                            onClick={() => {
-                              onSelectMedia(item);
-                              setShowSearchDropdown(false);
-                              setSearchQuery('');
-                            }}
-                            className="flex items-center gap-3 p-2.5 hover:bg-white/10 transition-colors cursor-pointer group"
-                          >
-                            <img
-                              src={getImageUrl(item.poster_path, 'w300')}
-                              alt={title}
-                              className="w-10 h-14 object-cover rounded-md flex-shrink-0 bg-gray-800 border border-white/5 group-hover:border-red-500/50"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs font-bold text-white truncate group-hover:text-red-400 transition-colors">{title}</p>
-                              <div className="flex items-center gap-2 mt-1 text-[11px] text-gray-400">
-                                <span className="uppercase text-[9px] font-black px-1.5 py-0.5 rounded bg-white/10 text-gray-300">
-                                  {item.media_type || (item.title ? 'Movie' : 'TV')}
-                                </span>
-                                {year && <span>{year}</span>}
-                                <span className="flex items-center gap-0.5 text-amber-400 font-semibold">
-                                  <Star className="w-3 h-3 fill-amber-400" />
-                                  {item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}
-                                </span>
-                              </div>
+                  <div className="max-h-72 overflow-y-auto divide-y divide-black/5">
+                    {searchResults.map((item) => {
+                      const title = item.title || item.name || 'Untitled';
+                      const year = (item.release_date || item.first_air_date || '').slice(0, 4);
+                      return (
+                        <div
+                          key={item.id}
+                          onClick={() => {
+                            playGelPop(540, 'sine');
+                            onSelectMedia(item);
+                            setShowSearchDropdown(false);
+                            setSearchQuery('');
+                          }}
+                          className="flex items-center gap-3 p-2 hover:bg-white/40 rounded-xl transition-colors cursor-pointer group"
+                        >
+                          <img
+                            src={getImageUrl(item.poster_path, 'w300')}
+                            alt={title}
+                            className="w-9 h-13 object-cover rounded-xl flex-shrink-0 shadow-sm"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-black truncate group-hover:text-rose-600 transition-colors">{title}</p>
+                            <div className="flex items-center gap-2 mt-0.5 text-[10px] opacity-70 font-semibold">
+                              <span className="uppercase px-1.5 py-0.2 rounded-full gel-badge">
+                                {item.media_type || (item.title ? 'Movie' : 'TV')}
+                              </span>
+                              {year && <span>{year}</span>}
                             </div>
                           </div>
-                        );
-                      })
-                    )}
-                  </div>
-
-                  {/* View All Results Button in Dropdown */}
-                  <div className="p-2 bg-[#0d0e17] border-t border-white/5 text-center">
-                    <button
-                      type="button"
-                      onClick={() => handleTriggerFullSearch()}
-                      className="w-full py-1.5 px-3 rounded-xl bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>View All &quot;{searchQuery}&quot; (Unlimited Load More)</span>
-                    </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Server Status Switcher Button */}
+            {/* Server Selector Button (3D Cream Gel Capsule) */}
             <button
-              onClick={onOpenServersList}
-              title="Select Active Streaming Server"
-              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400 rounded-lg text-xs font-semibold cursor-pointer transition-all hover:bg-emerald-500/20"
+              onClick={() => {
+                playGelPop(500, 'sine');
+                onOpenServersList();
+              }}
+              title="20 Streaming Servers"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full gel-cream text-stone-900 text-xs font-black shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <Server className="w-3.5 h-3.5" />
-              <span className="hidden md:inline truncate max-w-[100px]">{currentServerObj.name.split(' ')[0]}</span>
-              <span className="bg-emerald-500/20 text-[10px] px-1 py-0.2 rounded font-bold">20 Online</span>
+              <div className="gel-sheen" />
+              <Server className="w-3.5 h-3.5 text-rose-600" />
+              <span className="hidden md:inline">{currentServerObj.name.split(' ')[0]}</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             </button>
 
-            {/* Watchlist Quick Button */}
+            {/* Watchlist Button (3D Gel Capsule with Badge) */}
             <button
-              onClick={onOpenWatchlist}
-              title="Your Watchlist"
-              className="relative p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+              onClick={() => {
+                playGelPop(520, 'sine');
+                onOpenWatchlist();
+              }}
+              title="My Watchlist"
+              className="relative p-2 rounded-full gel-cream text-stone-900 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className="gel-sheen" />
+              <Bookmark className="w-4 h-4 stroke-[2.5]" />
               {watchlist.length > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg">
+                <span className="absolute -top-1 -right-1 w-4.5 h-4.5 rounded-full gel-pink text-white text-[9px] font-black flex items-center justify-center shadow">
                   {watchlist.length}
                 </span>
               )}
             </button>
 
-            {/* History Quick Button */}
-            <button
-              onClick={onOpenHistory}
-              title="Recent Watch History"
-              className="relative p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
-            >
-              <History className="w-4 h-4 sm:w-5 sm:h-5" />
-              {history.length > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full"></span>
-              )}
-            </button>
+            {/* Theme Toggle (🌸 Pastel Pink Gel vs ✨ Obsidian Dark Glass) */}
+            {onToggleTheme && (
+              <button
+                onClick={() => {
+                  playGlassPing();
+                  onToggleTheme();
+                }}
+                title={theme === 'pastel' ? 'Switch to Dark Obsidian Glass' : 'Switch to Pastel Pink Gel'}
+                className="p-2 rounded-full gel-white text-stone-900 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              >
+                <Palette className="w-4 h-4 text-rose-600 stroke-[2.5]" />
+              </button>
+            )}
 
-            {/* Mobile Hamburger Menu */}
+            {/* Audio Feedback Toggle */}
+            {onToggleMute && (
+              <button
+                onClick={() => {
+                  playGelPop(600, 'triangle');
+                  onToggleMute();
+                }}
+                title={isMuted ? 'Unmute 3D Gel Clicks' : 'Mute 3D Gel Clicks'}
+                className="hidden sm:flex p-2 rounded-full gel-white text-stone-900 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              >
+                {isMuted ? <VolumeX className="w-4 h-4 opacity-50" /> : <Volume2 className="w-4 h-4 text-emerald-600 stroke-[2.5]" />}
+              </button>
+            )}
+
+            {/* Mobile Menu Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+              className="lg:hidden p-2 rounded-full gel-cream text-stone-900 shadow-md cursor-pointer"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Expanded Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-3 pt-3 border-t border-white/10 space-y-3 pb-2 max-h-[75vh] overflow-y-auto">
-            <div className="grid grid-cols-2 gap-2">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const isActive = currentTab === link.id;
-                return (
-                  <button
-                    key={link.id}
-                    onClick={() => {
-                      onSelectTab(link.id);
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold text-left transition-colors cursor-pointer ${
-                      isActive ? 'bg-red-600 text-white' : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {link.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* 12 NEW GOO TV Categories on Mobile */}
-            <div className="pt-2 border-t border-white/10">
-              <div className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-                <span>12 GOO TV Categories</span>
-                <span className="text-red-400 font-bold">Real TMDB</span>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {GOO_TV_CATEGORIES.map((cat) => {
-                  const isCatActive = currentTab === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => {
-                        onSelectTab(cat.id);
-                        setMobileMenuOpen(false);
-                        window.location.hash = `#category-${cat.id}`;
-                      }}
-                      className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-[11px] font-bold text-left transition-colors cursor-pointer truncate ${
-                        isCatActive 
-                          ? 'bg-red-600 text-white' 
-                          : 'bg-white/5 text-gray-300 hover:bg-white/10'
-                      }`}
-                    >
-                      <span className="text-xs">{cat.flag}</span>
-                      <span className="truncate">{cat.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                onOpenServersList();
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-bold"
-            >
-              <div className="flex items-center gap-2">
-                <Server className="w-4 h-4" />
-                <span>20 Streaming Servers Configured</span>
-              </div>
-              <span className="bg-emerald-500 text-black px-1.5 py-0.5 rounded text-[10px] font-black">ACTIVE</span>
-            </button>
+          <div className="lg:hidden mt-3 pt-3 border-t border-black/10 grid grid-cols-2 gap-2 animate-fadeIn">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = currentTab === link.id;
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => {
+                    playGelPop(500, 'sine');
+                    onSelectTab(link.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-2xl text-xs font-black transition-all ${
+                    isActive ? 'gel-pink text-white shadow-md' : 'gel-cream text-stone-900'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{link.label}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

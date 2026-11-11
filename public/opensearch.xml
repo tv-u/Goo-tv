@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>GOO TV</ShortName>
+  <Description>Search millions of 4K movies and TV series with 20 live servers on GOO TV</Description>
+  <Tags>movies series cinema streaming 4k free hindi dual audio</Tags>
+  <Contact>support@gootv.app</Contact>
+  <Url type="text/html" template="https://goo-tv.pages.dev/#search-{searchTerms}"/>
+  <Image height="16" width="16" type="image/x-icon">https://goo-tv.pages.dev/favicon.ico</Image>
+  <InputEncoding>UTF-8</InputEncoding>
+  <OutputEncoding>UTF-8</OutputEncoding>
+  <Language>en</Language>
+</OpenSearchDescription>

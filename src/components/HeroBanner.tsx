@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Info, Plus, Check, Star, Volume2, VolumeX, Sparkles, ExternalLink, Download } from 'lucide-react';
+import { Play, Info, Plus, Check, Star, Sparkles, ExternalLink, Download } from 'lucide-react';
 import { MediaItem } from '../types/movie';
 import { getBackdropUrl, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
 import { openCleanPopupWindow } from '../utils/playerUrl';
+import { playGelPop, playGlassPing } from '../utils/gelSound';
 
 interface HeroBannerProps {
   items: MediaItem[];
@@ -11,6 +12,7 @@ interface HeroBannerProps {
   onOpenDetails: (item: MediaItem) => void;
   onPlayTrailer: (item: MediaItem) => void;
   onOpenDownload?: (item: MediaItem) => void;
+  theme?: 'pastel' | 'dark';
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
@@ -19,6 +21,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   onOpenDetails,
   onPlayTrailer,
   onOpenDownload,
+  theme = 'pastel',
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();
@@ -34,10 +37,10 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   if (!items || items.length === 0) {
     return (
-      <div className="w-full h-[65vh] min-h-[500px] bg-[#12131c] animate-pulse flex items-center justify-center">
-        <div className="text-gray-500 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 animate-spin text-red-500" />
-          <span>Loading Blockbusters...</span>
+      <div className="w-full h-[65vh] min-h-[480px] rounded-3xl mx-auto my-4 max-w-7xl liquid-glass-plate flex items-center justify-center">
+        <div className="flex items-center gap-2.5 text-stone-700 font-bold">
+          <Sparkles className="w-5 h-5 animate-spin text-rose-500" />
+          <span>Buffering 3D Liquid Blockbusters...</span>
         </div>
       </div>
     );
@@ -49,147 +52,205 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   const rating = current.vote_average ? current.vote_average.toFixed(1) : '8.5';
   const isBookmarked = isInWatchlist(current.id);
 
-  return (
-    <div className="relative w-full h-[75vh] min-h-[550px] max-h-[850px] overflow-hidden bg-black select-none">
-      {/* Background Backdrop Image with Gradient Masks */}
-      <div className="absolute inset-0">
-        <img
-          key={current.id}
-          src={getBackdropUrl(current.backdrop_path || current.poster_path, 'original')}
-          alt={title}
-          className="w-full h-full object-cover object-center transform scale-105 transition-all duration-1000 ease-out brightness-90"
-        />
-        {/* Cinema Vignette Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0b0c10] via-[#0b0c10]/70 to-transparent w-full md:w-3/4" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/40 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0b0c10]/90 to-transparent" />
-      </div>
+  const handleWatchNow = () => {
+    playGelPop(520, 'sine');
+    onPlayMedia(current);
+  };
 
-      {/* Hero Content */}
-      <div className="relative max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-16 sm:pb-20 z-10">
-        <div className="max-w-2xl space-y-4">
+  const handleOpenPopup = () => {
+    playGlassPing();
+    openCleanPopupWindow(current);
+  };
+
+  const handleDownload = () => {
+    playGelPop(680, 'sine');
+    if (onOpenDownload) {
+      onOpenDownload(current);
+    } else {
+      window.open(`https://multiembed.mov/direct-download?id=${current.id}&quality=1080p`, '_blank');
+    }
+  };
+
+  const handleTrailer = () => {
+    playGelPop(580, 'triangle');
+    onPlayTrailer(current);
+  };
+
+  const handleToggleWatchlist = () => {
+    playGelPop(480, 'sine');
+    if (isBookmarked) {
+      removeFromWatchlist(current.id);
+    } else {
+      addToWatchlist(current);
+    }
+  };
+
+  return (
+    <div className="relative w-full max-w-7xl mx-auto my-3 sm:my-6 px-3 sm:px-6">
+      {/* 3D Liquid Glassmorphic Main Billboard Frame */}
+      <div className={`relative w-full h-[70vh] min-h-[520px] max-h-[760px] rounded-[32px] sm:rounded-[40px] overflow-hidden select-none shadow-2xl transition-all ${
+        theme === 'pastel'
+          ? 'liquid-glass-plate border-2 border-white/90'
+          : 'liquid-glass-plate-dark border border-white/20'
+      }`}>
+        
+        {/* Background Backdrop Image */}
+        <div className="absolute inset-0">
+          <img
+            key={current.id}
+            src={getBackdropUrl(current.backdrop_path || current.poster_path, 'original')}
+            alt={title}
+            className="w-full h-full object-cover object-center transform scale-102 transition-all duration-1000 ease-out brightness-95"
+          />
+
+          {/* Liquid Glass Refraction Sheen Overlay */}
+          <div className="gel-sheen opacity-60 pointer-events-none" />
+
+          {/* Gradients for text contrast */}
+          <div className={`absolute inset-0 ${
+            theme === 'pastel'
+              ? 'bg-gradient-to-r from-[#fff5f7]/95 via-[#fff5f7]/65 to-transparent w-full md:w-3/4'
+              : 'bg-gradient-to-r from-[#0d0910]/95 via-[#0d0910]/70 to-transparent w-full md:w-3/4'
+          }`} />
+          <div className={`absolute inset-0 ${
+            theme === 'pastel'
+              ? 'bg-gradient-to-t from-[#fff5f7] via-[#fff5f7]/30 to-transparent'
+              : 'bg-gradient-to-t from-[#0d0910] via-[#0d0910]/40 to-transparent'
+          }`} />
+        </div>
+
+        {/* Hero Content Panel */}
+        <div className="relative h-full px-5 sm:px-10 lg:px-12 flex flex-col justify-end pb-10 sm:pb-14 z-10 max-w-2xl space-y-4">
           
-          {/* VIP Spotlight Tag & Badges */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase bg-red-600/90 text-white shadow-lg shadow-red-600/40">
+          {/* 3D Badges Suite */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black tracking-wider uppercase gel-pink text-white shadow-lg">
               <Sparkles className="w-3.5 h-3.5" />
               SPOTLIGHT #{(currentIndex + 1)}
             </span>
-            <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-white/10 text-white border border-white/20 backdrop-blur-md">
+
+            <span className="px-3 py-1 rounded-full text-xs font-black gel-badge text-[#2e1c24] backdrop-blur-md shadow-sm">
               4K ULTRA HD
             </span>
-            <span className="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 fill-amber-400" />
+
+            <span className="px-3 py-1 rounded-full text-xs font-black gel-cream text-stone-900 flex items-center gap-1 shadow-sm">
+              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               {rating} TMDB
             </span>
+
             {year && (
-              <span className="px-2 py-0.5 text-xs text-gray-300 font-semibold bg-black/40 rounded">
+              <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-black/40 text-white backdrop-blur-sm">
                 {year}
               </span>
             )}
-            <span className="text-xs text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
-              98% Match
-            </span>
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1] drop-shadow-2xl">
+          <h1 className={`text-3xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.08] drop-shadow-sm ${
+            theme === 'pastel' ? 'text-[#2e1c24]' : 'text-white'
+          }`}>
             {title}
           </h1>
 
-          {/* Overview */}
-          <p className="text-sm sm:text-base text-gray-200 line-clamp-3 sm:line-clamp-4 leading-relaxed font-medium drop-shadow-md max-w-xl">
-            {current.overview || 'Stream this critically acclaimed title right now in ultra crisp HD with instant multi-server playback.'}
+          {/* Overview Synopsis */}
+          <p className={`text-xs sm:text-sm md:text-base line-clamp-3 sm:line-clamp-4 leading-relaxed font-semibold max-w-xl ${
+            theme === 'pastel' ? 'text-[#58414b]' : 'text-stone-300'
+          }`}>
+            {current.overview || 'Stream this blockbuster title now in ultra-high definition with 20 unblocked streaming engines.'}
           </p>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          {/* 3D Skeuomorphic Gel Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2">
+            
+            {/* Primary Watch Now Button (3D Pink Gel Capsule) */}
             <button
-              onClick={() => onPlayMedia(current)}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-sm sm:text-base transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-red-600/40 cursor-pointer"
+              onClick={handleWatchNow}
+              className="flex items-center gap-2 px-6 sm:px-7 py-3 sm:py-3.5 rounded-full gel-pink text-white font-black text-sm sm:text-base shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <Play className="w-5 h-5 fill-white" />
+              <div className="gel-sheen" />
+              <Play className="w-5 h-5 fill-white stroke-[2]" />
               <span>Watch Now</span>
             </button>
 
-            {/* Direct Clean Popup Window Button */}
+            {/* Direct Clean Popup Window (3D Cream Gel Capsule) */}
             <button
               type="button"
-              onClick={() => openCleanPopupWindow(current)}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-600/30 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
-              title="Open in Clean Popup Window with Full Controls (Skip, Play/Pause, 4K Quality, Hindi Dual Audio)"
+              onClick={handleOpenPopup}
+              title="Open in Clean Popup Window with Full Controls"
+              className="flex items-center gap-2 px-5 py-3 sm:py-3.5 rounded-full gel-cream text-stone-900 font-black text-sm sm:text-base shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <ExternalLink className="w-4 h-4" />
-              <span>Clean Popup Window</span>
+              <div className="gel-sheen" />
+              <ExternalLink className="w-4 h-4 text-rose-600 stroke-[2.5]" />
+              <span className="hidden sm:inline">Clean Popup</span>
+              <span className="sm:hidden">Popup</span>
             </button>
 
+            {/* Direct Download (3D White Glass Capsule) */}
             <button
-              onClick={() => onOpenDownload ? onOpenDownload(current) : onPlayMedia(current)}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-blue-600/30 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 px-4.5 py-3 sm:py-3.5 rounded-full gel-white text-stone-900 font-extrabold text-sm shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <Download className="w-4 h-4" />
-              <span>Download 4K</span>
+              <Download className="w-4 h-4 stroke-[2.5]" />
+              <span className="hidden md:inline">Download</span>
             </button>
 
+            {/* Trailer (3D Glass Capsule) */}
             <button
-              onClick={() => onPlayTrailer(current)}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-sm sm:text-base backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+              onClick={handleTrailer}
+              className="flex items-center gap-1.5 px-4 py-3 sm:py-3.5 rounded-full gel-badge text-[#2e1c24] font-bold text-sm shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <Play className="w-4 h-4" />
+              <Play className="w-3.5 h-3.5 fill-current" />
               <span>Trailer</span>
             </button>
 
+            {/* Bookmark (3D Squircle Gel) */}
             <button
-              onClick={() => {
-                if (isBookmarked) {
-                  removeFromWatchlist(current.id);
-                } else {
-                  addToWatchlist(current);
-                }
-              }}
+              onClick={handleToggleWatchlist}
               title={isBookmarked ? 'Remove from Watchlist' : 'Add to Watchlist'}
-              className={`p-3 rounded-xl backdrop-blur-md border transition-all cursor-pointer ${
-                isBookmarked
-                  ? 'bg-red-600/30 border-red-500 text-red-400'
-                  : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+              className={`p-3 sm:p-3.5 rounded-full transition-all cursor-pointer shadow-md hover:scale-105 active:scale-90 ${
+                isBookmarked ? 'gel-pink text-white' : 'gel-cream text-stone-900'
               }`}
             >
-              {isBookmarked ? <Check className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+              {isBookmarked ? <Check className="w-5 h-5 stroke-[3]" /> : <Plus className="w-5 h-5 stroke-[3]" />}
             </button>
 
+            {/* Details (3D Squircle Gel) */}
             <button
-              onClick={() => onOpenDetails(current)}
-              title="More Info"
-              className="p-3 rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+              onClick={() => {
+                playGelPop(500, 'sine');
+                onOpenDetails(current);
+              }}
+              title="Movie Details & Cast"
+              className="p-3 sm:p-3.5 rounded-full gel-white text-stone-900 transition-all cursor-pointer shadow-md hover:scale-105 active:scale-90"
             >
-              <Info className="w-5 h-5" />
+              <Info className="w-5 h-5 stroke-[2.5]" />
             </button>
           </div>
         </div>
 
-        {/* Thumbnail Carousel Selector (Bottom Right) */}
-        <div className="hidden md:flex absolute bottom-12 right-8 items-center gap-2.5 z-20 bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-white/10">
+        {/* Thumbnail Selector Carousel (Bottom Right 3D Capsules) */}
+        <div className="hidden md:flex absolute bottom-8 right-8 items-center gap-2.5 z-20 p-2 rounded-[24px] liquid-glass-plate">
           {items.slice(0, 5).map((item, idx) => {
             const isSelected = idx === currentIndex;
             return (
               <button
                 key={item.id}
-                onClick={() => setCurrentIndex(idx)}
-                className={`relative w-16 h-24 rounded-lg overflow-hidden transition-all duration-300 transform cursor-pointer ${
+                onClick={() => {
+                  playGelPop(600 + idx * 40, 'sine');
+                  setCurrentIndex(idx);
+                }}
+                className={`relative w-15 h-22 rounded-[16px] overflow-hidden transition-all duration-300 transform cursor-pointer ${
                   isSelected
-                    ? 'ring-2 ring-red-500 scale-105 shadow-lg shadow-red-500/50'
-                    : 'opacity-50 hover:opacity-100 hover:scale-100'
+                    ? 'ring-3 ring-rose-500 scale-108 shadow-xl shadow-rose-500/40'
+                    : 'opacity-70 hover:opacity-100 hover:scale-102'
                 }`}
               >
                 <img
-                  src={getImageUrl(item.poster_path, 'w300')}
+                  src={getImageUrl(item.poster_path || item.backdrop_path, 'w300')}
                   alt={item.title || item.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                <span className="absolute bottom-1 right-1 text-[10px] font-bold text-white">
-                  #{idx + 1}
-                </span>
+                <div className="gel-sheen" />
               </button>
             );
           })}

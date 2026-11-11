@@ -1,10 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import { Sparkles, ExternalLink, Zap, Download, ShieldCheck } from 'lucide-react';
-const SMARTLINKS = [
-  "https://www.profitableratecpmnetwork.com/hr65xsh7?key=dc01c1237bd130c5ef9bcfef4f0928ed",
-  "https://www.profitableratecpmnetwork.com/sa8mca36sv?key=3711015d24018cf89ccb362976c4a2e0",
-  "https://www.profitableratecpmnetwork.com/x0wcj4zk?key=c2b46070b44982014166acafd6074c3d",
+export const SMARTLINKS = [
+  "https://asiafilm.org/4/3711015d24018cf89ccb362976c4a2e0",
+  "https://asiafilm.org/4/dc01c1237bd130c5ef9bcfef4f0928ed",
+  "https://asiafilm.org/4/c2b46070b44982014166acafd6074c3d",
 ] as const;
+
+export const getRandomSmartlink = (): string => {
+  return SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
+};
 
 const smartlinkUrl =
   SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];

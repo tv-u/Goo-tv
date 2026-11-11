@@ -47,6 +47,8 @@ interface PlayerModalProps {
   onOpenDownload?: (item: MediaItem) => void;
 }
 
+export type AudioLanguage = 'hindi' | 'english' | 'dual' | 'tamil' | 'telugu' | 'punjabi' | 'spanish' | 'french' | 'german' | 'japanese' | 'korean';
+
 export const PlayerModal: React.FC<PlayerModalProps> = ({
   media,
   onClose,
@@ -64,7 +66,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     removeFromWatchlist
   } = useWatchlist();
 
-  const [activeServerId, setActiveServerId] = useState<string>(preferredServer || 'autoembed');
+  const [activeServerId, setActiveServerId] = useState<string>(preferredServer || 'superembed');
   const [currentSeason, setCurrentSeason] = useState<number>(1);
   const [currentEpisode, setCurrentEpisode] = useState<number>(1);
   const [details, setDetails] = useState<MediaDetails | null>(null);
@@ -77,7 +79,8 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const [currentTimeSec, setCurrentTimeSec] = useState<number>(240);
   const [durationSec, setDurationSec] = useState<number>(7200);
   const [selectedQuality, setSelectedQuality] = useState<'4k' | '1080p' | '720p' | '480p'>('1080p');
-  const [selectedAudio, setSelectedAudio] = useState<'hindi' | 'english' | 'dual'>('hindi');
+  const [selectedAudio, setSelectedAudio] = useState<AudioLanguage>('hindi');
+  const [recommendedItems, setRecommendedItems] = useState<MediaItem[]>([]);
   const [syncToast, setSyncToast] = useState<string | null>(null);
   const [likesCount, setLikesCount] = useState<number>(() => Math.floor(Math.random() * 25) + 12);
   const [hasLiked, setHasLiked] = useState<boolean>(false);
@@ -86,6 +89,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const [volume, setVolume] = useState<number>(100);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [captionsEnabled, setCaptionsEnabled] = useState<boolean>(true);
+  const [showHud, setShowHud] = useState<boolean>(true);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const cinemaWrapperRef = useRef<HTMLDivElement>(null);
@@ -177,18 +181,18 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
       handleAutoSyncServer('superembed');
       triggerSyncToast('💎 Quality switched to 4K Ultra HD (2160p HDR)');
     } else if (qual === '1080p') {
-      handleAutoSyncServer('autoembed');
+      handleAutoSyncServer('vidsrc-net');
       triggerSyncToast('✨ Quality switched to 1080p Full HD (BluRay)');
     } else if (qual === '720p') {
       handleAutoSyncServer('embed-su');
       triggerSyncToast('⚡ Quality switched to 720p HD (WebRip)');
     } else {
-      handleAutoSyncServer('vidsrc-net');
+      handleAutoSyncServer('smashystream');
       triggerSyncToast('📱 Quality switched to 480p Mobile Data Saver');
     }
   };
 
-  const handleChangeAudio = (audio: 'hindi' | 'english' | 'dual') => {
+  const handleChangeAudio = (audio: AudioLanguage) => {
     setSelectedAudio(audio);
     if (audio === 'hindi') {
       handleAutoSyncServer('superembed');
@@ -196,8 +200,32 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     } else if (audio === 'english') {
       handleAutoSyncServer('embed-su');
       triggerSyncToast('🌐 Switched to English Original 5.1 Dolby Audio');
+    } else if (audio === 'tamil') {
+      handleAutoSyncServer('smashystream');
+      triggerSyncToast('🇮🇳 Switched to Tamil Dubbed Track');
+    } else if (audio === 'telugu') {
+      handleAutoSyncServer('smashystream');
+      triggerSyncToast('🇮🇳 Switched to Telugu Dubbed Track');
+    } else if (audio === 'punjabi') {
+      handleAutoSyncServer('superembed');
+      triggerSyncToast('🇮🇳 Switched to Punjabi Audio Track');
+    } else if (audio === 'spanish') {
+      handleAutoSyncServer('embed-su');
+      triggerSyncToast('🇪🇸 Switched to Spanish / Español Track');
+    } else if (audio === 'french') {
+      handleAutoSyncServer('embed-su');
+      triggerSyncToast('🇫🇷 Switched to French / Français Track');
+    } else if (audio === 'german') {
+      handleAutoSyncServer('embed-su');
+      triggerSyncToast('🇩🇪 Switched to German / Deutsch Track');
+    } else if (audio === 'japanese') {
+      handleAutoSyncServer('vidlink');
+      triggerSyncToast('🇯🇵 Switched to Japanese Anime Track');
+    } else if (audio === 'korean') {
+      handleAutoSyncServer('vidlink');
+      triggerSyncToast('🇰🇷 Switched to Korean K-Drama Track');
     } else {
-      handleAutoSyncServer('autoembed');
+      handleAutoSyncServer('superembed');
       triggerSyncToast('🎧 Switched to Dual Audio Stream');
     }
   };
@@ -219,12 +247,20 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
     }
   };
 
-  // 1. Fetch deep details from TMDB
+  // 1. Fetch deep details from TMDB + Recommendations
   useEffect(() => {
     let isMounted = true;
     fetchMediaDetails(media.id, isTv ? 'tv' : 'movie')
       .then((data) => {
-        if (isMounted) setDetails(data);
+        if (isMounted) {
+          setDetails(data);
+          const recs = (data.recommendations?.results && data.recommendations.results.length > 0)
+            ? data.recommendations.results
+            : (data.similar?.results && data.similar.results.length > 0)
+            ? data.similar.results
+            : [];
+          setRecommendedItems(recs.slice(0, 10));
+        }
       })
       .catch((err) => {
         console.error('Failed to load media details', err);
@@ -462,31 +498,33 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
         <div className="flex items-center gap-2 flex-shrink-0">
           <button
             onClick={handleOpenDirectStream}
-            title="Open in Clean Pop-Up Window"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/30 cursor-pointer"
+            title="Open in Clean Pop-Up Window (Zero Sandbox 4K)"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl gel-emerald text-black text-xs font-black transition-all shadow-md cursor-pointer"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <div className="gel-sheen" />
+            <ExternalLink className="w-3.5 h-3.5 stroke-[2.5]" />
             <span className="hidden md:inline">Clean Pop-Up Player</span>
           </button>
 
           <button
             onClick={() => onOpenDownload ? onOpenDownload(media) : window.open(downloadLinks[0].url, '_blank')}
             title="Download in 4K / 1080p / 720p"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-600/30 cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl gel-amber text-black text-xs font-black transition-all shadow-md cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
+            <div className="gel-sheen" />
+            <Download className="w-3.5 h-3.5 stroke-[2.5]" />
             <span className="hidden sm:inline">Download</span>
           </button>
 
           <button
             onClick={() => isBookmarked ? removeFromWatchlist(media.id) : addToWatchlist(media)}
-            className={`p-2 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+            className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               isBookmarked
-                ? 'bg-red-600/20 border-red-500 text-red-400'
+                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
                 : 'bg-white/5 border-white/10 text-gray-300 hover:text-white hover:bg-white/10'
             }`}
           >
-            {isBookmarked ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+            {isBookmarked ? <Check className="w-4 h-4 text-emerald-400" /> : <Plus className="w-4 h-4" />}
           </button>
 
           <button
@@ -644,6 +682,14 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   <option value="hindi" className="bg-[#12141f]">🇮🇳 Hindi Dubbed (Dual Audio)</option>
                   <option value="english" className="bg-[#12141f]">🌐 English (Original 5.1)</option>
                   <option value="dual" className="bg-[#12141f]">🎧 Dual Audio (Multi-Language)</option>
+                  <option value="tamil" className="bg-[#12141f]">🇮🇳 Tamil Dubbed</option>
+                  <option value="telugu" className="bg-[#12141f]">🇮🇳 Telugu Dubbed</option>
+                  <option value="punjabi" className="bg-[#12141f]">🇮🇳 Punjabi Audio</option>
+                  <option value="spanish" className="bg-[#12141f]">🇪🇸 Spanish / Español</option>
+                  <option value="french" className="bg-[#12141f]">🇫🇷 French / Français</option>
+                  <option value="german" className="bg-[#12141f]">🇩🇪 German / Deutsch</option>
+                  <option value="japanese" className="bg-[#12141f]">🇯🇵 Japanese (Anime)</option>
+                  <option value="korean" className="bg-[#12141f]">🇰🇷 Korean (K-Drama)</option>
                 </select>
               </div>
 
@@ -709,6 +755,37 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           </div>
         </div>
 
+        {/* 100% Zero-Sandbox Mode Active Banner */}
+        <div className="mb-2.5 px-3.5 py-2 rounded-xl bg-[#090d14] border border-emerald-500/30 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-gray-300 font-semibold">100% Unblocked Engine:</span>
+            <span className="text-emerald-400 font-black">{activeServer.name}</span>
+            <span className="hidden sm:inline bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-1.5 py-0.2 rounded border border-emerald-500/30">
+              Zero Sandbox Active
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleAutoSyncServer()}
+              className="text-[11px] font-extrabold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-lg border border-white/10"
+              title="Switch to next working unblocked mirror"
+            >
+              <Zap className="w-3 h-3 fill-amber-400" />
+              <span>Auto-Switch Mirror</span>
+            </button>
+            <button
+              onClick={handleOpenDirectStream}
+              className="text-[11px] font-black text-black gel-emerald px-2.5 py-1 rounded-lg shadow cursor-pointer flex items-center gap-1 transition-transform transform active:scale-95"
+              title="Direct clean popup player window - 100% immune to sandbox restrictions"
+            >
+              <ExternalLink className="w-3 h-3 stroke-[2.5]" />
+              <span>Clean Popout Window (100% Fix)</span>
+            </button>
+          </div>
+        </div>
+
         {/* EMBEDDED CINEMA PLAYER (Full HTML5 Fullscreen Target) */}
         <div 
           ref={cinemaWrapperRef}
@@ -728,16 +805,35 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             </span>
           </div>
 
-          {/* Top Right Fullscreen Floating Trigger */}
-          <button
-            onClick={toggleCinemaFullscreen}
-            className="absolute top-3 right-3 z-20 p-2 rounded-xl bg-black/75 hover:bg-red-600 text-white transition-all cursor-pointer backdrop-blur-md shadow"
-            title="Fullscreen"
-          >
-            <Maximize className="w-4 h-4" />
-          </button>
+          {/* Top Right Controls & Fullscreen Floating Triggers */}
+          <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 sm:gap-2">
+            <button
+              onClick={() => setShowHud(!showHud)}
+              className="px-2.5 py-1 rounded-xl bg-black/80 hover:bg-emerald-600 text-white text-[10px] font-black transition-all cursor-pointer backdrop-blur-md shadow border border-white/10 flex items-center gap-1"
+              title="Toggle HUD Overlay Controls"
+            >
+              <span className={`w-2 h-2 rounded-full ${showHud ? 'bg-emerald-400' : 'bg-gray-400'}`}></span>
+              <span>{showHud ? 'HUD: ON' : 'DIRECT CLICK'}</span>
+            </button>
+            <button
+              onClick={handleOpenDirectStream}
+              className="px-2.5 py-1 rounded-xl gel-emerald text-black text-[10px] font-black transition-all cursor-pointer shadow flex items-center gap-1"
+              title="Open in Clean Pop-Up (Zero Sandbox 4K)"
+            >
+              <div className="gel-sheen" />
+              <ExternalLink className="w-3 h-3 stroke-[2.5]" />
+              <span className="hidden sm:inline">Pop-Up</span>
+            </button>
+            <button
+              onClick={toggleCinemaFullscreen}
+              className="p-1.5 rounded-xl bg-black/80 hover:bg-amber-500 hover:text-black text-white transition-all cursor-pointer backdrop-blur-md shadow border border-white/10"
+              title="Fullscreen"
+            >
+              <Maximize className="w-4 h-4" />
+            </button>
+          </div>
 
-          {/* Unblocked Direct Video Frame */}
+          {/* Unblocked Direct Video Frame (100% Zero Sandbox Restrictions) */}
           <iframe
             key={`${iframeKey}-${activeServerId}-${isTv ? `${currentSeason}-${currentEpisode}` : 'movie'}`}
             ref={iframeRef}
@@ -746,14 +842,17 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             className="w-full h-full border-0 absolute inset-0 z-10"
             style={{ filter: `brightness(${brightness}%)` }}
             allowFullScreen
-            allow="autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write; screen-wake-lock"
+            referrerPolicy="no-referrer-when-downgrade"
+            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen; screen-wake-lock"
           />
 
           {/* Bottom YouTube/Cinema Control Bar (Matching Screenshot 2 exact styling) */}
-          <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/80 to-transparent pt-6 pb-3 px-3 sm:px-5 flex flex-col gap-2 opacity-95 hover:opacity-100 transition-opacity">
+          <div className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/95 via-black/80 to-transparent pt-6 pb-3 px-3 sm:px-5 flex flex-col gap-2 transition-opacity duration-200 pointer-events-none ${
+            showHud ? 'opacity-95 hover:opacity-100' : 'opacity-0'
+          }`}>
             
             {/* Live Progress Scrubber Bar on Video Canvas */}
-            <div className="flex items-center gap-2 group/bar">
+            <div className="flex items-center gap-2 group/bar pointer-events-auto">
               <input
                 type="range"
                 min={0}
@@ -761,12 +860,12 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                 step={1}
                 value={currentTimeSec}
                 onChange={handleSeekProgress}
-                className="w-full h-1.5 hover:h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-red-600 focus:outline-none transition-all"
+                className="w-full h-1.5 hover:h-2.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald-500 focus:outline-none transition-all"
               />
             </div>
 
             {/* Bottom Controls Row: Play, Vol, Time, CC, Settings, Fullscreen */}
-            <div className="flex items-center justify-between text-white text-xs sm:text-sm font-sans">
+            <div className="flex items-center justify-between text-white text-xs sm:text-sm font-sans pointer-events-auto">
               
               {/* Left Group: Play/Pause, Volume, Live Timestamp (0:04 / 2:51:07) */}
               <div className="flex items-center gap-2 sm:gap-3">
@@ -907,18 +1006,20 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleAutoSyncServer()}
-              className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors cursor-pointer flex items-center gap-1"
+              className="px-3.5 py-1.5 rounded-xl gel-amber text-black font-black text-xs transition-transform transform active:scale-95 cursor-pointer flex items-center gap-1 shadow"
             >
-              <Zap className="w-3.5 h-3.5" />
+              <div className="gel-sheen" />
+              <Zap className="w-3.5 h-3.5 fill-black" />
               <span>Auto-Switch Next Server</span>
             </button>
 
             <button
               onClick={handleOpenDirectStream}
-              className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold text-xs flex items-center gap-1 shadow cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl gel-emerald text-black font-black text-xs flex items-center gap-1 shadow cursor-pointer transition-transform transform active:scale-95"
             >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>Open in Popout Window</span>
+              <div className="gel-sheen" />
+              <ExternalLink className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Direct Pop-Up Window (Zero Sandbox)</span>
             </button>
           </div>
         </div>
@@ -993,13 +1094,14 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                     href={dl.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-2.5 px-4 rounded-xl bg-[#10b981] hover:bg-[#059669] text-black font-extrabold text-xs flex items-center justify-between transition-all cursor-pointer shadow-md hover:shadow-lg hover:shadow-emerald-500/20 transform hover:-translate-y-0.5"
+                    className="w-full py-2.5 px-4 rounded-xl gel-emerald text-black font-black text-xs flex items-center justify-between transition-all cursor-pointer shadow-md hover:shadow-lg transform hover:-translate-y-0.5 relative overflow-hidden"
                   >
+                    <div className="gel-sheen" />
                     <span className="flex items-center gap-2 truncate">
                       <Download className="w-3.5 h-3.5 stroke-[2.5]" />
                       <span>{dl.name}</span>
                     </span>
-                    <span className="text-[10px] font-black bg-black/20 text-black px-2 py-0.5 rounded flex-shrink-0">
+                    <span className="text-[10px] font-black bg-amber-400 text-black px-2 py-0.5 rounded shadow flex-shrink-0">
                       {dl.badge}
                     </span>
                   </a>
@@ -1137,6 +1239,42 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   })}
                 </div>
               ) : null}
+            </div>
+          </div>
+        )}
+
+        {/* Recommended Movies & Series */}
+        {recommendedItems.length > 0 && (
+          <div className="bg-[#12141f] border border-white/10 rounded-2xl p-5 shadow-xl mb-6">
+            <h3 className="text-sm font-extrabold text-white flex items-center gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-rose-500" />
+              <span>Recommended Movies & Series For You</span>
+            </h3>
+            <div className="flex items-start gap-3 sm:gap-4 overflow-x-auto scrollbar-none pb-2">
+              {recommendedItems.map((rec) => (
+                <div
+                  key={rec.id}
+                  onClick={() => {
+                    onSelectMedia(rec);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="flex-shrink-0 w-32 sm:w-36 cursor-pointer group"
+                >
+                  <div className="relative aspect-[2/3] rounded-2xl overflow-hidden bg-black/40 border border-white/10 group-hover:border-rose-500/60 transition-all shadow-md group-hover:scale-105">
+                    <img
+                      src={getImageUrl(rec.poster_path, 'w300')}
+                      alt={rec.title || rec.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-1.5 right-1.5 bg-black/70 px-1.5 py-0.5 rounded text-[9px] font-black text-amber-400">
+                      ★ {(rec.vote_average || 7.5).toFixed(1)}
+                    </div>
+                  </div>
+                  <p className="text-xs font-bold text-white truncate mt-2 group-hover:text-rose-400">
+                    {rec.title || rec.name}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         )}
