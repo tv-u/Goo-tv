@@ -360,3 +360,167 @@
   }
 }
 
+
+/* =====================================================
+   GOO TV - PREMIUM HOTSTAR INSPIRED RESPONSIVE DESIGN
+   ===================================================== */
+
+:root {
+  color-scheme: dark;
+  --ott-bg: #080d18;
+  --ott-panel: #101a2b;
+  --ott-blue: #1769e0;
+  --ott-text: #f4f7ff;
+  --ott-muted: #9ba9bd;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--ott-bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(ellipse at 50% -15%, rgba(22, 85, 170, .22), transparent 55%),
+    var(--ott-bg);
+  color: var(--ott-text);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  overflow-x: clip;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  transition: transform .2s ease, background .2s ease, opacity .2s ease;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+img {
+  max-width: 100%;
+}
+
+video {
+  max-width: 100%;
+}
+
+/* Premium horizontal content rows */
+.scrollbar-none,
+[class*="overflow-x-auto"],
+[class*="overflow-x-scroll"] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar,
+[class*="overflow-x-auto"]::-webkit-scrollbar,
+[class*="overflow-x-scroll"]::-webkit-scrollbar {
+  display: none;
+}
+
+/* Movie and series poster cards */
+[class*="group"] img {
+  transition: transform .35s ease, filter .35s ease;
+}
+
+[class*="group"]:hover img {
+  transform: scale(1.045);
+}
+
+img {
+  image-rendering: auto;
+}
+
+/* Premium glass panels */
+.liquid-glass-plate-cinema {
+  background: linear-gradient(135deg,
+    rgba(17, 31, 54, .94),
+    rgba(7, 12, 24, .97));
+  border-color: rgba(75, 145, 255, .22);
+}
+
+/* Cinematic buttons */
+.gel-emerald,
+.gel-amber,
+.gel-emerald-gold {
+  border-radius: 12px;
+}
+
+/* Responsive mobile layout */
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+
+  main {
+    padding-bottom: 76px;
+  }
+
+  h1 {
+    line-height: 1.12;
+  }
+
+  button {
+    min-height: 36px;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  [class*="grid-cols-"] {
+    gap: 10px;
+  }
+
+  [class*="overflow-x-auto"] {
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [class*="overflow-x-auto"] > *,
+  [class*="overflow-x-scroll"] > * {
+    scroll-snap-align: start;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+/* Desktop cinema presentation */
+@media (min-width: 1025px) {
+  body {
+    font-size: 15px;
+  }
+
+  main {
+    max-width: 1800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

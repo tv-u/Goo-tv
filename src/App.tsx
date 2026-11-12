@@ -30,7 +30,7 @@ import { Flame, Sparkles, Clapperboard, Tv, Star, Globe2, ShieldCheck, Server, F
 import { toggleMute, getMuted, playGelPop, playGlassPing } from './utils/gelSound';
 
 export default function App() {
-  const [theme, setTheme] = useState<'pastel' | 'dark'>('pastel');
+  const [theme, setTheme] = useState<'dark' | 'dark'>('dark');
   const [isMuted, setIsMuted] = useState<boolean>(() => getMuted());
   const [currentTab, setCurrentTab] = useState<string>('home');
   const [searchQuery, setSearchQuery] = useState<string>('');
