@@ -1,0 +1,94 @@
+:root {
+  --ott-bg: #08090d;
+  --ott-surface: #11141b;
+  --ott-text: #fff;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: clip;
+}
+
+body {
+  background: var(--ott-bg);
+  color: var(--ott-text);
+  -webkit-text-size-adjust: 100%;
+}
+
+img, video, iframe {
+  max-width: 100%;
+}
+
+button, input, select, textarea {
+  max-width: 100%;
+  font: inherit;
+}
+
+main, section, header, nav, footer {
+  min-width: 0;
+}
+
+h1, h2, h3, p {
+  overflow-wrap: anywhere;
+}
+
+[class*="carousel"],
+[class*="Carousel"],
+[class*="media-row"],
+[class*="MediaRow"],
+[class*="movie-row"] {
+  min-width: 0;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+[role="dialog"],
+[class*="modal"],
+[class*="Modal"] {
+  max-width: calc(100vw - 12px);
+}
+
+video { width: 100%; height: auto; }
+
+@media(max-width:600px) {
+  body { font-size: 14px; }
+  h1 { font-size: clamp(23px,6vw,36px); }
+  h2 { font-size: clamp(18px,4.8vw,27px); }
+
+  [class*="carousel"],
+  [class*="media-row"],
+  [class*="movie-row"] {
+    scroll-snap-type: x proximity;
+    overscroll-behavior-inline: contain;
+  }
+
+  [role="dialog"] {
+    width: calc(100vw - 20px);
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  input, textarea, select { min-width: 0; }
+}
+
+@media(max-width:360px) {
+  body { font-size: 13px; }
+}
+
+@media(min-width:601px) and (max-width:1024px) {
+  main { width: 100%; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
