@@ -10,9 +10,6 @@ export const getRandomSmartlink = (): string => {
   return SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
 };
 
-const smartlinkUrl =
-  SMARTLINKS[Math.floor(Math.random() * SMARTLINKS.length)];
-
 export const AdsterraNativeContainer: React.FC<{ className?: string }> = ({ className = '' }) => {
   useEffect(() => {
     const containerId = 'container-a4e46263cbd8519b40b7d5e084f699d2';
@@ -54,6 +51,8 @@ export const AdsterraAdBanner: React.FC<AdsterraAdBannerProps> = ({
   format = 'native_bar',
   className = '',
 }) => {
+  const smartlinkUrl = getRandomSmartlink();
+
   if (format === 'native_container') {
     return <AdsterraNativeContainer className={className} />;
   }

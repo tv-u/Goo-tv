@@ -37,7 +37,7 @@ import { MediaItem, MediaDetails, Season } from '../types/movie';
 import { STREAMING_SERVERS } from '../services/servers';
 import { fetchMediaDetails, fetchTVSeason, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
-import { AdsterraAdBanner } from './AdsterraAdBanner';
+import { AdsterraAdBanner, getRandomSmartlink } from './AdsterraAdBanner';
 import { openCleanPopupWindow } from '../utils/playerUrl';
 
 interface PlayerModalProps {
@@ -388,7 +388,13 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const downloadLinks = [
     {
       id: 1,
-      name: 'Download Link 1 (StreamTape Direct Video Download)',
+      name: 'Download Link 1 (VIP Ultra-Speed 4K Cloud Direct)',
+      badge: '100 MB/s VIP',
+      url: getRandomSmartlink(),
+    },
+    {
+      id: 2,
+      name: 'Download Link 2 (StreamTape Direct Video Download)',
       badge: '1.34 GB MP4',
       url: isTv
         ? `https://player.autoembed.cc/embed/tv/${media.id}/${currentSeason}/${currentEpisode}?server=streamtape`

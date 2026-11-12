@@ -138,33 +138,50 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
 
-  // Dynamic SEO Synchronization
+  // Dynamic Worldwide SEO Synchronization
   useEffect(() => {
     if (activeMedia) {
       const year = (activeMedia.release_date || activeMedia.first_air_date || '').slice(0, 4);
       const title = activeMedia.title || activeMedia.name || 'Movie';
+      const isTv = activeMedia.media_type === 'tv' || (!activeMedia.title && !!activeMedia.name);
       applySeo({
-        title: `Watch ${title} (${year || '2026'}) Online Free in 4K HDR — GOO TV`,
-        description: `Stream ${title} online with 20 unblocked live servers, multi-language Hindi Dubbed and Dual Audio tracks, instant seek controls, and direct 4K download.`,
+        title: `Watch ${title} (${year || '2026'}) Online Free in 4K HDR | GOO TV`,
+        description: `Stream ${title} (${year || '2026'}) online free with 20 unblocked live servers, Hindi dubbed, multi-audio dual audio tracks, full 4K HDR, and direct download on GOO TV.`,
         year,
-        path: window.location.hash || '/',
-        keywords: [
-          `watch ${title} online free`,
-          `${title} full movie 4k`,
-          `${title} hindi dubbed`,
-          `${title} dual audio`,
-          `${title} download 1080p`,
-          `${title} stream online hd`
-        ]
+        path: `#play-${isTv ? 'tv' : 'movie'}-${activeMedia.id}`,
+        isTv,
+        image: activeMedia.poster_path ? `https://image.tmdb.org/t/p/w500${activeMedia.poster_path}` : undefined,
+        rating: activeMedia.vote_average ? activeMedia.vote_average.toFixed(1) : '8.6',
+      });
+    } else if (detailMedia) {
+      const year = (detailMedia.release_date || detailMedia.first_air_date || '').slice(0, 4);
+      const title = detailMedia.title || detailMedia.name || 'Movie';
+      const isTv = detailMedia.media_type === 'tv' || (!detailMedia.title && !!detailMedia.name);
+      applySeo({
+        title: `${title} (${year || '2026'}) Cast, Storyline, Rating & Free Stream | GOO TV`,
+        description: `Read storyline, IMDb rating, cast information, trailer, and watch ${title} online in 4K HDR on GOO TV.`,
+        year,
+        path: `#details-${detailMedia.id}`,
+        isTv,
+        image: detailMedia.poster_path ? `https://image.tmdb.org/t/p/w500${detailMedia.poster_path}` : undefined,
+        rating: detailMedia.vote_average ? detailMedia.vote_average.toFixed(1) : '8.5',
+      });
+    } else if (searchQuery) {
+      applySeo({
+        title: `Search results for "${searchQuery}" — Watch Movies & Series Online | GOO TV`,
+        description: `Browse 4K movie and web series streaming results for "${searchQuery}" with 20 live servers on GOO TV.`,
+        path: `#search?q=${encodeURIComponent(searchQuery)}`,
       });
     } else {
+      const catTitle = currentTab === 'home' ? 'Watch Movies & TV Series Online Free in 4K HDR' : `${currentTab.toUpperCase().replace('_', ' ')} Movies & Series`;
       applySeo({
-        title: `GOO TV — Watch Movies & TV Series Online Free in 4K HDR | 20 Live Servers`,
+        title: `GOO TV — ${catTitle} | 20 Live Servers`,
         description: `Watch unlimited 4K movies and TV series online with 20 live servers, multi-language audio dubs, and zero buffering playback.`,
         category: currentTab,
+        path: currentTab === 'home' ? '/' : `#${currentTab}`,
       });
     }
-  }, [activeMedia, currentTab]);
+  }, [activeMedia, detailMedia, searchQuery, currentTab]);
 
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'pastel' ? 'dark' : 'pastel'));

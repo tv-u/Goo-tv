@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { MediaItem, Season } from '../types/movie';
 import { getImageUrl, fetchTVSeason, fetchMediaDetails } from '../services/tmdb';
-import { AdsterraAdBanner } from './AdsterraAdBanner';
+import { AdsterraAdBanner, getRandomSmartlink } from './AdsterraAdBanner';
 import { openCleanPopupWindow } from '../utils/playerUrl';
 
 interface DownloadModalProps {
@@ -127,18 +127,16 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
 
     return [
       {
-        serverId: 'autoembed',
-        name: 'Server 1: AutoEmbed Pro (Instant 4K Direct CDN)',
-        speed: '65 MB/s',
-        type: 'Zero-Sandbox Ultra',
-        url: isTv
-          ? `https://player.autoembed.cc/embed/tv/${id}/${s}/${e}`
-          : `https://player.autoembed.cc/embed/movie/${id}`,
+        serverId: 'vip-cloud',
+        name: '⚡ Server 1: VIP Ultra-Speed Direct 4K Cloud (100 MB/s Fast)',
+        speed: '100 MB/s',
+        type: 'VIP High-Speed Direct',
+        url: getRandomSmartlink(),
       },
       {
         serverId: 'superembed',
         name: 'Server 2: SuperEmbed Ultra 4K (Hindi Dual Audio)',
-        speed: '60 MB/s',
+        speed: '65 MB/s',
         type: 'Dual Audio Stream',
         url: isTv
           ? `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`

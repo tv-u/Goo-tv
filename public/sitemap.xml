@@ -1,55 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Root & Main Channels -->
   <url>
     <loc>https://goo-tv.pages.dev/</loc>
-    <changefreq>daily</changefreq>
+    <changefreq>always</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#movies</loc>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#tv</loc>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#hindi_movies</loc>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#hollywood</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://goo-tv.pages.dev/#south_hindi</loc>
+    <loc>https://goo-tv.pages.dev/#south_movies</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.90</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#punjabi</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#kdrama</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#anime</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://goo-tv.pages.dev/#top_rated</loc>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
+
+  <!-- Google Video Sitemap Entries (Pushpa 2: The Rule) -->
+  <url>
+    <loc>https://goo-tv.pages.dev/#play-movie-1389172</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+    <video:video>
+      <video:thumbnail_loc>https://image.tmdb.org/t/p/w500/b7k5vNq2sYyP7kP31XvQe8Q6kY9.jpg</video:thumbnail_loc>
+      <video:title>Watch Pushpa 2: The Rule Full Movie Online Free 4K (Hindi Dubbed &amp; Dual Audio)</video:title>
+      <video:description>Stream Pushpa 2: The Rule online free in 4K HDR with Hindi dubbed, Telugu, Tamil, and Malayalam multi-audio tracks and zero buffering on GOO TV.</video:description>
+      <video:player_loc>https://goo-tv.pages.dev/#play-movie-1389172</video:player_loc>
+      <video:duration>11880</video:duration>
+      <video:rating>8.8</video:rating>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <!-- Google Video Sitemap Entries (Deadpool & Wolverine) -->
+  <url>
+    <loc>https://goo-tv.pages.dev/#play-movie-533535</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+    <video:video>
+      <video:thumbnail_loc>https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg</video:thumbnail_loc>
+      <video:title>Watch Deadpool &amp; Wolverine Full Movie Online Free in 4K HDR</video:title>
+      <video:description>Stream Marvel's Deadpool and Wolverine in 4K UHD with English 5.1 Dolby audio and Hindi dubbed tracks across 20 unblocked live servers.</video:description>
+      <video:player_loc>https://goo-tv.pages.dev/#play-movie-533535</video:player_loc>
+      <video:duration>7680</video:duration>
+      <video:rating>8.6</video:rating>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <!-- Google Video Sitemap Entries (Kalki 2898 AD) -->
+  <url>
+    <loc>https://goo-tv.pages.dev/#play-movie-1400940</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+    <video:video>
+      <video:thumbnail_loc>https://image.tmdb.org/t/p/w500/fa7P25F4XmR5k2X2c6r2jJk1pP7.jpg</video:thumbnail_loc>
+      <video:title>Watch Kalki 2898 AD Full Movie Online Free 4K Hindi Dubbed</video:title>
+      <video:description>Watch epic sci-fi blockbuster Kalki 2898 AD in 4K HDR with Hindi dubbed, Telugu, and multi-language audio with 20 live servers.</video:description>
+      <video:player_loc>https://goo-tv.pages.dev/#play-movie-1400940</video:player_loc>
+      <video:duration>10800</video:duration>
+      <video:rating>8.5</video:rating>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <!-- Google Video Sitemap Entries (Dune: Part Two) -->
+  <url>
+    <loc>https://goo-tv.pages.dev/#play-movie-693134</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+    <video:video>
+      <video:thumbnail_loc>https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg</video:thumbnail_loc>
+      <video:title>Watch Dune: Part Two Full Movie Online Free in 4K HDR</video:title>
+      <video:description>Watch Denis Villeneuve's Dune Part Two with full Dolby Atmos and IMAX 4K streaming quality online without registration on GOO TV.</video:description>
+      <video:player_loc>https://goo-tv.pages.dev/#play-movie-693134</video:player_loc>
+      <video:duration>9960</video:duration>
+      <video:rating>8.9</video:rating>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <!-- Google Video Sitemap Entries (Stranger Things Series) -->
+  <url>
+    <loc>https://goo-tv.pages.dev/#play-tv-66732</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.90</priority>
+    <video:video>
+      <video:thumbnail_loc>https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg</video:thumbnail_loc>
+      <video:title>Watch Stranger Things All Seasons &amp; Episodes Online Free in 4K</video:title>
+      <video:description>Stream Stranger Things all seasons and complete episode pack in 4K HDR with English audio and multi-language dubbed tracks.</video:description>
+      <video:player_loc>https://goo-tv.pages.dev/#play-tv-66732</video:player_loc>
+      <video:duration>3600</video:duration>
+      <video:rating>8.7</video:rating>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>
+  </url>
+
+  <!-- Policy Pages -->
   <url>
     <loc>https://goo-tv.pages.dev/#about</loc>
     <changefreq>monthly</changefreq>
