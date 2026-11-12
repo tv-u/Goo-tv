@@ -206,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 );
               })}
 
-              {/* 🎬 12 Channels Dropdown */}
+              {/* 🎬 45+ World Cinema Industries Dropdown */}
               <div ref={categoriesRef} className="relative">
                 <button
                   type="button"
@@ -223,51 +223,76 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }`}
                 >
                   <Layers className="w-3.5 h-3.5" />
-                  <span>Channels</span>
+                  <span>Cinemas</span>
                   <span className="bg-white/30 text-[9px] font-black px-1.5 py-0.2 rounded-full">
-                    12
+                    45+
                   </span>
                   <ChevronDown className={`w-3 h-3 transition-transform ${showCategoriesDropdown ? 'rotate-180' : ''}`} />
                 </button>
 
                 {showCategoriesDropdown && (
-                  <div className={`absolute top-full mt-3 left-0 w-80 rounded-[24px] shadow-2xl p-2.5 z-50 grid grid-cols-1 gap-1 max-h-[460px] overflow-y-auto scrollbar-none animate-fadeIn ${
+                  <div className={`absolute top-full mt-3 left-0 w-88 sm:w-96 rounded-[24px] shadow-2xl p-3 z-50 max-h-[500px] overflow-y-auto scrollbar-none animate-fadeIn ${
                     theme === 'pastel' ? 'liquid-glass-plate' : 'liquid-glass-plate-dark'
                   }`}>
-                    <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider opacity-60 flex items-center justify-between border-b border-black/5">
-                      <span>GOO TV Channels</span>
-                      <span className="text-rose-500 font-bold">12 Catalogs</span>
+                    <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider opacity-75 flex items-center justify-between border-b border-black/10 mb-2">
+                      <span>World Cinema & Film Industries</span>
+                      <span className="text-rose-500 font-bold">45+ Catalogs</span>
                     </div>
-                    {GOO_TV_CATEGORIES.map((cat) => {
-                      const isCatActive = currentTab === cat.id;
-                      return (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => {
-                            playGelPop(560, 'sine');
-                            onSelectTab(cat.id);
-                            setShowCategoriesDropdown(false);
-                            window.location.hash = `#category-${cat.id}`;
-                          }}
-                          className={`flex items-center justify-between px-3.5 py-2 rounded-2xl text-xs font-bold transition-all text-left cursor-pointer ${
-                            isCatActive
-                              ? 'gel-pink text-white shadow-md'
-                              : 'hover:bg-white/40'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm">{cat.flag}</span>
-                            <span>{cat.name}</span>
+
+                    <div className="space-y-3">
+                      {[
+                        { title: '🇮🇳 Indian Regional Cinemas', region: 'indian' },
+                        { title: '🇺🇸 Hollywood & Western', region: 'western' },
+                        { title: '🇰🇷 Asian Cinema Industries', region: 'asian' },
+                        { title: '🇵🇰 South Asian & Middle Eastern', region: 'south_asian' },
+                        { title: '🌍 African Cinema Industries', region: 'african' },
+                        { title: '🇪🇺 European Cinema', region: 'european' },
+                        { title: '🌎 Latin American Cinema', region: 'latin' },
+                        { title: '📺 Channels & Special Catalogs', region: 'channels' },
+                      ].map((grp) => {
+                        const items = GOO_TV_CATEGORIES.filter((c) => c.region === grp.region);
+                        if (items.length === 0) return null;
+                        return (
+                          <div key={grp.region} className="space-y-1">
+                            <h4 className="text-[10px] font-black text-rose-500 uppercase px-2 tracking-wider">
+                              {grp.title}
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                              {items.map((cat) => {
+                                const isCatActive = currentTab === cat.id;
+                                return (
+                                  <button
+                                    key={cat.id}
+                                    type="button"
+                                    onClick={() => {
+                                      playGelPop(560, 'sine');
+                                      onSelectTab(cat.id);
+                                      setShowCategoriesDropdown(false);
+                                      window.location.hash = `#category-${cat.id}`;
+                                    }}
+                                    className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                                      isCatActive
+                                        ? 'gel-pink text-white shadow-md'
+                                        : 'hover:bg-white/40'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-1.5 truncate">
+                                      <span className="text-xs">{cat.flag}</span>
+                                      <span className="truncate text-[11px]">{cat.name}</span>
+                                    </div>
+                                    {cat.badge && (
+                                      <span className="text-[8px] px-1.5 py-0.2 rounded-full font-black bg-white/30 flex-shrink-0 ml-1">
+                                        {cat.badge}
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                          {cat.badge && (
-                            <span className="text-[9px] px-2 py-0.5 rounded-full font-black bg-white/40">
-                              {cat.badge}
-                            </span>
-                          )}
-                        </button>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>

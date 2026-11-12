@@ -47,7 +47,83 @@ interface PlayerModalProps {
   onOpenDownload?: (item: MediaItem) => void;
 }
 
-export type AudioLanguage = 'hindi' | 'english' | 'dual' | 'tamil' | 'telugu' | 'punjabi' | 'spanish' | 'french' | 'german' | 'japanese' | 'korean';
+export type AudioLanguage = 
+  | 'hindi' 
+  | 'english' 
+  | 'dual' 
+  | 'telugu' 
+  | 'tamil' 
+  | 'malayalam' 
+  | 'kannada' 
+  | 'punjabi' 
+  | 'bengali' 
+  | 'gujarati' 
+  | 'odia' 
+  | 'bhojpuri' 
+  | 'urdu' 
+  | 'pashto' 
+  | 'sinhala' 
+  | 'nepali' 
+  | 'korean' 
+  | 'japanese' 
+  | 'chinese' 
+  | 'french' 
+  | 'german' 
+  | 'italian' 
+  | 'spanish' 
+  | 'russian' 
+  | 'turkish' 
+  | 'persian' 
+  | 'arabic' 
+  | 'thai' 
+  | 'indonesian' 
+  | 'tagalog' 
+  | 'portuguese' 
+  | 'swahili' 
+  | 'swedish';
+
+export const detectAutoAudio = (media: MediaItem): AudioLanguage => {
+  const lang = (media.original_language || '').toLowerCase();
+  switch (lang) {
+    case 'hi': return 'hindi';
+    case 'en': return 'english';
+    case 'te': return 'telugu';
+    case 'ta': return 'tamil';
+    case 'ml': return 'malayalam';
+    case 'kn': return 'kannada';
+    case 'pa': return 'punjabi';
+    case 'bn': return 'bengali';
+    case 'gu': return 'gujarati';
+    case 'or': return 'odia';
+    case 'bho': return 'bhojpuri';
+    case 'ur': return 'urdu';
+    case 'ps': return 'pashto';
+    case 'ne': return 'nepali';
+    case 'si': return 'sinhala';
+    case 'ko': return 'korean';
+    case 'ja': return 'japanese';
+    case 'zh':
+    case 'cn': return 'chinese';
+    case 'fr': return 'french';
+    case 'de': return 'german';
+    case 'it': return 'italian';
+    case 'es': return 'spanish';
+    case 'ru': return 'russian';
+    case 'tr': return 'turkish';
+    case 'fa': return 'persian';
+    case 'ar': return 'arabic';
+    case 'th': return 'thai';
+    case 'id': return 'indonesian';
+    case 'tl': return 'tagalog';
+    case 'pt': return 'portuguese';
+    case 'sw': return 'swahili';
+    case 'sv': return 'swedish';
+    default:
+      // If language not explicitly marked, inspect title/context
+      if (media.media_type === 'tv' && lang === 'ko') return 'korean';
+      return 'hindi';
+  }
+};
 
 export const PlayerModal: React.FC<PlayerModalProps> = ({
   media,
@@ -79,7 +155,7 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const [currentTimeSec, setCurrentTimeSec] = useState<number>(240);
   const [durationSec, setDurationSec] = useState<number>(7200);
   const [selectedQuality, setSelectedQuality] = useState<'4k' | '1080p' | '720p' | '480p'>('1080p');
-  const [selectedAudio, setSelectedAudio] = useState<AudioLanguage>('hindi');
+  const [selectedAudio, setSelectedAudio] = useState<AudioLanguage>(() => detectAutoAudio(media));
   const [recommendedItems, setRecommendedItems] = useState<MediaItem[]>([]);
   const [syncToast, setSyncToast] = useState<string | null>(null);
   const [likesCount, setLikesCount] = useState<number>(() => Math.floor(Math.random() * 25) + 12);
@@ -90,6 +166,12 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [captionsEnabled, setCaptionsEnabled] = useState<boolean>(true);
   const [showHud, setShowHud] = useState<boolean>(true);
+
+  // Sync Audio Automatically whenever media changes to match its Cinema Industry
+  useEffect(() => {
+    const auto = detectAutoAudio(media);
+    setSelectedAudio(auto);
+  }, [media.id, media.original_language]);
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const cinemaWrapperRef = useRef<HTMLDivElement>(null);
@@ -194,40 +276,55 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
 
   const handleChangeAudio = (audio: AudioLanguage) => {
     setSelectedAudio(audio);
-    if (audio === 'hindi') {
+    const audioLabels: Record<AudioLanguage, string> = {
+      hindi: '🇮🇳 Hindi (Bollywood / Dual Audio)',
+      english: '🇺🇸 English (Hollywood 5.1 Dolby Atmos)',
+      dual: '🎧 Dual Audio Master Stream',
+      telugu: '🇮🇳 Telugu (Tollywood Original Master)',
+      tamil: '🇮🇳 Tamil (Kollywood Spatial Track)',
+      malayalam: '🇮🇳 Malayalam (Mollywood Studio Track)',
+      kannada: '🇮🇳 Kannada (Sandalwood HD Master)',
+      punjabi: '🇮🇳 Punjabi (Pollywood Desi Audio)',
+      bengali: '🇮🇳 Bengali (Tollywood / Dhallywood)',
+      gujarati: '🇮🇳 Gujarati (Dhollywood Audio)',
+      odia: '🇮🇳 Odia (Ollywood Track)',
+      bhojpuri: '🇮🇳 Bhojpuri (Bhojiwood Track)',
+      urdu: '🇵🇰 Urdu (Lollywood / Kariwood)',
+      pashto: '🇵🇰 Pashto (Pashtun Cinema Track)',
+      sinhala: '🇱🇰 Sinhala (Follywood Track)',
+      nepali: '🇳🇵 Nepali (Cinema Track)',
+      korean: '🇰🇷 Korean (Hallyuwood / K-Drama)',
+      japanese: '🇯🇵 Japanese (Nihon Eiga / Anime)',
+      chinese: '🇨🇳 Chinese (Chinawood / Mandarin)',
+      french: '🇫🇷 French (Français Cannes Master)',
+      german: '🇩🇪 German (Deutsch Studio Master)',
+      italian: '🇮🇹 Italian (Cinecittà Master)',
+      spanish: '🇪🇸 Spanish (Español Latino / Castilian)',
+      russian: '🇷🇺 Russian (Mosfilm Master)',
+      turkish: '🇹🇷 Turkish (Yeşilçam / Dizi Master)',
+      persian: '🇮🇷 Persian (Iranian Cinema Master)',
+      arabic: '🇪🇬 Arabic (Egyptian / Arab World)',
+      thai: '🇹🇭 Thai (Cinema Master)',
+      indonesian: '🇮🇩 Indonesian (Cinema Master)',
+      tagalog: '🇵🇭 Filipino / Tagalog (Cinema Master)',
+      portuguese: '🇧🇷 Portuguese (Brazilian Cinema)',
+      swahili: '🇹🇿 Swahili (Swahiliwood / Bongowood)',
+      swedish: '🇸🇪 Swedish (Trollywood Nordic)',
+    };
+
+    if (['hindi', 'punjabi', 'bhojpuri', 'gujarati', 'odia', 'dual'].includes(audio)) {
       handleAutoSyncServer('superembed');
-      triggerSyncToast('🇮🇳 Switched to Hindi Dubbed / Dual Audio Track');
-    } else if (audio === 'english') {
+    } else if (['english', 'french', 'german', 'spanish', 'italian', 'russian', 'portuguese', 'swedish'].includes(audio)) {
       handleAutoSyncServer('embed-su');
-      triggerSyncToast('🌐 Switched to English Original 5.1 Dolby Audio');
-    } else if (audio === 'tamil') {
+    } else if (['telugu', 'tamil', 'malayalam', 'kannada', 'bengali', 'urdu', 'nepali', 'sinhala'].includes(audio)) {
       handleAutoSyncServer('smashystream');
-      triggerSyncToast('🇮🇳 Switched to Tamil Dubbed Track');
-    } else if (audio === 'telugu') {
-      handleAutoSyncServer('smashystream');
-      triggerSyncToast('🇮🇳 Switched to Telugu Dubbed Track');
-    } else if (audio === 'punjabi') {
-      handleAutoSyncServer('superembed');
-      triggerSyncToast('🇮🇳 Switched to Punjabi Audio Track');
-    } else if (audio === 'spanish') {
-      handleAutoSyncServer('embed-su');
-      triggerSyncToast('🇪🇸 Switched to Spanish / Español Track');
-    } else if (audio === 'french') {
-      handleAutoSyncServer('embed-su');
-      triggerSyncToast('🇫🇷 Switched to French / Français Track');
-    } else if (audio === 'german') {
-      handleAutoSyncServer('embed-su');
-      triggerSyncToast('🇩🇪 Switched to German / Deutsch Track');
-    } else if (audio === 'japanese') {
+    } else if (['korean', 'japanese', 'chinese', 'thai', 'indonesian', 'tagalog'].includes(audio)) {
       handleAutoSyncServer('vidlink');
-      triggerSyncToast('🇯🇵 Switched to Japanese Anime Track');
-    } else if (audio === 'korean') {
-      handleAutoSyncServer('vidlink');
-      triggerSyncToast('🇰🇷 Switched to Korean K-Drama Track');
     } else {
       handleAutoSyncServer('superembed');
-      triggerSyncToast('🎧 Switched to Dual Audio Stream');
     }
+
+    triggerSyncToast(`🔊 Switched to ${audioLabels[audio] || audio.toUpperCase()}`);
   };
 
   const toggleCinemaFullscreen = () => {
@@ -685,17 +782,49 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
                   onChange={(e) => handleChangeAudio(e.target.value as any)}
                   className="bg-transparent text-amber-400 font-bold text-xs focus:outline-none cursor-pointer"
                 >
-                  <option value="hindi" className="bg-[#12141f]">🇮🇳 Hindi Dubbed (Dual Audio)</option>
-                  <option value="english" className="bg-[#12141f]">🌐 English (Original 5.1)</option>
-                  <option value="dual" className="bg-[#12141f]">🎧 Dual Audio (Multi-Language)</option>
-                  <option value="tamil" className="bg-[#12141f]">🇮🇳 Tamil Dubbed</option>
-                  <option value="telugu" className="bg-[#12141f]">🇮🇳 Telugu Dubbed</option>
-                  <option value="punjabi" className="bg-[#12141f]">🇮🇳 Punjabi Audio</option>
-                  <option value="spanish" className="bg-[#12141f]">🇪🇸 Spanish / Español</option>
-                  <option value="french" className="bg-[#12141f]">🇫🇷 French / Français</option>
-                  <option value="german" className="bg-[#12141f]">🇩🇪 German / Deutsch</option>
-                  <option value="japanese" className="bg-[#12141f]">🇯🇵 Japanese (Anime)</option>
-                  <option value="korean" className="bg-[#12141f]">🇰🇷 Korean (K-Drama)</option>
+                  <optgroup label="Popular & Dubbed">
+                    <option value="hindi" className="bg-[#12141f]">🇮🇳 Hindi Dubbed / Dual Audio</option>
+                    <option value="english" className="bg-[#12141f]">🇺🇸 English 5.1 Dolby Atmos</option>
+                    <option value="dual" className="bg-[#12141f]">🎧 Dual Audio (Multi-Lang)</option>
+                  </optgroup>
+                  <optgroup label="Indian Regional Cinema">
+                    <option value="telugu" className="bg-[#12141f]">🇮🇳 Telugu (Tollywood Original)</option>
+                    <option value="tamil" className="bg-[#12141f]">🇮🇳 Tamil (Kollywood Spatial)</option>
+                    <option value="malayalam" className="bg-[#12141f]">🇮🇳 Malayalam (Mollywood Studio)</option>
+                    <option value="kannada" className="bg-[#12141f]">🇮🇳 Kannada (Sandalwood HD)</option>
+                    <option value="punjabi" className="bg-[#12141f]">🇮🇳 Punjabi (Pollywood Desi)</option>
+                    <option value="bengali" className="bg-[#12141f]">🇮🇳 Bengali (Tollywood / Dhallywood)</option>
+                    <option value="gujarati" className="bg-[#12141f]">🇮🇳 Gujarati (Dhollywood)</option>
+                    <option value="odia" className="bg-[#12141f]">🇮🇳 Odia (Ollywood)</option>
+                    <option value="bhojpuri" className="bg-[#12141f]">🇮🇳 Bhojpuri (Bhojiwood)</option>
+                  </optgroup>
+                  <optgroup label="South Asian & Middle Eastern">
+                    <option value="urdu" className="bg-[#12141f]">🇵🇰 Urdu (Lollywood / Kariwood)</option>
+                    <option value="pashto" className="bg-[#12141f]">🇵🇰 Pashto (Pashtun Cinema)</option>
+                    <option value="nepali" className="bg-[#12141f]">🇳🇵 Nepali Cinema Track</option>
+                    <option value="sinhala" className="bg-[#12141f]">🇱🇰 Sinhala (Follywood)</option>
+                    <option value="turkish" className="bg-[#12141f]">🇹🇷 Turkish (Yeşilçam / Dizi)</option>
+                    <option value="persian" className="bg-[#12141f]">🇮🇷 Persian (Iranian Cinema)</option>
+                    <option value="arabic" className="bg-[#12141f]">🇪🇬 Arabic (Egyptian Master)</option>
+                  </optgroup>
+                  <optgroup label="Asian Cinema">
+                    <option value="korean" className="bg-[#12141f]">🇰🇷 Korean (Hallyuwood / K-Drama)</option>
+                    <option value="japanese" className="bg-[#12141f]">🇯🇵 Japanese (Anime / Live Action)</option>
+                    <option value="chinese" className="bg-[#12141f]">🇨🇳 Chinese (Chinawood Mandarin)</option>
+                    <option value="thai" className="bg-[#12141f]">🇹🇭 Thai Cinema Audio</option>
+                    <option value="indonesian" className="bg-[#12141f]">🇮🇩 Indonesian Audio</option>
+                    <option value="tagalog" className="bg-[#12141f]">🇵🇭 Filipino / Tagalog</option>
+                  </optgroup>
+                  <optgroup label="European & Global">
+                    <option value="french" className="bg-[#12141f]">🇫🇷 French (Français)</option>
+                    <option value="german" className="bg-[#12141f]">🇩🇪 German (Deutsch)</option>
+                    <option value="italian" className="bg-[#12141f]">🇮🇹 Italian (Cinecittà)</option>
+                    <option value="spanish" className="bg-[#12141f]">🇪🇸 Spanish (Español)</option>
+                    <option value="russian" className="bg-[#12141f]">🇷🇺 Russian (Mosfilm)</option>
+                    <option value="portuguese" className="bg-[#12141f]">🇧🇷 Portuguese (Brazilian)</option>
+                    <option value="swahili" className="bg-[#12141f]">🇹🇿 Swahili (Swahiliwood)</option>
+                    <option value="swedish" className="bg-[#12141f]">🇸🇪 Swedish (Trollywood)</option>
+                  </optgroup>
                 </select>
               </div>
 
@@ -806,8 +935,8 @@ export const PlayerModal: React.FC<PlayerModalProps> = ({
             <span className="bg-black/80 backdrop-blur-md text-amber-400 text-[10px] font-black px-2 py-1 rounded-lg border border-amber-400/30">
               {selectedQuality.toUpperCase()}
             </span>
-            <span className="bg-black/80 backdrop-blur-md text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg border border-emerald-400/30">
-              {selectedAudio === 'hindi' ? 'Hindi Dual Audio' : selectedAudio === 'english' ? 'English 5.1' : 'Multi Audio'}
+            <span className="bg-black/80 backdrop-blur-md text-emerald-400 text-[10px] font-black px-2 py-1 rounded-lg border border-emerald-400/30 flex items-center gap-1">
+              <span>🔊 {selectedAudio.toUpperCase()} (AUTO SYNCED)</span>
             </span>
           </div>
 

@@ -272,21 +272,26 @@ export const PolicyModal: React.FC<PolicyModalProps> = ({
                   <li>A statement that you have a good-faith belief that use of the material is not authorized.</li>
                 </ul>
 
-                <div className={`p-4 rounded-2xl flex items-center justify-between gap-4 border ${
+                <div className={`p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border ${
                   theme === 'pastel' ? 'bg-white/60 border-black/10' : 'bg-black/40 border-white/10'
                 }`}>
                   <div>
                     <h4 className="font-black text-sm flex items-center gap-2">
                       <Mail className="w-4 h-4 text-rose-500" />
-                      DMCA Designated Agent Contact
+                      Dedicated Support & DMCA Agent
                     </h4>
-                    <p className="text-xs opacity-75 mt-0.5">We review and remove indexed links within 24 to 48 business hours.</p>
+                    <p className="text-xs font-semibold text-rose-600 mt-0.5">
+                      Email: <strong>Help.wowmovies@gmail.com</strong>
+                    </p>
+                    <p className="text-xs opacity-75 mt-0.5">
+                      Guaranteed reply and resolution within 24 to 48 hours (24 से 48 घंटे में समाधान).
+                    </p>
                   </div>
                   <a
-                    href="mailto:dmca@gootv.app?subject=DMCA%20Takedown%20Notice"
-                    className="px-4 py-2 rounded-full gel-pink text-white font-black text-xs shadow-md hover:scale-105 active:scale-95 transition-all flex-shrink-0"
+                    href="mailto:Help.wowmovies@gmail.com?subject=Support%20or%20DMCA%20Inquiry%20-%20GOO%20TV"
+                    className="px-5 py-2.5 rounded-full gel-pink text-white font-black text-xs shadow-md hover:scale-105 active:scale-95 transition-all flex-shrink-0"
                   >
-                    Send Notice
+                    Email Support
                   </a>
                 </div>
               </div>

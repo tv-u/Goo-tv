@@ -12,6 +12,7 @@ import { WatchlistDrawer } from './components/WatchlistDrawer';
 import { ServersListModal } from './components/ServersListModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { PolicyModal, PolicyPageType } from './components/PolicyModal';
+import { RunningSupportNotice } from './components/RunningSupportNotice';
 import { AdsterraAdBanner, AdsterraNativeContainer } from './components/AdsterraAdBanner';
 import { applySeo } from './seo/seo';
 import { 
@@ -377,13 +378,17 @@ export default function App() {
           )}
         </main>
 
-        {/* 3D Liquid Glass Footer */}
-        <footer className={`border-t transition-colors py-10 px-4 sm:px-8 mt-auto ${
+        {/* 3D Liquid Glass Footer with 24/7 Running Support Notice */}
+        <footer className={`border-t transition-colors py-8 px-4 sm:px-8 mt-auto ${
           theme === 'pastel'
             ? 'border-white/80 bg-white/40 backdrop-blur-xl text-stone-800'
             : 'border-white/10 bg-[#0d0912]/80 backdrop-blur-xl text-stone-400'
         }`}>
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {/* 3D Liquid Glass Marquee Notice Running in Hindi & English */}
+            <RunningSupportNotice theme={theme} />
+
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-2xl gel-pink flex items-center justify-center text-white shadow-md">
                 <div className="gel-sheen" />
@@ -461,8 +466,9 @@ export default function App() {
             </div>
 
             <p className="text-xs opacity-60 text-center md:text-right font-medium">
-              © {new Date().getFullYear()} GOO TV. All Rights Reserved.
+              © {new Date().getFullYear()} GOO TV. Support: <span className="text-rose-500 font-bold">Help.wowmovies@gmail.com</span> (24-48h).
             </p>
+          </div>
           </div>
         </footer>
 

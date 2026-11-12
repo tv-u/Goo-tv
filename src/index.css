@@ -337,4 +337,26 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* 3D Running Notice Marquee Animation */
+  @keyframes marqueeNotice {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee-notice {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: marqueeNotice 35s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-marquee-notice:hover {
+    animation-play-state: paused;
+  }
 }
+

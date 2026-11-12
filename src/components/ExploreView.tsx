@@ -87,6 +87,9 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   };
 
   const [selectedCategory, setSelectedCategory] = useState<string>(getStartingCategory());
+  const [selectedRegion, setSelectedRegion] = useState<string>('all');
+  const [categorySearchQuery, setCategorySearchQuery] = useState<string>('');
+  const [showFullCategoryGrid, setShowFullCategoryGrid] = useState<boolean>(false);
   const [southSubFilter, setSouthSubFilter] = useState<string>(getStartingSouthSubFilter());
   const [mediaType, setMediaType] = useState<'movie' | 'tv'>(
     selectedCategory === 'kdrama' || selectedCategory === 'kdrama_hindi' || selectedCategory === 'tv' || selectedCategory === 'anime' 
@@ -111,18 +114,26 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
   const bottomSentinelRef = useRef<HTMLDivElement>(null);
 
+  // Synchronize when initialCategory prop changes from Navbar or Home
+  useEffect(() => {
+    if (initialCategory && initialCategory !== selectedCategory) {
+      setSelectedCategory(initialCategory);
+      setCurrentSearch('');
+      setPage(1);
+      const matched = GOO_TV_CATEGORIES.find((c) => c.id === initialCategory);
+      if (matched && matched.region) {
+        setSelectedRegion(matched.region);
+      }
+    }
+  }, [initialCategory]);
+
   // Sync hash changes (Browser Back / Forward / Direct Link)
   useEffect(() => {
     const handleHashSync = () => {
       const hash = window.location.hash;
       if (hash.startsWith('#category-')) {
         const withoutPrefix = hash.replace('#category-', '');
-        if (withoutPrefix.startsWith('south_movies-')) {
-          setSelectedCategory('south_movies');
-          setSouthSubFilter(withoutPrefix.replace('south_movies-', ''));
-        } else {
-          setSelectedCategory(withoutPrefix);
-        }
+        setSelectedCategory(withoutPrefix);
         setCurrentSearch('');
       } else if (hash.startsWith('#search-')) {
         const q = decodeURIComponent(hash.replace('#search-', ''));
@@ -366,90 +377,221 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
         <span className="text-red-400 font-bold">{getPageTitle()}</span>
       </nav>
 
-      {/* 🎬 12 NEW GOO TV CATEGORIES RESPONSIVE NAVIGATOR */}
+      {/* 🎬 WORLD CINEMA INDUSTRIES & GOO TV INDEPENDENT CATEGORIES NAVIGATOR */}
       <div className="mb-6 bg-[#0e1019] border border-white/10 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5">
-        <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-red-600/20 text-red-500 border border-red-500/30">
-              <Layers className="w-4 h-4" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-red-600/20 text-red-500 border border-red-500/30">
+              <Layers className="w-5 h-5" />
             </span>
             <div>
-              <h2 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                <span>GOO TV Categories</span>
-                <span className="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow">
-                  12 CHANNELS
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center gap-2">
+                  <span>World Cinema Industries</span>
+                </h2>
+                <span className="bg-gradient-to-r from-red-600 to-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                  {GOO_TV_CATEGORIES.length} INDEPENDENT CATEGORIES
                 </span>
-              </h2>
-              <p className="text-[11px] text-gray-400 hidden sm:block">
-                Real TMDB metadata • Zero fake titles • Instant auto-server playback
+                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  <span>Zero Mixing Guaranteed</span>
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                Every film industry is 100% separate with dedicated TMDB filtering & auto-synced audio
               </p>
             </div>
           </div>
 
-          <span className="text-[11px] text-gray-400 font-medium">
-            Active: <span className="text-white font-bold">{getPageTitle()}</span>
-          </span>
+          {/* Quick Actions: Toggle Full Directory Grid & Category Search */}
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative flex-1 md:w-56">
+              <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Filter 45+ categories..."
+                value={categorySearchQuery}
+                onChange={(e) => setCategorySearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-7 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+              />
+              {categorySearchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setCategorySearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowFullCategoryGrid(!showFullCategoryGrid)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer flex-shrink-0 ${
+                showFullCategoryGrid
+                  ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/30'
+                  : 'bg-white/10 hover:bg-white/20 text-white border border-white/10'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>{showFullCategoryGrid ? 'Hide Directory' : 'All Categories Grid'}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Category Carousel / Grid */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
-          {GOO_TV_CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat.id && !currentSearch.trim();
+        {/* Expandable 3D Squircle Grid Directory (Shows ALL 45+ Categories as Distinct Large Cards) */}
+        {showFullCategoryGrid && (
+          <div className="pt-2 pb-3 border-b border-white/10 animate-fadeIn space-y-3">
+            <div className="flex items-center justify-between text-xs text-gray-400 px-1">
+              <span className="font-bold text-white flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400" />
+                <span>Complete World Cinema Directory ({GOO_TV_CATEGORIES.length} Categories)</span>
+              </span>
+              <span className="text-[11px] text-gray-400 hidden sm:inline">
+                Click any industry to stream strictly its content
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 max-h-96 overflow-y-auto pr-1">
+              {GOO_TV_CATEGORIES
+                .filter((cat) => {
+                  if (!categorySearchQuery.trim()) return true;
+                  const q = categorySearchQuery.toLowerCase();
+                  return cat.name.toLowerCase().includes(q) || 
+                         cat.industryName.toLowerCase().includes(q) || 
+                         cat.badge.toLowerCase().includes(q) || 
+                         cat.description.toLowerCase().includes(q);
+                })
+                .map((cat, idx) => {
+                  const isCur = selectedCategory === cat.id;
+                  return (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        handleSelectCategory(cat.id);
+                        setShowFullCategoryGrid(false);
+                      }}
+                      className={`p-3 rounded-2xl text-left transition-all cursor-pointer flex flex-col justify-between space-y-2 border relative overflow-hidden group ${
+                        isCur
+                          ? 'bg-gradient-to-br from-red-600/30 to-rose-600/30 border-red-500 shadow-lg shadow-red-600/20 scale-[1.02]'
+                          : 'bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-1.5">
+                        <span className="text-xl">{cat.flag}</span>
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-white/10 text-gray-300">
+                          #{idx + 1}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-black text-white group-hover:text-red-400 transition-colors line-clamp-1">
+                          {cat.name}
+                        </h4>
+                        <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-1">
+                          {cat.badge} • {cat.defaultAudio.toUpperCase()}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between text-[9px] text-amber-400 font-bold border-t border-white/5 pt-1.5">
+                        <span>Strict Filter</span>
+                        <span>Explore →</span>
+                      </div>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        )}
+
+        {/* Regional Filter Bar (Indian, Hollywood/Western, Asian, African, European, Latin, Channels) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+          {[
+            { id: 'all', label: `All (${GOO_TV_CATEGORIES.length})`, flag: '🌐' },
+            { id: 'indian', label: 'Indian Regional (14)', flag: '🇮🇳' },
+            { id: 'western', label: 'Hollywood & West (5)', flag: '🇺🇸' },
+            { id: 'asian', label: 'Asian Cinema (9)', flag: '🇰🇷' },
+            { id: 'south_asian', label: 'South Asian & M.East (8)', flag: '🇵🇰' },
+            { id: 'african', label: 'African Cinema (13)', flag: '🌍' },
+            { id: 'european', label: 'European Cinema (5)', flag: '🇪🇺' },
+            { id: 'latin', label: 'Latin American (4)', flag: '🌎' },
+            { id: 'channels', label: 'Channels & Specials (8)', flag: '📺' },
+          ].map((r) => {
+            const isRegActive = selectedRegion === r.id;
             return (
               <button
-                key={cat.id}
+                key={r.id}
                 type="button"
-                onClick={() => handleSelectCategory(cat.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/40 border border-red-400 scale-[1.02]'
-                    : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10'
+                onClick={() => setSelectedRegion(r.id)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-black text-[11px] whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
+                  isRegActive
+                    ? 'bg-red-600 text-white shadow-md shadow-red-600/30'
+                    : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/5'
                 }`}
-                title={cat.description}
               >
-                <span className="text-sm">{cat.flag}</span>
-                <span>{cat.name}</span>
-                {cat.badge && (
-                  <span className={`text-[9px] px-1 py-0.2 rounded font-extrabold ml-0.5 ${
-                    isActive ? 'bg-black/40 text-amber-300' : 'bg-white/10 text-gray-400'
-                  }`}>
-                    {cat.badge}
-                  </span>
-                )}
+                <span>{r.flag}</span>
+                <span>{r.label}</span>
               </button>
             );
           })}
         </div>
 
-        {/* South Movies Sub-Filters (Tamil, Telugu, Malayalam, Kannada) */}
-        {selectedCategory === 'south_movies' && !currentSearch.trim() && (
-          <div className="pt-2 border-t border-white/10 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs animate-fadeIn">
-            <span className="text-amber-400 font-bold text-[11px] flex-shrink-0 flex items-center gap-1">
-              <span>🌴 South Languages:</span>
-            </span>
-            {[
-              { id: 'all', label: 'All South Indian' },
-              { id: 'ta', label: 'Tamil (Kollywood)' },
-              { id: 'te', label: 'Telugu (Tollywood)' },
-              { id: 'ml', label: 'Malayalam (Mollywood)' },
-              { id: 'kn', label: 'Kannada (Sandalwood)' },
-            ].map((sub) => {
-              const isSubActive = southSubFilter === sub.id;
+        {/* Individual Category Capsules (Every single category rendered as its own button) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none text-xs pt-1">
+          {GOO_TV_CATEGORIES
+            .filter((cat) => {
+              if (categorySearchQuery.trim()) {
+                const q = categorySearchQuery.toLowerCase();
+                return cat.name.toLowerCase().includes(q) || cat.industryName.toLowerCase().includes(q) || cat.badge.toLowerCase().includes(q);
+              }
+              return selectedRegion === 'all' || cat.region === selectedRegion;
+            })
+            .map((cat, idx) => {
+              const isActive = selectedCategory === cat.id && !currentSearch.trim();
               return (
                 <button
-                  key={sub.id}
+                  key={cat.id}
                   type="button"
-                  onClick={() => handleSelectSouthSub(sub.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex-shrink-0 ${
-                    isSubActive
-                      ? 'bg-amber-500 text-black shadow-md font-black'
+                  onClick={() => handleSelectCategory(cat.id)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs whitespace-nowrap transition-all cursor-pointer flex-shrink-0 ${
+                    isActive
+                      ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white shadow-lg shadow-red-600/40 border border-red-400 scale-[1.02]'
                       : 'bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10'
                   }`}
+                  title={cat.description}
                 >
-                  {sub.label}
+                  <span className="text-sm">{cat.flag}</span>
+                  <span>{cat.name}</span>
+                  {cat.badge && (
+                    <span className={`text-[9px] px-1 py-0.2 rounded font-extrabold ml-0.5 ${
+                      isActive ? 'bg-black/40 text-amber-300' : 'bg-white/10 text-gray-400'
+                    }`}>
+                      {cat.badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
+        </div>
+
+        {/* Active Industry Assurance & Audio Auto-Fix Notification Bar */}
+        {currentCatDef && !currentSearch.trim() && (
+          <div className="pt-2.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-black border border-emerald-500/30">
+                🔒 INDEPENDENT CATEGORY
+              </span>
+              <span className="text-gray-300">
+                Showing exclusively <strong className="text-white">{currentCatDef.name}</strong> titles (Zero Content Mixing).
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-amber-300 font-bold">
+              <span>🔊 Auto-Synced Audio:</span>
+              <span className="underline decoration-amber-400/40 uppercase font-black">
+                {currentCatDef.defaultAudio} Audio Track
+              </span>
+            </div>
           </div>
         )}
       </div>

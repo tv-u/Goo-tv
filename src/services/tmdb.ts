@@ -302,130 +302,889 @@ export const deduplicateMediaItems = (items: MediaItem[]): MediaItem[] => {
 export interface GooTvCategoryDef {
   id: string;
   name: string;
+  industryName: string;
+  region: 'indian' | 'western' | 'asian' | 'south_asian' | 'african' | 'european' | 'latin' | 'channels';
   flag: string;
   badge: string;
   type: 'movie' | 'tv';
   description: string;
+  languageCode?: string;
+  originCountry?: string;
+  defaultAudio: string;
   subFilters?: { id: string; label: string; code: string }[];
 }
 
 export const GOO_TV_CATEGORIES: GooTvCategoryDef[] = [
+  // ================= 1. INDIAN REGIONAL CINEMA INDUSTRIES =================
   {
     id: 'hindi_movies',
-    name: 'Hindi Movies',
+    name: 'Bollywood (Hindi)',
+    industryName: 'Bollywood',
+    region: 'indian',
     flag: '🇮🇳',
     badge: 'BOLLYWOOD',
     type: 'movie',
-    description: 'Bollywood & Hindi Cinema Blockbusters',
+    languageCode: 'hi',
+    originCountry: 'IN',
+    defaultAudio: 'hindi',
+    description: 'Bollywood & Hindi Cinema Blockbusters from Mumbai, India',
   },
   {
-    id: 'english_movies',
-    name: 'English Movies',
-    flag: '🇺🇸',
-    badge: 'HOLLYWOOD',
+    id: 'tollywood_telugu',
+    name: 'Tollywood (Telugu)',
+    industryName: 'Tollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'TOLLYWOOD',
     type: 'movie',
-    description: 'Hollywood Blockbusters & Global Cinema',
+    languageCode: 'te',
+    originCountry: 'IN',
+    defaultAudio: 'telugu',
+    description: 'Telugu Cinema Industry (Tollywood) — Andhra Pradesh & Telangana',
+  },
+  {
+    id: 'kollywood',
+    name: 'Kollywood (Tamil)',
+    industryName: 'Kollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'KOLLYWOOD',
+    type: 'movie',
+    languageCode: 'ta',
+    originCountry: 'IN',
+    defaultAudio: 'tamil',
+    description: 'Tamil Film Industry (Kollywood) — Kodambakkam, Chennai',
+  },
+  {
+    id: 'mollywood',
+    name: 'Mollywood (Malayalam)',
+    industryName: 'Mollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'MOLLYWOOD',
+    type: 'movie',
+    languageCode: 'ml',
+    originCountry: 'IN',
+    defaultAudio: 'malayalam',
+    description: 'Malayalam Cinema Industry (Mollywood) — Kerala Cinematic Art',
+  },
+  {
+    id: 'sandalwood',
+    name: 'Sandalwood (Kannada)',
+    industryName: 'Sandalwood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'SANDALWOOD',
+    type: 'movie',
+    languageCode: 'kn',
+    originCountry: 'IN',
+    defaultAudio: 'kannada',
+    description: 'Kannada Film Industry (Sandalwood) — Bengaluru, Karnataka',
   },
   {
     id: 'punjabi_movies',
-    name: 'Punjabi Movies',
-    flag: '🟠',
+    name: 'Pollywood (Punjabi)',
+    industryName: 'Pollywood',
+    region: 'indian',
+    flag: '🇮🇳',
     badge: 'POLLYWOOD',
     type: 'movie',
-    description: 'Top Punjabi Cinema & Desi Comedy',
+    languageCode: 'pa',
+    originCountry: 'IN',
+    defaultAudio: 'punjabi',
+    description: 'Punjabi Cinema (Pollywood) — Vibrant Blockbusters & Desi Comedy',
   },
   {
-    id: 'south_movies',
-    name: 'South Movies',
-    flag: '🌴',
-    badge: 'SOUTH CINEMA',
+    id: 'tollywood_bengali',
+    name: 'Tollywood (Bengali)',
+    industryName: 'Tollywood Bengal',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'BENGALI CINEMA',
     type: 'movie',
-    description: 'South Indian Cinema in Tamil, Telugu, Malayalam & Kannada',
-    subFilters: [
-      { id: 'all', label: 'All South', code: 'ta|te|ml|kn' },
-      { id: 'ta', label: 'Tamil', code: 'ta' },
-      { id: 'te', label: 'Telugu', code: 'te' },
-      { id: 'ml', label: 'Malayalam', code: 'ml' },
-      { id: 'kn', label: 'Kannada', code: 'kn' },
-    ],
+    languageCode: 'bn',
+    originCountry: 'IN',
+    defaultAudio: 'bengali',
+    description: 'Bengali Cinema Industry (Tollygunge, Kolkata) Masterpieces',
   },
+  {
+    id: 'dhollywood',
+    name: 'Dhollywood (Gujarati)',
+    industryName: 'Dhollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'DHOHLLYWOOD',
+    type: 'movie',
+    languageCode: 'gu',
+    originCountry: 'IN',
+    defaultAudio: 'gujarati',
+    description: 'Gujarati Film Industry (Dhollywood) Blockbusters & Urban Cinema',
+  },
+  {
+    id: 'gollywood',
+    name: 'Gollywood (Gujarati)',
+    industryName: 'Gollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'GOLLYWOOD',
+    type: 'movie',
+    languageCode: 'gu',
+    originCountry: 'IN',
+    defaultAudio: 'gujarati',
+    description: 'Gollywood (Gujarati Cinema Alternative) Productions',
+  },
+  {
+    id: 'ollywood',
+    name: 'Ollywood (Odia)',
+    industryName: 'Ollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'ODIA CINEMA',
+    type: 'movie',
+    languageCode: 'or',
+    originCountry: 'IN',
+    defaultAudio: 'odia',
+    description: 'Odia Film Industry (Ollywood) — Cuttack & Bhubaneswar, Odisha',
+  },
+  {
+    id: 'bhojiwood',
+    name: 'Bhojiwood (Bhojpuri)',
+    industryName: 'Bhojiwood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'BHOJPURI',
+    type: 'movie',
+    languageCode: 'bho',
+    originCountry: 'IN',
+    defaultAudio: 'bhojpuri',
+    description: 'Bhojpuri Film Industry (Bhojiwood) Desi Entertainers',
+  },
+  {
+    id: 'jollywood',
+    name: 'Jollywood (Assamese)',
+    industryName: 'Jollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'ASSAMESE',
+    type: 'movie',
+    languageCode: 'as',
+    originCountry: 'IN',
+    defaultAudio: 'assamese',
+    description: 'Assamese Cinema (Jollywood) — Jyoti Chitraban, Assam',
+  },
+  {
+    id: 'maniwood',
+    name: 'Maniwood (Manipuri)',
+    industryName: 'Maniwood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'MANIPURI',
+    type: 'movie',
+    languageCode: 'mni',
+    originCountry: 'IN',
+    defaultAudio: 'manipuri',
+    description: 'Manipuri Cinema (Maniwood) — Imphal, Manipur',
+  },
+  {
+    id: 'chhollywood',
+    name: 'Chhollywood (Chhattisgarhi)',
+    industryName: 'Chhollywood',
+    region: 'indian',
+    flag: '🇮🇳',
+    badge: 'CHHATTISGARHI',
+    type: 'movie',
+    originCountry: 'IN',
+    defaultAudio: 'hindi',
+    description: 'Chhattisgarhi Cinema (Chhollywood) Regional Productions',
+  },
+
+  // ================= 2. WESTERN & GLOBAL MAJOR CINEMA =================
+  {
+    id: 'english_movies',
+    name: 'Hollywood (USA)',
+    industryName: 'Hollywood',
+    region: 'western',
+    flag: '🇺🇸',
+    badge: 'HOLLYWOOD',
+    type: 'movie',
+    languageCode: 'en',
+    originCountry: 'US',
+    defaultAudio: 'english',
+    description: 'Hollywood Cinema Industry — Los Angeles & Global American Blockbusters',
+  },
+  {
+    id: 'british_cinema',
+    name: 'British Cinema (UK)',
+    industryName: 'British Film',
+    region: 'western',
+    flag: '🇬🇧',
+    badge: 'BRITISH',
+    type: 'movie',
+    languageCode: 'en',
+    originCountry: 'GB',
+    defaultAudio: 'english',
+    description: 'United Kingdom Film Industry — British Studio & Indie Cinema',
+  },
+  {
+    id: 'aussiewood',
+    name: 'Aussiewood (Australia)',
+    industryName: 'Aussiewood',
+    region: 'western',
+    flag: '🇦🇺',
+    badge: 'AUSSIEWOOD',
+    type: 'movie',
+    languageCode: 'en',
+    originCountry: 'AU',
+    defaultAudio: 'english',
+    description: 'Australian Cinema Industry (Aussiewood) — Sydney & Melbourne Hits',
+  },
+  {
+    id: 'wellywood',
+    name: 'Wellywood (New Zealand)',
+    industryName: 'Wellywood',
+    region: 'western',
+    flag: '🇳🇿',
+    badge: 'WELLYWOOD',
+    type: 'movie',
+    originCountry: 'NZ',
+    defaultAudio: 'english',
+    description: 'New Zealand Film Industry (Wellywood) — Wellington Epic Productions',
+  },
+  {
+    id: 'trollywood',
+    name: 'Trollywood (Sweden)',
+    industryName: 'Trollywood',
+    region: 'western',
+    flag: '🇸🇪',
+    badge: 'TROLLYWOOD',
+    type: 'movie',
+    languageCode: 'sv',
+    originCountry: 'SE',
+    defaultAudio: 'swedish',
+    description: 'Swedish Film Industry (Trollywood) — Trollhättan Nordic Cinema',
+  },
+
+  // ================= 3. ASIAN CINEMA INDUSTRIES =================
+  {
+    id: 'hallyuwood',
+    name: 'Hallyuwood (South Korea)',
+    industryName: 'Hallyuwood',
+    region: 'asian',
+    flag: '🇰🇷',
+    badge: 'HALLYUWOOD',
+    type: 'movie',
+    languageCode: 'ko',
+    originCountry: 'KR',
+    defaultAudio: 'korean',
+    description: 'South Korean Cinema (Hallyuwood) — Thrillers, Drama & Chungmuro Hits',
+  },
+  {
+    id: 'japanese_cinema',
+    name: 'Japanese Cinema (Japan)',
+    industryName: 'Japanese Film',
+    region: 'asian',
+    flag: '🇯🇵',
+    badge: 'JAPANESE',
+    type: 'movie',
+    languageCode: 'ja',
+    originCountry: 'JP',
+    defaultAudio: 'japanese',
+    description: 'Japanese Cinema Industry (Nihon Eiga) — Live Action Masterpieces',
+  },
+  {
+    id: 'anime',
+    name: 'Anime (Japanese Animation)',
+    industryName: 'Anime',
+    region: 'asian',
+    flag: '🇯🇵',
+    badge: 'ANIME 4K',
+    type: 'tv',
+    languageCode: 'ja',
+    defaultAudio: 'japanese',
+    description: 'Japanese Animation Studio Series & Feature Films in Ultra HD',
+  },
+  {
+    id: 'chinawood',
+    name: 'Chinawood (Mainland China)',
+    industryName: 'Chinawood',
+    region: 'asian',
+    flag: '🇨🇳',
+    badge: 'CHINAWOOD',
+    type: 'movie',
+    languageCode: 'zh',
+    originCountry: 'CN',
+    defaultAudio: 'chinese',
+    description: 'Mainland Chinese Cinema Industry (Hengdian World Studios & Beyond)',
+  },
+  {
+    id: 'hong_kong_cinema',
+    name: 'Hong Kong Cinema',
+    industryName: 'Hong Kong Cinema',
+    region: 'asian',
+    flag: '🇭🇰',
+    badge: 'HK CINEMA',
+    type: 'movie',
+    languageCode: 'cn|zh',
+    originCountry: 'HK',
+    defaultAudio: 'chinese',
+    description: 'Hong Kong Cinema — Legendary Martial Arts & Cantopop Thrillers',
+  },
+  {
+    id: 'taiwanese_cinema',
+    name: 'Taiwanese Cinema',
+    industryName: 'Taiwanese Film',
+    region: 'asian',
+    flag: '🇹🇼',
+    badge: 'TAIWAN',
+    type: 'movie',
+    originCountry: 'TW',
+    defaultAudio: 'chinese',
+    description: 'New Wave Taiwanese Cinema & Golden Horse Award Winners',
+  },
+  {
+    id: 'thai_cinema',
+    name: 'Thai Cinema (Thailand)',
+    industryName: 'Thai Cinema',
+    region: 'asian',
+    flag: '🇹🇭',
+    badge: 'THAILAND',
+    type: 'movie',
+    languageCode: 'th',
+    originCountry: 'TH',
+    defaultAudio: 'thai',
+    description: 'Thai Film Industry — Martial Arts & Gripping Horror Cinema',
+  },
+  {
+    id: 'indonesian_cinema',
+    name: 'Indonesian Cinema',
+    industryName: 'Indonesian Cinema',
+    region: 'asian',
+    flag: '🇮🇩',
+    badge: 'INDONESIA',
+    type: 'movie',
+    languageCode: 'id',
+    originCountry: 'ID',
+    defaultAudio: 'indonesian',
+    description: 'Indonesian Cinema — Jakarta Action Thrillers & Supernatural Hits',
+  },
+  {
+    id: 'philippine_cinema',
+    name: 'Philippine Cinema',
+    industryName: 'Philippine Cinema',
+    region: 'asian',
+    flag: '🇵🇭',
+    badge: 'PHILIPPINES',
+    type: 'movie',
+    languageCode: 'tl',
+    originCountry: 'PH',
+    defaultAudio: 'tagalog',
+    description: 'Philippine Film Industry — Manila Dramas & Indie Cinema',
+  },
+
+  // ================= 4. SOUTH ASIAN & MIDDLE EASTERN CINEMAS =================
+  {
+    id: 'dhallywood',
+    name: 'Dhallywood (Bangladesh)',
+    industryName: 'Dhallywood',
+    region: 'south_asian',
+    flag: '🇧🇩',
+    badge: 'DHALLYWOOD',
+    type: 'movie',
+    languageCode: 'bn',
+    originCountry: 'BD',
+    defaultAudio: 'bengali',
+    description: 'Bangladeshi Film Industry (Dhallywood) — Dhaka Cinema Blockbusters',
+  },
+  {
+    id: 'lollywood',
+    name: 'Lollywood (Pakistan - Lahore)',
+    industryName: 'Lollywood',
+    region: 'south_asian',
+    flag: '🇵🇰',
+    badge: 'LOLLYWOOD',
+    type: 'movie',
+    languageCode: 'ur',
+    originCountry: 'PK',
+    defaultAudio: 'urdu',
+    description: 'Pakistani Cinema Industry (Lollywood) — Lahore Productions',
+  },
+  {
+    id: 'kariwood',
+    name: 'Kariwood (Pakistan - Karachi)',
+    industryName: 'Kariwood',
+    region: 'south_asian',
+    flag: '🇵🇰',
+    badge: 'KARIWOOD',
+    type: 'movie',
+    originCountry: 'PK',
+    defaultAudio: 'urdu',
+    description: 'Karachi Film Industry (Kariwood) — Modern Pakistani Cinema Revival',
+  },
+  {
+    id: 'pashtun_cinema',
+    name: 'Pashtun Cinema (Pakistan - Pashto)',
+    industryName: 'Pashtun Cinema',
+    region: 'south_asian',
+    flag: '🇵🇰',
+    badge: 'PASHTUN',
+    type: 'movie',
+    languageCode: 'ps',
+    defaultAudio: 'pashto',
+    description: 'Pashto Language Film Industry in Khyber Pakhtunkhwa & Pakistan',
+  },
+  {
+    id: 'follywood',
+    name: 'Follywood (Sri Lanka)',
+    industryName: 'Follywood',
+    region: 'south_asian',
+    flag: '🇱🇰',
+    badge: 'FOLLYWOOD',
+    type: 'movie',
+    originCountry: 'LK',
+    defaultAudio: 'sinhala',
+    description: 'Sri Lankan Film Industry (Follywood) — Sinhala & Tamil Cinema',
+  },
+  {
+    id: 'nepali_cinema',
+    name: 'Nepali Cinema (Kollywood Nepal)',
+    industryName: 'Nepali Cinema',
+    region: 'south_asian',
+    flag: '🇳🇵',
+    badge: 'NEPALI',
+    type: 'movie',
+    languageCode: 'ne',
+    originCountry: 'NP',
+    defaultAudio: 'nepali',
+    description: 'Nepali Cinema Industry — Kathmandu Valley Productions',
+  },
+  {
+    id: 'iranian_cinema',
+    name: 'Iranian Cinema (Iran)',
+    industryName: 'Iranian Cinema',
+    region: 'south_asian',
+    flag: '🇮🇷',
+    badge: 'IRANIAN',
+    type: 'movie',
+    languageCode: 'fa',
+    originCountry: 'IR',
+    defaultAudio: 'persian',
+    description: 'Cinema of Iran — World Renowned Persian Poetic & Realist Film',
+  },
+  {
+    id: 'turkish_cinema',
+    name: 'Yeşilçam / Turkish Cinema',
+    industryName: 'Turkish Cinema',
+    region: 'south_asian',
+    flag: '🇹🇷',
+    badge: 'TURKISH',
+    type: 'movie',
+    languageCode: 'tr',
+    originCountry: 'TR',
+    defaultAudio: 'turkish',
+    description: 'Turkish Film & Dizi Industry (Yeşilçam) — Istanbul Productions',
+  },
+  {
+    id: 'egyptian_cinema',
+    name: 'Egyptian Cinema (Egypt)',
+    industryName: 'Egyptian Cinema',
+    region: 'south_asian',
+    flag: '🇪🇬',
+    badge: 'EGYPTIAN',
+    type: 'movie',
+    languageCode: 'ar',
+    originCountry: 'EG',
+    defaultAudio: 'arabic',
+    description: 'Cinema of Egypt — Arab World Hollywood in Cairo',
+  },
+
+  // ================= 5. AFRICAN CINEMA INDUSTRIES =================
+  {
+    id: 'nollywood',
+    name: 'Nollywood (Nigeria)',
+    industryName: 'Nollywood',
+    region: 'african',
+    flag: '🇳🇬',
+    badge: 'NOLLYWOOD',
+    type: 'movie',
+    originCountry: 'NG',
+    defaultAudio: 'english',
+    description: 'Nigerian Film Industry (Nollywood) — World’s 2nd Largest Cinema',
+  },
+  {
+    id: 'kannywood',
+    name: 'Kannywood (Nigeria - Hausa)',
+    industryName: 'Kannywood',
+    region: 'african',
+    flag: '🇳🇬',
+    badge: 'KANNYWOOD',
+    type: 'movie',
+    languageCode: 'ha',
+    originCountry: 'NG',
+    defaultAudio: 'hausa',
+    description: 'Hausa Language Film Industry (Kannywood) — Kano, Nigeria',
+  },
+  {
+    id: 'ghallywood',
+    name: 'Ghallywood (Ghana)',
+    industryName: 'Ghallywood',
+    region: 'african',
+    flag: '🇬🇭',
+    badge: 'GHALLYWOOD',
+    type: 'movie',
+    originCountry: 'GH',
+    defaultAudio: 'english',
+    description: 'Ghanaian Film Industry (Ghallywood) — Accra Cinema Productions',
+  },
+  {
+    id: 'ghollywood',
+    name: 'Ghollywood (Ghana Alternative)',
+    industryName: 'Ghollywood',
+    region: 'african',
+    flag: '🇬🇭',
+    badge: 'GHOLLYWOOD',
+    type: 'movie',
+    originCountry: 'GH',
+    defaultAudio: 'english',
+    description: 'Ghollywood (Ghana Alternative Cinema) Productions',
+  },
+  {
+    id: 'riverwood',
+    name: 'Riverwood (Kenya)',
+    industryName: 'Riverwood',
+    region: 'african',
+    flag: '🇰🇪',
+    badge: 'RIVERWOOD',
+    type: 'movie',
+    originCountry: 'KE',
+    defaultAudio: 'swahili',
+    description: 'Kenyan Cinema Industry (Riverwood) — Nairobi Productions',
+  },
+  {
+    id: 'swahiliwood',
+    name: 'Swahiliwood (Tanzania)',
+    industryName: 'Swahiliwood',
+    region: 'african',
+    flag: '🇹🇿',
+    badge: 'SWAHILIWOOD',
+    type: 'movie',
+    originCountry: 'TZ',
+    defaultAudio: 'swahili',
+    description: 'Tanzanian Film Industry (Swahiliwood) — Dar es Salaam Swahili Cinema',
+  },
+  {
+    id: 'bongowood',
+    name: 'Bongowood (Tanzania)',
+    industryName: 'Bongowood',
+    region: 'african',
+    flag: '🇹🇿',
+    badge: 'BONGOWOOD',
+    type: 'movie',
+    originCountry: 'TZ',
+    defaultAudio: 'swahili',
+    description: 'Bongowood (Tanzanian Bongo Cinema) Blockbusters',
+  },
+  {
+    id: 'ugawood',
+    name: 'Ugawood (Uganda)',
+    industryName: 'Ugawood',
+    region: 'african',
+    flag: '🇺🇬',
+    badge: 'UGAWOOD',
+    type: 'movie',
+    originCountry: 'UG',
+    defaultAudio: 'english',
+    description: 'Ugandan Film Industry (Ugawood) — Kampala Urban Cinema',
+  },
+  {
+    id: 'wakaliwood',
+    name: 'Wakaliwood (Uganda Ramon Action)',
+    industryName: 'Wakaliwood',
+    region: 'african',
+    flag: '🇺🇬',
+    badge: 'WAKALIWOOD',
+    type: 'movie',
+    originCountry: 'UG',
+    defaultAudio: 'english',
+    description: 'Wakaliwood (Ugandan Guerrilla Action Cinema) Cult Hits',
+  },
+  {
+    id: 'zollywood',
+    name: 'Zollywood (Zimbabwe)',
+    industryName: 'Zollywood',
+    region: 'african',
+    flag: '🇿🇼',
+    badge: 'ZOLLYWOOD',
+    type: 'movie',
+    originCountry: 'ZW',
+    defaultAudio: 'english',
+    description: 'Zimbabwe Film Industry (Zollywood) — Harare Cinema',
+  },
+  {
+    id: 'sollywood',
+    name: 'Sollywood (Sierra Leone)',
+    industryName: 'Sollywood',
+    region: 'african',
+    flag: '🇸🇱',
+    badge: 'SOLLYWOOD',
+    type: 'movie',
+    originCountry: 'SL',
+    defaultAudio: 'english',
+    description: 'Sierra Leone Film Industry (Sollywood) — Freetown',
+  },
+  {
+    id: 'hillywood',
+    name: 'Hillywood (Rwanda)',
+    industryName: 'Hillywood',
+    region: 'african',
+    flag: '🇷🇼',
+    badge: 'HILLYWOOD',
+    type: 'movie',
+    originCountry: 'RW',
+    defaultAudio: 'english',
+    description: 'Rwandan Film Festival & Cinema (Hillywood) — Kigali',
+  },
+  {
+    id: 'hollyveld',
+    name: 'Hollyveld (South Africa)',
+    industryName: 'Hollyveld',
+    region: 'african',
+    flag: '🇿🇦',
+    badge: 'HOLLYVELD',
+    type: 'movie',
+    originCountry: 'ZA',
+    defaultAudio: 'english',
+    description: 'South African Film Industry (Hollyveld) — Cape Town & Johannesburg',
+  },
+
+  // ================= 6. EUROPEAN CINEMA =================
+  {
+    id: 'french_cinema',
+    name: 'French Cinema (France)',
+    industryName: 'French Cinema',
+    region: 'european',
+    flag: '🇫🇷',
+    badge: 'FRENCH',
+    type: 'movie',
+    languageCode: 'fr',
+    originCountry: 'FR',
+    defaultAudio: 'french',
+    description: 'Cinema of France — Cannes Award Winners & French Masterpieces',
+  },
+  {
+    id: 'german_cinema',
+    name: 'German Cinema (Germany)',
+    industryName: 'German Cinema',
+    region: 'european',
+    flag: '🇩🇪',
+    badge: 'GERMAN',
+    type: 'movie',
+    languageCode: 'de',
+    originCountry: 'DE',
+    defaultAudio: 'german',
+    description: 'German Film Industry (Babelsberg & Berlin) Thrillers & Epics',
+  },
+  {
+    id: 'italian_cinema',
+    name: 'Italian Cinema (Cinecittà)',
+    industryName: 'Italian Cinema',
+    region: 'european',
+    flag: '🇮🇹',
+    badge: 'ITALIAN',
+    type: 'movie',
+    languageCode: 'it',
+    originCountry: 'IT',
+    defaultAudio: 'italian',
+    description: 'Italian Cinema (Cinecittà Studios) — Rome Classics & Modern Hits',
+  },
+  {
+    id: 'spanish_cinema',
+    name: 'Spanish Cinema (Spain)',
+    industryName: 'Spanish Cinema',
+    region: 'european',
+    flag: '🇪🇸',
+    badge: 'SPANISH',
+    type: 'movie',
+    languageCode: 'es',
+    originCountry: 'ES',
+    defaultAudio: 'spanish',
+    description: 'Cinema of Spain (Goya Award Films) — Madrid & Barcelona',
+  },
+  {
+    id: 'russian_cinema',
+    name: 'Russian Cinema (Mosfilm)',
+    industryName: 'Russian Cinema',
+    region: 'european',
+    flag: '🇷🇺',
+    badge: 'RUSSIAN',
+    type: 'movie',
+    languageCode: 'ru',
+    originCountry: 'RU',
+    defaultAudio: 'russian',
+    description: 'Russian Film Industry (Mosfilm) — Moscow Sci-Fi, Epics & War Drama',
+  },
+
+  // ================= 7. LATIN AMERICAN CINEMA =================
+  {
+    id: 'mexican_cinema',
+    name: 'Mexican Cinema (Mexico)',
+    industryName: 'Mexican Cinema',
+    region: 'latin',
+    flag: '🇲🇽',
+    badge: 'MEXICAN',
+    type: 'movie',
+    languageCode: 'es',
+    originCountry: 'MX',
+    defaultAudio: 'spanish',
+    description: 'Cinema of Mexico — Golden Age & Modern Oscar-Winning Epics',
+  },
+  {
+    id: 'brazilian_cinema',
+    name: 'Brazilian Cinema (Brazil)',
+    industryName: 'Brazilian Cinema',
+    region: 'latin',
+    flag: '🇧🇷',
+    badge: 'BRAZILIAN',
+    type: 'movie',
+    languageCode: 'pt',
+    originCountry: 'BR',
+    defaultAudio: 'portuguese',
+    description: 'Cinema of Brazil — Rio & São Paulo Hits & Festival Favorites',
+  },
+  {
+    id: 'argentine_cinema',
+    name: 'Argentine Cinema (Argentina)',
+    industryName: 'Argentine Cinema',
+    region: 'latin',
+    flag: '🇦🇷',
+    badge: 'ARGENTINE',
+    type: 'movie',
+    languageCode: 'es',
+    originCountry: 'AR',
+    defaultAudio: 'spanish',
+    description: 'Cinema of Argentina — Buenos Aires Oscar-Winning Dramas',
+  },
+  {
+    id: 'chollywood',
+    name: 'Chollywood (Peru)',
+    industryName: 'Chollywood',
+    region: 'latin',
+    flag: '🇵🇪',
+    badge: 'CHOLLYWOOD',
+    type: 'movie',
+    originCountry: 'PE',
+    defaultAudio: 'spanish',
+    description: 'Peruvian Film Industry (Chollywood) — Lima Productions',
+  },
+
+  // ================= 8. CHANNELS & CURATED COLLECTIONS =================
   {
     id: 'classic_movies',
-    name: 'Classic Movies',
+    name: 'Classic Movies (Golden Era)',
+    industryName: 'Classics',
+    region: 'channels',
     flag: '🕰️',
     badge: 'CLASSICS',
     type: 'movie',
-    description: 'Golden Era Vintage Classics (Pre-2000 Masterpieces)',
+    defaultAudio: 'hindi',
+    description: 'Golden Era Vintage Classics (Pre-2000 Timeless Masterpieces)',
   },
   {
     id: 'hindi_dubbed_movies',
-    name: 'Hindi Dubbed Movies',
+    name: 'Hindi Dubbed Blockbusters',
+    industryName: 'Hindi Dubbed',
+    region: 'channels',
     flag: '🎙️',
     badge: 'DUAL AUDIO',
     type: 'movie',
-    description: 'Hollywood & International Movies in Hindi Audio',
+    defaultAudio: 'hindi',
+    description: 'Hollywood & World Cinema with Official Hindi Dubbed Track',
   },
   {
     id: 'kdrama',
-    name: 'K-Drama',
+    name: 'K-Drama (Original Korean)',
+    industryName: 'K-Drama',
+    region: 'channels',
     flag: '🇰🇷',
-    badge: 'SERIES',
+    badge: 'K-SERIES',
     type: 'tv',
-    description: 'Top Korean Dramas & High-Rating Series',
+    languageCode: 'ko',
+    defaultAudio: 'korean',
+    description: 'Top Korean Television Dramas & Global Streaming Hits',
   },
   {
     id: 'kdrama_hindi',
     name: 'Hindi Dubbed K-Drama',
+    industryName: 'K-Drama Hindi',
+    region: 'channels',
     flag: '🇮🇳🇰🇷',
     badge: 'HINDI AUDIO',
     type: 'tv',
-    description: 'Korean Dramas with Official Hindi Dubbed Audio',
-  },
-  {
-    id: 'hbo_movies',
-    name: 'HBO Movies',
-    flag: '🔵',
-    badge: 'HBO / MAX',
-    type: 'movie',
-    description: 'HBO Original Productions & Warner Cinema Hits',
+    defaultAudio: 'hindi',
+    description: 'Korean Dramas with Official Hindi Dubbed Audio Stream',
   },
   {
     id: 'netflix_movies',
-    name: 'Netflix Movies',
+    name: 'Netflix Movies & Shows',
+    industryName: 'Netflix',
+    region: 'channels',
     flag: '🔴',
     badge: 'NETFLIX',
     type: 'movie',
-    description: 'Official Netflix Originals & Exclusives',
+    defaultAudio: 'dual',
+    description: 'Official Netflix Originals & Platform Exclusive Releases',
+  },
+  {
+    id: 'hbo_movies',
+    name: 'HBO Max Originals',
+    industryName: 'HBO Max',
+    region: 'channels',
+    flag: '🔵',
+    badge: 'HBO / MAX',
+    type: 'movie',
+    defaultAudio: 'english',
+    description: 'HBO Original Productions & Warner Bros Cinema Hits',
   },
   {
     id: 'jiohotstar_movies',
     name: 'JioHotstar Movies',
+    industryName: 'JioHotstar',
+    region: 'channels',
     flag: '🟣',
     badge: 'JIO / HOTSTAR',
     type: 'movie',
-    description: 'Disney+ Hotstar & JioCinema Originals & Movies',
+    defaultAudio: 'hindi',
+    description: 'Disney+ Hotstar & JioCinema Originals & Blockbusters',
   },
   {
     id: 'mxplayer_movies',
-    name: 'MX Player Movies',
+    name: 'MX Player Hits',
+    industryName: 'MX Player',
+    region: 'channels',
     flag: '🟢',
     badge: 'MX ORIGINALS',
     type: 'movie',
+    defaultAudio: 'hindi',
     description: 'MX Player Desi Blockbusters & Web Movies',
   },
 ];
+
+// Helper to look up any industry
+export const getIndustryDef = (id: string): GooTvCategoryDef | undefined => {
+  return GOO_TV_CATEGORIES.find((c) => c.id === id);
+};
 
 // 4. Bollywood / Hindi Cinema
 export const fetchBollywood = async (page = 1, type: 'movie' | 'tv' = 'movie'): Promise<PaginatedResult<MediaItem>> => {
   const data = await tmdbFetch<PaginatedResult<MediaItem>>(`/discover/${type}`, {
     page,
     with_original_language: 'hi',
+    with_origin_country: 'IN',
     sort_by: 'popularity.desc',
-    'vote_count.gte': '10',
+    'vote_count.gte': '5',
   });
   return {
     ...data,
-    results: deduplicateMediaItems(data.results.map((item) => ({ ...item, media_type: type }))),
+    results: deduplicateMediaItems(data.results.map((item) => ({ ...item, media_type: type, original_language: 'hi' }))),
   };
 };
 
@@ -605,36 +1364,95 @@ export const fetchGooTvCategory = async (
   page = 1, 
   subFilter = 'all'
 ): Promise<PaginatedResult<MediaItem>> => {
-  switch (categoryId) {
-    case 'hindi_movies':
-    case 'bollywood':
-      return fetchHindiMovies(page);
-    case 'english_movies':
-    case 'hollywood':
-      return fetchEnglishMovies(page);
-    case 'punjabi_movies':
-      return fetchPunjabiMovies(page);
-    case 'south_movies':
-      return fetchSouthMovies(page, subFilter);
-    case 'classic_movies':
-      return fetchClassicMovies(page);
-    case 'hindi_dubbed_movies':
-      return fetchHindiDubbedMovies(page);
-    case 'kdrama':
-      return fetchKDrama(page);
-    case 'kdrama_hindi':
-      return fetchKDramaHindi(page);
-    case 'hbo_movies':
-      return fetchHboMovies(page);
-    case 'netflix_movies':
-      return fetchNetflixMovies(page);
-    case 'jiohotstar_movies':
-      return fetchJioHotstarMovies(page);
-    case 'mxplayer_movies':
-      return fetchMxPlayerMovies(page);
-    default:
-      return fetchHindiMovies(page);
+  // Alias mapping
+  const normalizedId = categoryId === 'bollywood' ? 'hindi_movies' : (categoryId === 'hollywood' ? 'english_movies' : categoryId);
+
+  // 1. Curated Channels & Special Handlers
+  if (normalizedId === 'south_movies') {
+    return fetchSouthMovies(page, subFilter);
   }
+  if (normalizedId === 'classic_movies') {
+    return fetchClassicMovies(page);
+  }
+  if (normalizedId === 'hindi_dubbed_movies') {
+    return fetchHindiDubbedMovies(page);
+  }
+  if (normalizedId === 'kdrama_hindi') {
+    return fetchKDramaHindi(page);
+  }
+  if (normalizedId === 'hbo_movies') {
+    return fetchHboMovies(page);
+  }
+  if (normalizedId === 'netflix_movies') {
+    return fetchNetflixMovies(page);
+  }
+  if (normalizedId === 'jiohotstar_movies') {
+    return fetchJioHotstarMovies(page);
+  }
+  if (normalizedId === 'mxplayer_movies') {
+    return fetchMxPlayerMovies(page);
+  }
+  if (normalizedId === 'anime') {
+    return fetchAnime(page);
+  }
+
+  // 2. Strict World Cinema Industries Lookup
+  const industryDef = GOO_TV_CATEGORIES.find((c) => c.id === normalizedId);
+
+  if (industryDef) {
+    const effectiveType = industryDef.type || 'movie';
+    const params: Record<string, string | number> = {
+      page,
+      sort_by: 'popularity.desc',
+    };
+
+    if (industryDef.languageCode && industryDef.languageCode !== 'all') {
+      params.with_original_language = industryDef.languageCode;
+    }
+    if (industryDef.originCountry && industryDef.originCountry !== 'all') {
+      params.with_origin_country = industryDef.originCountry;
+    }
+
+    // Set reasonable vote thresholds to eliminate garbage/empty titles while preserving regional gems
+    if (['english_movies', 'hollywood', 'british_cinema', 'french_cinema', 'german_cinema', 'italian_cinema', 'spanish_cinema'].includes(normalizedId)) {
+      params['vote_count.gte'] = 15;
+    } else if (['hindi_movies', 'hallyuwood', 'japanese_cinema', 'tollywood_telugu', 'kollywood', 'mollywood', 'sandalwood', 'pollywood'].includes(normalizedId)) {
+      params['vote_count.gte'] = 5;
+    }
+
+    try {
+      const data = await tmdbFetch<PaginatedResult<MediaItem>>(`/discover/${effectiveType}`, params);
+      const cleanResults = (data.results || []).map((item) => ({
+        ...item,
+        media_type: effectiveType,
+        original_language: item.original_language || industryDef.languageCode,
+      }));
+
+      return {
+        ...data,
+        results: deduplicateMediaItems(cleanResults),
+      };
+    } catch (err) {
+      console.warn(`Error fetching industry ${normalizedId}, trying relaxed parameters`, err);
+      // Fallback with just language code if country code was too restrictive
+      if (industryDef.languageCode) {
+        try {
+          const fallbackData = await tmdbFetch<PaginatedResult<MediaItem>>(`/discover/${effectiveType}`, {
+            page,
+            with_original_language: industryDef.languageCode,
+            sort_by: 'popularity.desc',
+          });
+          return {
+            ...fallbackData,
+            results: deduplicateMediaItems((fallbackData.results || []).map((i) => ({ ...i, media_type: effectiveType, original_language: industryDef.languageCode }))),
+          };
+        } catch {}
+      }
+    }
+  }
+
+  // Default fallback to Hindi movies
+  return fetchHindiMovies(page);
 };
 
 // 5. Anime / Japanese Animation
