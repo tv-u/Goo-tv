@@ -1165,7 +1165,59 @@ export const GOO_TV_CATEGORIES: GooTvCategoryDef[] = [
     type: 'movie',
     defaultAudio: 'hindi',
     description: 'MX Player Desi Blockbusters & Web Movies',
+  },,
+  {
+    "id": "karachi_cinema",
+    "name": "Karachi Cinema",
+    "industryName": "Pakistani Cinema",
+    "region": "south_asian",
+    "flag": "🇵🇰",
+    "badge": "PAKISTANI",
+    "type": "movie",
+    "languageCode": "ur",
+    "originCountry": "PK",
+    "defaultAudio": "urdu",
+    "description": "Urdu and Pakistani Cinema Productions"
   },
+  {
+    "id": "taiwan_cinema",
+    "name": "Taiwan Cinema",
+    "industryName": "Taiwanese Film",
+    "region": "asian",
+    "flag": "🇹🇼",
+    "badge": "TAIWAN",
+    "type": "movie",
+    "languageCode": "zh",
+    "originCountry": "TW",
+    "defaultAudio": "chinese",
+    "description": "Taiwanese Film Industry"
+  },
+  {
+    "id": "sri_lankan_cinema",
+    "name": "Sri Lankan Cinema",
+    "industryName": "Sri Lankan Film",
+    "region": "south_asian",
+    "flag": "🇱🇰",
+    "badge": "SRI LANKA",
+    "type": "movie",
+    "languageCode": "si",
+    "originCountry": "LK",
+    "defaultAudio": "sinhala",
+    "description": "Sri Lankan Sinhala Cinema"
+  },
+  {
+    "id": "australian_cinema",
+    "name": "Australian Cinema",
+    "industryName": "Aussiewood",
+    "region": "western",
+    "flag": "🇦🇺",
+    "badge": "AUSSIEWOOD",
+    "type": "movie",
+    "languageCode": "en",
+    "originCountry": "AU",
+    "defaultAudio": "english",
+    "description": "Australian Film Industry"
+  }
 ];
 
 // Helper to look up any industry
