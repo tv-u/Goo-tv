@@ -4,11 +4,8 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
-  // Universal static base for Cloudflare Pages, GitHub Pages & Custom Domains
-  const base = './';
-
   return {
-    base,
+    base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
@@ -19,12 +16,10 @@ export default defineConfig(() => {
       outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: false,
+      chunkSizeWarningLimit: 1000,
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
