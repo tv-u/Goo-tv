@@ -1,4 +1,3 @@
-
 {
   "name": "goo-tv",
   "version": "1.0.0",
@@ -10,12 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "i18next": "latest",
+    "lucide-react": "^1.72.0",
     "react": "latest",
     "react-dom": "latest",
-    "i18next": "latest",
-    "react-i18next": "latest"
-  },
-  "devDependencies": {}
+    "react-i18next": "latest",
+    "tailwindcss": "^4.3.5",
+    "vite": "latest"
+  }
 }
